@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to vibrant web3 aesthetic with cyan/purple accents */
-  --background: oklch(1 0 0);
+  /* Updated to sleek web3 degen aesthetic with neon accents and glassmorphism */
+  --background: oklch(0.98 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -29,7 +29,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  --radius: 0.75rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -38,41 +38,52 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Web3 degen colors: charcoal, orange, purple */
+  --neon-orange: oklch(0.7 0.2 45);
+  --neon-purple: oklch(0.65 0.25 290);
+  --neon-violet: oklch(0.6 0.22 310);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* Dark mode with charcoal background and orange/purple accents */
+  --background: oklch(0.12 0.01 270);
+  --foreground: oklch(0.95 0.01 45);
+  --card: oklch(0.15 0.02 270 / 0.6);
+  --card-foreground: oklch(0.95 0.01 45);
+  --popover: oklch(0.13 0.01 270);
+  --popover-foreground: oklch(0.95 0.01 45);
+  --primary: oklch(0.7 0.2 45);
+  --primary-foreground: oklch(0.12 0.01 270);
+  --secondary: oklch(0.2 0.02 270);
+  --secondary-foreground: oklch(0.95 0.01 45);
+  --muted: oklch(0.2 0.02 270);
+  --muted-foreground: oklch(0.65 0.01 270);
+  --accent: oklch(0.65 0.25 290);
+  --accent-foreground: oklch(0.95 0.01 45);
+  --destructive: oklch(0.55 0.25 25);
+  --destructive-foreground: oklch(0.95 0.01 45);
+  --border: oklch(0.25 0.03 270 / 0.3);
+  --input: oklch(0.25 0.03 270 / 0.5);
+  --ring: oklch(0.7 0.2 45 / 0.5);
+  --chart-1: oklch(0.7 0.2 45);
+  --chart-2: oklch(0.65 0.25 290);
+  --chart-3: oklch(0.6 0.22 310);
+  --chart-4: oklch(0.75 0.18 35);
+  --chart-5: oklch(0.68 0.22 300);
+  --sidebar: oklch(0.13 0.01 270);
+  --sidebar-foreground: oklch(0.95 0.01 45);
+  --sidebar-primary: oklch(0.7 0.2 45);
+  --sidebar-primary-foreground: oklch(0.12 0.01 270);
+  --sidebar-accent: oklch(0.2 0.02 270);
+  --sidebar-accent-foreground: oklch(0.95 0.01 45);
+  --sidebar-border: oklch(0.25 0.03 270 / 0.3);
+  --sidebar-ring: oklch(0.7 0.2 45 / 0.5);
+
+  /* Web3 degen neon colors: orange and purple only */
+  --neon-orange: oklch(0.7 0.2 45);
+  --neon-purple: oklch(0.65 0.25 290);
+  --neon-violet: oklch(0.6 0.22 310);
 }
 
 @theme inline {
@@ -112,13 +123,71 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Add neon color utilities for orange and purple */
+  --color-neon-orange: var(--neon-orange);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-violet: var(--neon-violet);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    /* Lightened gradient with charcoal, orange, and purple tones */
+    background: linear-gradient(
+      135deg,
+      oklch(0.2 0.01 270) 0%,
+      oklch(0.23 0.05 290) 25%,
+      oklch(0.26 0.08 45) 50%,
+      oklch(0.23 0.05 290) 75%,
+      oklch(0.2 0.01 270) 100%
+    );
+    background-attachment: fixed;
+  }
+}
+
+/* Update glassmorphism utilities with new color palette */
+@layer utilities {
+  .glass-card {
+    background: oklch(0.15 0.02 270 / 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.25 0.03 270 / 0.3);
+    box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.37), inset 0 1px 0 0 oklch(0.95 0.01 45 / 0.05);
+  }
+
+  .glass-card:hover {
+    background: oklch(0.17 0.03 270 / 0.5);
+    border-color: oklch(0.7 0.2 45 / 0.4);
+    box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.37), 0 0 20px 0 oklch(0.7 0.2 45 / 0.2), inset 0 1px 0 0
+      oklch(0.95 0.01 45 / 0.1);
+  }
+
+  .neon-glow-orange {
+    /* Reduced blur from 20px to 12px and opacity from 0.5 to 0.25 for more subtle glow */
+    box-shadow: 0 0 12px oklch(0.7 0.2 45 / 0.25);
+  }
+
+  .neon-glow-purple {
+    box-shadow: 0 0 20px oklch(0.65 0.25 290 / 0.5);
+  }
+
+  .neon-glow-violet {
+    box-shadow: 0 0 20px oklch(0.6 0.22 310 / 0.5);
+  }
+
+  .neon-border {
+    border: 1px solid oklch(0.7 0.2 45 / 0.5);
+    box-shadow: 0 0 10px oklch(0.7 0.2 45 / 0.3), inset 0 0 10px oklch(0.7 0.2 45 / 0.1);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, oklch(0.7 0.2 45), oklch(0.65 0.25 290), oklch(0.6 0.22 310));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }

@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen">
+      <header className="glass-card border-b border-primary/20 sticky top-0 z-50">
         <div className="container mx-auto px-4 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">DAPPTOBER</h1>
+              <h1 className="text-2xl font-bold tracking-tight gradient-text">DAPPTOBER</h1>
               <p className="text-sm text-muted-foreground">Showcase for Vibe-Coded Web3 Apps</p>
             </div>
 
             <nav className="hidden md:flex items-center gap-6">
-              <a href="#prompts" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              <a href="#prompts" className="text-sm font-medium text-primary hover:text-accent transition-colors">
                 Prompts
               </a>
               <a
@@ -31,14 +31,14 @@ export default function Home() {
               </a>
             </nav>
 
-            <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity">
+            <Button className="bg-primary hover:bg-primary/90 transition-all neon-glow-orange hover:neon-glow-purple">
               Connect Wallet
             </Button>
           </div>
         </div>
       </header>
 
-      <section id="prompts" className="container mx-auto px-4 lg:px-8 py-12">
+      <section id="prompts" className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {dappPrompts.map((dapp) => (
             <DappCard key={dapp.day} dapp={dapp} />
@@ -46,7 +46,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-card/30 backdrop-blur-md mt-12">
+      <footer className="glass-card border-t border-primary/20 mt-12 relative z-10">
         <div className="container mx-auto px-4 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">Built with Next.js 15, shadcn/ui, and ThirdWeb</p>
