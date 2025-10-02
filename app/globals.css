@@ -155,15 +155,23 @@
   .glass-card {
     background: oklch(0.15 0.02 270 / 0.4);
     backdrop-filter: blur(12px);
-    border: 1px solid oklch(0.25 0.03 270 / 0.3);
+    border: 1px solid oklch(0.3 0.03 270 / 0.3);
     box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.37), inset 0 1px 0 0 oklch(0.95 0.01 45 / 0.05);
   }
 
   .glass-card:hover {
     background: oklch(0.17 0.03 270 / 0.5);
-    border-color: oklch(0.7 0.2 45 / 0.4);
+    border-color: oklch(0.7 0.2 45 / 0.3);
     box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.37), 0 0 20px 0 oklch(0.7 0.2 45 / 0.2), inset 0 1px 0 0
-      oklch(0.95 0.01 45 / 0.1);
+      oklch(0.95 0.01 45 / 0.08);
+  }
+
+  /* Added new modal-specific glassmorphic styling - darker and more opaque */
+  .glass-modal {
+    background: oklch(0.12 0.02 270 / 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid oklch(0.3 0.03 270 / 0.5);
+    box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.5), inset 0 1px 0 0 oklch(0.95 0.01 45 / 0.08);
   }
 
   .neon-glow-orange {

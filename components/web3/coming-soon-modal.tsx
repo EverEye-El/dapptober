@@ -36,11 +36,11 @@ export function ComingSoonModal({ isOpen, onClose, feature }: ComingSoonModalPro
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
       {/* Backdrop with blur */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal content with glassmorphic design */}
       <div className="relative w-full max-w-md animate-in zoom-in-95 duration-200">
-        <div className="glass-card rounded-2xl p-8 space-y-6 relative overflow-hidden">
+        <div className="glass-modal rounded-2xl p-8 space-y-6 relative overflow-hidden">
           {/* Decorative gradient orbs */}
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-neon-orange/20 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-neon-purple/20 rounded-full blur-3xl" />
