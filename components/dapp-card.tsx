@@ -7,6 +7,7 @@ import { Eye, Users } from "lucide-react"
 import { useState } from "react"
 import type { DappPrompt } from "@/lib/dapp-prompts"
 import Image from "next/image"
+import Link from "next/link"
 
 interface DappCardProps {
   dapp: DappPrompt
@@ -68,13 +69,15 @@ export function DappCard({ dapp }: DappCardProps) {
               <span>{Math.floor(Math.random() * 100) + 10}+</span>
             </div>
           </div>
-          <Button
-            size="sm"
-            variant="default"
-            className="h-8 text-xs font-semibold neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
-          >
-            View Prompt
-          </Button>
+          <Link href={`/dapp/${dapp.day}`}>
+            <Button
+              size="sm"
+              variant="default"
+              className="h-8 text-xs font-semibold neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
+            >
+              View Prompt
+            </Button>
+          </Link>
         </div>
       </div>
 
