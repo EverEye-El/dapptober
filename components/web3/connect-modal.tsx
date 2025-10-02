@@ -5,6 +5,7 @@ import { ConnectButton } from "thirdweb/react"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
 import { useEffect } from "react"
+import { createPortal } from "react-dom"
 
 const wallets = [
   createWallet("io.metamask"),
@@ -39,13 +40,13 @@ export function ConnectModal({ isOpen, onClose }: ConnectModalProps) {
 
   if (!isOpen) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-end p-4 md:p-6 animate-in fade-in duration-200">
       {/* Backdrop with blur */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal content with glassmorphic design */}
-      <div className="relative w-full max-w-md animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md animate-in slide-in-from-right duration-200">
         <div className="glass-card rounded-2xl p-8 space-y-6 relative overflow-hidden">
           {/* Decorative gradient orbs */}
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-neon-orange/20 rounded-full blur-3xl" />
@@ -103,6 +104,7 @@ export function ConnectModal({ isOpen, onClose }: ConnectModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

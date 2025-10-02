@@ -11,6 +11,7 @@ import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
+import { ComingSoonModal } from "./coming-soon-modal"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 
 interface Comment {
@@ -33,6 +34,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConnectModal, setShowConnectModal] = useState(false)
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const account = useActiveAccount()
@@ -111,77 +113,19 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
       return
     }
 
-    setIsSubmitting(true)
-    setShowSuccess(false)
-
-    try {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser()
-
-      console.log("[v0] Supabase user check", { userId: user?.id, authError })
-
-      if (authError || !user) {
-        console.error("[v0] No Supabase session found")
-        setError("Please reconnect your wallet to authenticate")
-        setIsSubmitting(false)
-        return
-      }
-
-      console.log("[v0] Inserting comment to database", {
-        user_id: user.id,
-        dapp_day: dappDay,
-        content: newComment.trim(),
-      })
-
-      const { data, error: insertError } = await supabase
-        .from("comments")
-        .insert({
-          user_id: user.id,
-          dapp_day: dappDay,
-          content: newComment.trim(),
-        })
-        .select(
-          `
-          id,
-          content,
-          created_at,
-          profiles (
-            display_name,
-            wallet_address
-          )
-        `,
-        )
-        .single()
-
-      if (insertError) {
-        console.error("[v0] Database insert error:", insertError)
-        throw new Error(insertError.message)
-      }
-
-      console.log("[v0] Comment posted successfully", data)
-
-      setComments((prev) => [data as Comment, ...prev])
-      setNewComment("")
-      setShowSuccess(true)
-
-      setTimeout(() => setShowSuccess(false), 3000)
-
-      router.refresh()
-    } catch (error) {
-      console.error("[v0] Comment submission error:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to post comment"
-      setError(errorMessage)
-      setTimeout(() => setError(null), 5000)
-    } finally {
-      setIsSubmitting(false)
-    }
+    console.log("[v0] Showing coming soon modal for comments")
+    setShowComingSoonModal(true)
   }
 
   return (
     <div className="space-y-6">
       <ConnectModal isOpen={showConnectModal} onClose={() => setShowConnectModal(false)} />
+      <ComingSoonModal
+        isOpen={showComingSoonModal}
+        onClose={() => setShowComingSoonModal(false)}
+        feature="comments"
+        position="left"
+      />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
