@@ -190,4 +190,19 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+
+  /* Added new gradient for main page logo with only orange and purple */
+  .gradient-text-main {
+    /* Reduced orange chroma from 0.22 to 0.20 to match sidebar vibrancy */
+    background: linear-gradient(
+      90deg,
+      oklch(0.7 0.2 45) 0%,
+      oklch(0.7 0.2 45) 35%,
+      oklch(0.65 0.25 290) 70%,
+      oklch(0.6 0.25 310) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
