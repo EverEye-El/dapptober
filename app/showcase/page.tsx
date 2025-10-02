@@ -1,26 +1,30 @@
-import { DappCard } from "@/components/dapp-card"
-import { dappPrompts } from "@/lib/dapp-prompts"
+import { ShowcaseGrid } from "@/components/showcase/showcase-grid"
 import { Sidebar } from "@/components/sidebar"
+import { SubmitButton } from "@/components/web3/submit-button"
 
-export default function Home() {
+export default function ShowcasePage() {
   return (
     <div className="min-h-screen">
       <Sidebar />
 
       <main>
-        <header className="container mx-auto px-4 lg:px-8 py-4 relative z-10">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">DAPPTOBER</h1>
-            <p className="text-sm text-white/70">31 Days of Vibe-Coded Web3</p>
+        <header className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">
+              Community Showcase
+            </h1>
+            <p className="text-sm md:text-base text-white/70 max-w-2xl mx-auto text-balance">
+              Explore amazing Web3 projects built by the Dapptober community. Each submission represents creativity,
+              innovation, and the spirit of decentralized building.
+            </p>
+            <div className="pt-2">
+              <SubmitButton dappDay={1} variant="button" />
+            </div>
           </div>
         </header>
 
-        <section id="prompts" className="container mx-auto px-4 lg:px-8 py-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {dappPrompts.map((dapp) => (
-              <DappCard key={dapp.day} dapp={dapp} />
-            ))}
-          </div>
+        <section className="container mx-auto px-4 lg:px-8 py-6 relative z-10">
+          <ShowcaseGrid />
         </section>
 
         <footer className="glass-card border-t border-primary/20 mt-12 relative z-10">

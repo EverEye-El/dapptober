@@ -17,9 +17,9 @@ export function Sidebar() {
   }, [])
 
   const navItems = [
-    { href: "/#prompts", label: "Prompts", icon: FileText, active: true },
-    { href: "/#submissions", label: "Submissions", icon: Send, active: false },
-    { href: "/#about", label: "About", icon: Info, active: false },
+    { href: "/", label: "Prompts", icon: FileText, active: false },
+    { href: "/showcase", label: "Showcase", icon: Send, active: false },
+    { href: "/about", label: "About", icon: Info, active: false },
   ]
 
   return (

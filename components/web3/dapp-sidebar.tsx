@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Heart, MessageSquare, Eye, Users, Share2, ArrowLeft } from "lucide-react"
+import { Heart, MessageSquare, Eye, Users, Share2, ArrowLeft, Upload } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LikeButton } from "@/components/web3/like-button"
+import { SubmitButton } from "@/components/web3/submit-button"
 import Link from "next/link"
 
 interface DappSidebarProps {
@@ -67,6 +68,18 @@ export function DappSidebar({
             Back to Gallery
           </Button>
         </Link>
+
+        {/* Submit DApp Card */}
+        <Card className="glass-card border-accent/30 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Upload className="w-4 h-4" />
+            <span className="font-semibold">Submit Your Build</span>
+          </div>
+          <SubmitButton dappDay={dappDay} variant="card" />
+          <p className="text-xs text-muted-foreground">
+            Built something for Day {dappDay}? Share it with the community!
+          </p>
+        </Card>
 
         {/* Like Card */}
         <Card className="glass-card border-primary/30 p-4 space-y-3">
