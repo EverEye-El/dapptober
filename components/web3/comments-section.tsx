@@ -7,9 +7,20 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
-import { useActiveAccount } from "thirdweb/react"
+import { ConnectButton, useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
+import { client } from "@/lib/web3/thirdweb-client"
+import { createWallet } from "thirdweb/wallets"
+import { AlertCircle } from "lucide-react"
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+  createWallet("io.rabby"),
+  createWallet("io.zerion.wallet"),
+]
 
 interface Comment {
   id: string
@@ -30,6 +41,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showConnectPrompt, setShowConnectPrompt] = useState(false)
   const account = useActiveAccount()
   const router = useRouter()
   const supabase = createClient()
@@ -38,7 +50,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     e.preventDefault()
 
     if (!account) {
-      alert("Please connect your wallet to comment")
+      setShowConnectPrompt(true)
       return
     }
 
@@ -52,7 +64,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
       } = await supabase.auth.getUser()
 
       if (!user) {
-        alert("Please connect your wallet to comment")
+        setShowConnectPrompt(true)
         setIsSubmitting(false)
         return
       }
@@ -94,17 +106,43 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
         <Textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder={account ? "Share your thoughts about this DApp..." : "Connect your wallet to comment"}
-          disabled={!account || isSubmitting}
+          placeholder="Share your thoughts about this DApp..."
+          disabled={isSubmitting}
           className="min-h-[100px] bg-slate-900/90 border-border text-white placeholder:text-gray-400 focus:border-neon-purple/50 transition-colors"
         />
+
+        {showConnectPrompt && !account && (
+          <Card className="p-4 bg-slate-900/90 border-neon-orange/50 space-y-3">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-neon-orange flex-shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-2">
+                <p className="text-sm text-white">Please connect your wallet to post comments</p>
+                <ConnectButton
+                  client={client}
+                  wallets={wallets}
+                  theme="dark"
+                  connectButton={{
+                    label: "Connect Wallet",
+                    className:
+                      "!bg-gradient-to-r !from-neon-purple !to-neon-orange !text-white !font-semibold !px-4 !py-2 !rounded-lg !transition-opacity hover:!opacity-90 !text-sm",
+                  }}
+                />
+              </div>
+            </div>
+          </Card>
+        )}
+
         <Button
           type="submit"
           disabled={!account || isSubmitting || !newComment.trim()}
-          className="bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity"
+          className="bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isSubmitting ? "Posting..." : "Post Comment"}
         </Button>
+
+        {!account && !showConnectPrompt && (
+          <p className="text-xs text-gray-400">Connect your wallet to post comments</p>
+        )}
       </form>
 
       <div className="space-y-4">

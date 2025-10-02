@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, FileText, Send, Info } from "lucide-react"
 import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
+import Link from "next/link"
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -16,9 +17,9 @@ export function Sidebar() {
   }, [])
 
   const navItems = [
-    { href: "#prompts", label: "Prompts", icon: FileText, active: true },
-    { href: "#submissions", label: "Submissions", icon: Send, active: false },
-    { href: "#about", label: "About", icon: Info, active: false },
+    { href: "/#prompts", label: "Prompts", icon: FileText, active: true },
+    { href: "/#submissions", label: "Submissions", icon: Send, active: false },
+    { href: "/#about", label: "About", icon: Info, active: false },
   ]
 
   return (
@@ -32,7 +33,7 @@ export function Sidebar() {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 border-b border-primary/20">
-            <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center justify-between hover:opacity-80 transition-opacity">
               {!isCollapsed && (
                 <div className="flex-1">
                   <h1 className="text-xl font-bold tracking-tight gradient-text">DAPPTOBER</h1>
@@ -44,13 +45,13 @@ export function Sidebar() {
                   <span className="text-xl font-bold gradient-text">D</span>
                 </div>
               )}
-            </div>
+            </Link>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Main navigation">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
@@ -63,7 +64,7 @@ export function Sidebar() {
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {!isCollapsed && <span className="text-sm font-medium">{item.label}</span>}
-              </a>
+              </Link>
             ))}
           </nav>
 
