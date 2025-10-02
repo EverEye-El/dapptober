@@ -1,7 +1,7 @@
 -- Create comments table for DApp comments
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
   dapp_day integer not null,
   content text not null,
   created_at timestamp with time zone default now(),
@@ -31,3 +31,4 @@ create policy "comments_delete_own"
 -- Create index for faster queries
 create index if not exists comments_dapp_day_idx on public.comments(dapp_day);
 create index if not exists comments_created_at_idx on public.comments(created_at desc);
+create index if not exists comments_user_id_idx on public.comments(user_id);

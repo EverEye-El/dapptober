@@ -1,7 +1,7 @@
 -- Create likes table for DApp likes
 create table if not exists public.likes (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
   dapp_day integer not null,
   created_at timestamp with time zone default now(),
   unique(user_id, dapp_day)

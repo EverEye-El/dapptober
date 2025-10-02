@@ -46,20 +46,32 @@ export default async function DappPage({ params }: DappPageProps) {
     ? await supabase.from("likes").select("id").eq("user_id", user.id).eq("dapp_day", dapp.day).single()
     : { data: null }
 
-  // Get comments with user profiles
-  const { data: comments } = await supabase
+  // Get comments with user_id
+  const { data: commentsData } = await supabase
     .from("comments")
-    .select(`
-      id,
-      content,
-      created_at,
-      profiles (
-        display_name,
-        wallet_address
-      )
-    `)
+    .select("id, content, created_at, user_id")
     .eq("dapp_day", dapp.day)
     .order("created_at", { ascending: false })
+
+  // Get unique user IDs from comments
+  const userIds = commentsData ? [...new Set(commentsData.map((c) => c.user_id))] : []
+
+  // Fetch profiles for those users
+  const { data: profilesData } =
+    userIds.length > 0
+      ? await supabase.from("profiles").select("id, display_name, wallet_address").in("id", userIds)
+      : { data: [] }
+
+  // Create a map of profiles for quick lookup
+  const profilesMap = new Map(profilesData?.map((p) => [p.id, p]) || [])
+
+  // Combine comments with profile data
+  const comments = commentsData?.map((comment) => ({
+    id: comment.id,
+    content: comment.content,
+    created_at: comment.created_at,
+    profiles: profilesMap.get(comment.user_id) || null,
+  }))
 
   return (
     <div className="min-h-screen">

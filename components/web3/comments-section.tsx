@@ -96,7 +96,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           onChange={(e) => setNewComment(e.target.value)}
           placeholder={account ? "Share your thoughts about this DApp..." : "Connect your wallet to comment"}
           disabled={!account || isSubmitting}
-          className="min-h-[100px] bg-card/50 border-border focus:border-neon-purple/50 transition-colors"
+          className="min-h-[100px] bg-slate-900/90 border-border text-white placeholder:text-gray-400 focus:border-neon-purple/50 transition-colors"
         />
         <Button
           type="submit"
@@ -109,14 +109,14 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
 
       <div className="space-y-4">
         {comments.length === 0 ? (
-          <Card className="p-6 text-center text-muted-foreground bg-card/30 border-border">
+          <Card className="p-6 text-center text-gray-300 bg-slate-900/90 border-border">
             No comments yet. Be the first to share your thoughts!
           </Card>
         ) : (
           comments.map((comment) => (
             <Card
               key={comment.id}
-              className="p-4 bg-card/50 border-border hover:border-neon-purple/30 transition-colors"
+              className="p-4 bg-slate-900/90 border-border hover:border-neon-purple/30 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <div className="flex-1 space-y-2">
@@ -130,7 +130,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
                       })}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed">{comment.content}</p>
+                  <p className="text-sm text-white leading-relaxed">{comment.content}</p>
                 </div>
               </div>
             </Card>
