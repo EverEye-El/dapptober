@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
@@ -11,6 +11,7 @@ import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
+import { CheckCircle2, AlertCircle } from "lucide-react"
 
 interface Comment {
   id: string
@@ -32,41 +33,117 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConnectModal, setShowConnectModal] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const account = useActiveAccount()
   const router = useRouter()
   const supabase = createClient()
 
+  useEffect(() => {
+    if (account && showConnectModal) {
+      console.log("[v0] Wallet connected, closing modal")
+      setShowConnectModal(false)
+    }
+  }, [account, showConnectModal])
+
+  useEffect(() => {
+    console.log("[v0] Setting up real-time subscription for dapp day:", dappDay)
+
+    const channel = supabase
+      .channel(`comments:${dappDay}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "comments",
+          filter: `dapp_day=eq.${dappDay}`,
+        },
+        (payload) => {
+          console.log("[v0] New comment received via real-time:", payload)
+          supabase
+            .from("comments")
+            .select(
+              `
+              id,
+              content,
+              created_at,
+              profiles (
+                display_name,
+                wallet_address
+              )
+            `,
+            )
+            .eq("id", payload.new.id)
+            .single()
+            .then(({ data }) => {
+              if (data) {
+                setComments((prev) => {
+                  if (prev.some((c) => c.id === data.id)) return prev
+                  return [data as Comment, ...prev]
+                })
+              }
+            })
+        },
+      )
+      .subscribe()
+
+    return () => {
+      console.log("[v0] Cleaning up real-time subscription")
+      supabase.removeChannel(channel)
+    }
+  }, [dappDay, supabase])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+
+    console.log("[v0] Comment submit triggered", { account: account?.address })
 
     if (!account) {
+      console.log("[v0] No wallet connected, showing modal")
       setShowConnectModal(true)
       return
     }
 
-    if (!newComment.trim()) return
+    if (!newComment.trim()) {
+      console.log("[v0] Empty comment, ignoring")
+      return
+    }
 
     setIsSubmitting(true)
+    setShowSuccess(false)
 
     try {
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser()
 
-      if (!user) {
-        setShowConnectModal(true)
+      console.log("[v0] Supabase user check", { userId: user?.id, authError })
+
+      if (authError || !user) {
+        console.error("[v0] No Supabase session found")
+        setError("Please reconnect your wallet to authenticate")
         setIsSubmitting(false)
         return
       }
 
-      const { data, error } = await supabase
+      console.log("[v0] Inserting comment to database", {
+        user_id: user.id,
+        dapp_day: dappDay,
+        content: newComment.trim(),
+      })
+
+      const { data, error: insertError } = await supabase
         .from("comments")
         .insert({
           user_id: user.id,
           dapp_day: dappDay,
           content: newComment.trim(),
         })
-        .select(`
+        .select(
+          `
           id,
           content,
           created_at,
@@ -74,18 +151,29 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
             display_name,
             wallet_address
           )
-        `)
+        `,
+        )
         .single()
 
-      if (error) throw error
+      if (insertError) {
+        console.error("[v0] Database insert error:", insertError)
+        throw new Error(insertError.message)
+      }
 
-      setComments([data as Comment, ...comments])
+      console.log("[v0] Comment posted successfully", data)
+
+      setComments((prev) => [data as Comment, ...prev])
       setNewComment("")
-      setShowConnectModal(false)
+      setShowSuccess(true)
+
+      setTimeout(() => setShowSuccess(false), 3000)
+
       router.refresh()
     } catch (error) {
-      console.error("[v0] Comment error:", error)
-      alert("Failed to post comment. Please try again.")
+      console.error("[v0] Comment submission error:", error)
+      const errorMessage = error instanceof Error ? error.message : "Failed to post comment"
+      setError(errorMessage)
+      setTimeout(() => setError(null), 5000)
     } finally {
       setIsSubmitting(false)
     }
@@ -104,18 +192,38 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           className="min-h-[100px] bg-slate-900/90 border-border text-white placeholder:text-gray-400 focus:border-neon-purple/50 transition-colors"
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting || !newComment.trim()}
-          className="bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {isSubmitting ? "Posting..." : "Post Comment"}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !newComment.trim()}
+            className="bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            {isSubmitting ? "Posting..." : "Post Comment"}
+          </Button>
+
+          {showSuccess && (
+            <div className="flex items-center gap-2 text-green-400 animate-in fade-in slide-in-from-left-2 duration-300">
+              <CheckCircle2 className="w-5 h-5" />
+              <span className="text-sm font-medium">Comment posted!</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 text-orange-400 animate-in fade-in slide-in-from-left-2 duration-300">
+              <AlertCircle className="w-5 h-5" />
+              <span className="text-sm font-medium">{error}</span>
+            </div>
+          )}
+        </div>
 
         {!account && <p className="text-xs text-gray-400">Connect your wallet to post comments</p>}
       </form>
 
       <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-white">
+          {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
+        </h3>
+
         {comments.length === 0 ? (
           <Card className="p-6 text-center text-gray-300 bg-slate-900/90 border-border">
             No comments yet. Be the first to share your thoughts!
@@ -130,7 +238,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-neon-purple">
-                      {comment.profiles.display_name || "Anonymous"}
+                      {comment.profiles?.display_name || "Anonymous"}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(comment.created_at), {

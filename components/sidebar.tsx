@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, FileText, Send, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info } from "lucide-react"
 import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
 import Link from "next/link"
 
@@ -17,8 +17,8 @@ export function Sidebar() {
   }, [])
 
   const navItems = [
-    { href: "/", label: "Prompts", icon: FileText, active: false },
-    { href: "/showcase", label: "Showcase", icon: Send, active: false },
+    { href: "/", label: "Prompts", icon: Sparkles, active: false },
+    { href: "/showcase", label: "Showcase", icon: Grid3x3, active: false },
     { href: "/about", label: "About", icon: Info, active: false },
   ]
 
