@@ -1,11 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Wallet, FileText, Send, Info } from "lucide-react"
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCollapsed(true)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const navItems = [
     { href: "#prompts", label: "Prompts", icon: FileText, active: true },
@@ -74,7 +82,7 @@ export function Sidebar() {
 
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`w-full h-8 rounded-lg bg-[oklch(0.55_0.25_300)] hover:bg-[oklch(0.6_0.25_300)] text-white flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background neon-glow-orange ${
+              className={`w-full h-8 rounded-lg bg-[oklch(0.55_0.25_300)] hover:bg-[oklch(0.6_0.25_300)] text-white flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-neon-orange neon-glow-orange ${
                 isCollapsed ? "px-2" : ""
               }`}
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
