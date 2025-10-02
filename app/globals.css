@@ -168,7 +168,8 @@
 
   .neon-glow-orange {
     /* Reduced blur from 20px to 12px and opacity from 0.5 to 0.25 for more subtle glow */
-    box-shadow: 0 0 12px oklch(0.7 0.2 45 / 0.25);
+    /* Added !important to ensure glow applies even with thirdweb button overrides */
+    box-shadow: 0 0 12px oklch(0.7 0.2 45 / 0.25) !important;
   }
 
   .neon-glow-purple {

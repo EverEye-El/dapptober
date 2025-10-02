@@ -4,8 +4,11 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Heart, MessageCircle, ArrowLeft, Eye, Users } from "lucide-react"
+import { ArrowLeft, Eye, Users } from "lucide-react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/server"
+import { LikeButton } from "@/components/web3/like-button"
+import { CommentsSection } from "@/components/web3/comments-section"
 
 interface DappPageProps {
   params: {
@@ -19,12 +22,44 @@ export function generateStaticParams() {
   }))
 }
 
-export default function DappPage({ params }: DappPageProps) {
+export default async function DappPage({ params }: DappPageProps) {
   const dapp = dappPrompts.find((d) => d.day === Number.parseInt(params.day))
 
   if (!dapp) {
     notFound()
   }
+
+  const supabase = await createClient()
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Get likes count and check if current user liked
+  const { count: likesCount } = await supabase
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .eq("dapp_day", dapp.day)
+
+  const { data: userLike } = user
+    ? await supabase.from("likes").select("id").eq("user_id", user.id).eq("dapp_day", dapp.day).single()
+    : { data: null }
+
+  // Get comments with user profiles
+  const { data: comments } = await supabase
+    .from("comments")
+    .select(`
+      id,
+      content,
+      created_at,
+      profiles (
+        display_name,
+        wallet_address
+      )
+    `)
+    .eq("dapp_day", dapp.day)
+    .order("created_at", { ascending: false })
 
   return (
     <div className="min-h-screen">
@@ -82,7 +117,7 @@ export default function DappPage({ params }: DappPageProps) {
               <div className="absolute inset-0 border-2 border-primary/30 neon-glow-orange" />
 
               {/* Interactive Preview Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent flex items-end p-6">
+              <div className="absolute inset-0 flex items-end p-6">
                 <Button
                   size="lg"
                   className="neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 font-semibold"
@@ -131,17 +166,7 @@ export default function DappPage({ params }: DappPageProps) {
             <Card className="glass-card border-primary/30 p-6 space-y-4">
               <h3 className="text-xl font-bold gradient-text">Show Your Support</h3>
               <div className="flex items-center gap-4">
-                <Button
-                  size="lg"
-                  className="flex-1 neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 font-semibold"
-                >
-                  <Heart className="w-5 h-5 mr-2" />
-                  Like This DApp
-                </Button>
-                <div className="text-center">
-                  <div className="text-2xl font-bold gradient-text">{Math.floor(Math.random() * 1000) + 100}</div>
-                  <div className="text-xs text-muted-foreground">likes</div>
-                </div>
+                <LikeButton dappDay={dapp.day} initialLikes={likesCount || 0} initialIsLiked={!!userLike} />
               </div>
               <p className="text-sm text-muted-foreground">
                 Connect your wallet to like this DApp and show your appreciation to the creator.
@@ -153,20 +178,20 @@ export default function DappPage({ params }: DappPageProps) {
               <h3 className="text-xl font-bold gradient-text">Community Stats</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <div className="text-2xl font-bold text-accent">{Math.floor(Math.random() * 50) + 10}</div>
+                  <div className="text-2xl font-bold text-accent">{comments?.length || 0}</div>
                   <div className="text-xs text-muted-foreground">Comments</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-2xl font-bold text-accent">{Math.floor(Math.random() * 200) + 50}</div>
-                  <div className="text-xs text-muted-foreground">Shares</div>
+                  <div className="text-2xl font-bold text-accent">{likesCount || 0}</div>
+                  <div className="text-xs text-muted-foreground">Likes</div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-2xl font-bold text-accent">{Math.floor(Math.random() * 30) + 5}</div>
                   <div className="text-xs text-muted-foreground">Contributors</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-2xl font-bold text-accent">#{Math.floor(Math.random() * 31) + 1}</div>
-                  <div className="text-xs text-muted-foreground">Rank</div>
+                  <div className="text-2xl font-bold text-accent">#{dapp.day}</div>
+                  <div className="text-xs text-muted-foreground">Day</div>
                 </div>
               </div>
             </Card>
@@ -175,74 +200,11 @@ export default function DappPage({ params }: DappPageProps) {
           {/* Comments Section */}
           <Card className="glass-card border-primary/30 p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold gradient-text flex items-center gap-2">
-                <MessageCircle className="w-6 h-6" />
-                Community Discussion
-              </h3>
-              <span className="text-sm text-muted-foreground">{Math.floor(Math.random() * 50) + 10} comments</span>
+              <h3 className="text-2xl font-bold gradient-text">Community Discussion</h3>
+              <span className="text-sm text-muted-foreground">{comments?.length || 0} comments</span>
             </div>
 
-            {/* Comment Input */}
-            <div className="space-y-3">
-              <textarea
-                placeholder="Share your thoughts about this DApp... (Connect wallet to comment)"
-                className="w-full min-h-[100px] p-4 rounded-lg glass-card border border-primary/30 bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon-orange resize-none"
-              />
-              <div className="flex justify-end">
-                <Button className="neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 font-semibold">
-                  Post Comment
-                </Button>
-              </div>
-            </div>
-
-            {/* Sample Comments */}
-            <div className="space-y-4 pt-4 border-t border-primary/20">
-              {[
-                {
-                  author: "CryptoEnthusiast",
-                  time: "2 hours ago",
-                  comment:
-                    "This is exactly what the Web3 space needs! The vibe is perfect and the concept is innovative.",
-                  likes: 24,
-                },
-                {
-                  author: "BlockchainBuilder",
-                  time: "5 hours ago",
-                  comment: "Love the aesthetic! Would be great to see this implemented with cross-chain functionality.",
-                  likes: 18,
-                },
-                {
-                  author: "DeFiDreamer",
-                  time: "1 day ago",
-                  comment: "The attention to detail in the design is impressive. Can't wait to try the demo!",
-                  likes: 31,
-                },
-              ].map((comment, index) => (
-                <div key={index} className="glass-card border border-primary/20 p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent" />
-                      <div>
-                        <div className="font-semibold text-sm">{comment.author}</div>
-                        <div className="text-xs text-muted-foreground">{comment.time}</div>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent">
-                      <Heart className="w-4 h-4 mr-1" />
-                      {comment.likes}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{comment.comment}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Load More */}
-            <div className="flex justify-center pt-4">
-              <Button variant="outline" className="glass-card border-primary/30 hover:border-primary/50 bg-transparent">
-                Load More Comments
-              </Button>
-            </div>
+            <CommentsSection dappDay={dapp.day} initialComments={comments || []} />
           </Card>
         </div>
       </div>

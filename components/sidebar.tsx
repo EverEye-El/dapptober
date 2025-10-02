@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Wallet, FileText, Send, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Send, Info } from "lucide-react"
+import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -67,22 +67,12 @@ export function Sidebar() {
             ))}
           </nav>
 
-          {/* Footer with Connect Wallet and Toggle */}
-          <div className="p-4 border-t border-primary/20 space-y-3">
-            <Button
-              className={`w-full bg-primary hover:bg-primary/90 transition-all neon-glow-orange hover:neon-glow-purple ${
-                isCollapsed ? "px-2" : ""
-              }`}
-              size={isCollapsed ? "icon" : "default"}
-              aria-label="Connect Wallet"
-            >
-              <Wallet className="w-5 h-5" aria-hidden="true" />
-              {!isCollapsed && <span className="ml-2">Connect Wallet</span>}
-            </Button>
+          <div className="p-4 border-t border-primary/20 flex flex-col gap-4">
+            <WalletConnectButton isCollapsed={isCollapsed} />
 
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`w-full h-8 rounded-lg bg-[oklch(0.55_0.25_300)] hover:bg-[oklch(0.6_0.25_300)] text-white flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-neon-orange neon-glow-orange ${
+              className={`w-full h-8 rounded-lg bg-primary/80 hover:bg-primary text-white flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-neon-orange neon-glow-orange border border-primary/50 ${
                 isCollapsed ? "px-2" : ""
               }`}
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
