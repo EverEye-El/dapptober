@@ -120,12 +120,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   return (
     <div className="space-y-6">
       <ConnectModal isOpen={showConnectModal} onClose={() => setShowConnectModal(false)} />
-      <ComingSoonModal
-        isOpen={showComingSoonModal}
-        onClose={() => setShowComingSoonModal(false)}
-        feature="comments"
-        position="left"
-      />
+      <ComingSoonModal isOpen={showComingSoonModal} onClose={() => setShowComingSoonModal(false)} feature="comments" />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
