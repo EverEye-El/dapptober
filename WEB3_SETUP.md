@@ -229,4 +229,4 @@ For issues or questions:
 3. Open an issue in the repository
 \`\`\`
 
-```typescript file="" isHidden
+\`\`\`typescript file="" isHidden
