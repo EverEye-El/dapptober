@@ -11,7 +11,7 @@ export default function Home() {
         <header className="container mx-auto px-4 lg:px-8 py-4 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">DAPPTOBER</h1>
-            <p className="text-sm text-white/70">31 Days of Vibe-Coded Web3</p>
+            <p className="text-sm text-white">31 Days of Vibe-Coded Web3</p>
           </div>
         </header>
 

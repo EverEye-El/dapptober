@@ -43,7 +43,7 @@ export function DappCard({ dapp }: DappCardProps) {
         <div className="space-y-2">
           <h3 className="text-lg font-bold text-balance leading-tight gradient-text">{dapp.title}</h3>
           <p className="text-xs text-accent italic">{dapp.vibe}</p>
-          <p className="text-sm text-muted-foreground text-pretty leading-relaxed line-clamp-2">{dapp.description}</p>
+          <p className="text-sm text-white text-pretty leading-relaxed line-clamp-2">{dapp.description}</p>
         </div>
 
         <div className="flex flex-wrap gap-1.5">
@@ -59,13 +59,13 @@ export function DappCard({ dapp }: DappCardProps) {
         </div>
 
         <div className="flex items-center justify-between pt-2 border-t border-primary/30">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-xs text-white">
             <div className="flex items-center gap-1">
-              <Eye className="w-3 h-3 opacity-70" />
+              <Eye className="w-3 h-3" />
               <span>{Math.floor(Math.random() * 500) + 100}k</span>
             </div>
             <div className="flex items-center gap-1">
-              <Users className="w-3 h-3 opacity-70" />
+              <Users className="w-3 h-3" />
               <span>{Math.floor(Math.random() * 100) + 10}+</span>
             </div>
           </div>

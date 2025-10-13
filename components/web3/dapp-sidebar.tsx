@@ -129,7 +129,7 @@ export function DappSidebar({
           <div className="space-y-2">
             <Button
               variant="outline"
-              className="w-full justify-start text-sm text-white border-primary/30 hover:bg-primary/10 bg-transparent"
+              className="w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
               onClick={scrollToComments}
             >
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -137,7 +137,7 @@ export function DappSidebar({
             </Button>
             <Button
               variant="outline"
-              className="w-full justify-start text-sm text-white border-primary/30 hover:bg-primary/10 bg-transparent"
+              className="w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
               onClick={handleShare}
             >
               <Share2 className="w-4 h-4 mr-2" />
