@@ -128,7 +128,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Share your thoughts about this DApp..."
           disabled={isSubmitting}
-          className="min-h-[100px] bg-slate-900/90 border-border text-white placeholder:text-gray-400 focus:border-neon-purple/50 transition-colors"
+          className="min-h-[100px] bg-slate-900/90 border-primary/50 neon-glow-orange text-white placeholder:text-gray-400 focus:border-primary/50 focus:neon-glow-orange transition-colors"
         />
 
         <div className="flex items-center gap-3">
@@ -164,14 +164,14 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
         </h3>
 
         {comments.length === 0 ? (
-          <Card className="p-6 text-center text-gray-300 bg-slate-900/90 border-border">
+          <Card className="p-6 text-center text-gray-300 bg-slate-900/90 border-primary/50 neon-glow-orange">
             No comments yet. Be the first to share your thoughts!
           </Card>
         ) : (
           comments.map((comment) => (
             <Card
               key={comment.id}
-              className="p-4 bg-slate-900/90 border-border hover:border-neon-purple/30 transition-colors"
+              className="p-4 bg-slate-900/90 border-primary/50 neon-glow-orange hover:border-primary/50 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <div className="flex-1 space-y-2">

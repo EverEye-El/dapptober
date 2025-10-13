@@ -94,11 +94,11 @@ export default async function DappPage({ params }: DappPageProps) {
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold gradient-text-main text-balance">{dapp.title}</h1>
                   </div>
-                  <p className="text-lg text-accent italic">{dapp.vibe}</p>
+                  <p className="text-lg text-white italic">{dapp.vibe}</p>
                 </div>
 
                 {/* Stats - Mobile Only */}
-                <div className="flex flex-col gap-2 text-sm text-muted-foreground lg:hidden">
+                <div className="flex flex-col gap-2 text-sm text-white lg:hidden">
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4" />
                     <span>{viewsCount}k views</span>
@@ -113,7 +113,7 @@ export default async function DappPage({ params }: DappPageProps) {
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {dapp.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="glass-card border-primary/30 text-accent px-3 py-1">
+                  <Badge key={tag} variant="secondary" className="glass-card border-primary/30 text-white px-3 py-1">
                     {tag}
                   </Badge>
                 ))}
@@ -141,16 +141,16 @@ export default async function DappPage({ params }: DappPageProps) {
             {/* Full Prompt Section */}
             <Card className="glass-card border-primary/30 p-6 space-y-4">
               <h2 className="text-2xl font-bold gradient-text">Full Prompt</h2>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <div className="space-y-4 text-white leading-relaxed">
                 <p className="text-lg">{dapp.description}</p>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-foreground">Vibe Aesthetic</h3>
-                  <p className="italic text-accent">{dapp.vibe}</p>
+                  <h3 className="text-lg font-semibold text-neon-purple">Vibe Aesthetic</h3>
+                  <p className="italic text-white">{dapp.vibe}</p>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-foreground">Technical Implementation</h3>
+                  <h3 className="text-lg font-semibold text-neon-purple">Technical Implementation</h3>
                   <p>
                     This DApp leverages blockchain technology to create a decentralized experience that embodies the{" "}
                     {dapp.vibe} aesthetic. Built with modern Web3 tools and frameworks, it provides users with a
@@ -160,7 +160,7 @@ export default async function DappPage({ params }: DappPageProps) {
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-foreground">Key Features</h3>
+                  <h3 className="text-lg font-semibold text-neon-purple">Key Features</h3>
                   <ul className="list-disc list-inside space-y-1 ml-2">
                     <li>Decentralized architecture ensuring transparency and security</li>
                     <li>Smart contract integration for automated, trustless operations</li>
@@ -175,7 +175,7 @@ export default async function DappPage({ params }: DappPageProps) {
             <Card id="comments-section" className="glass-card border-primary/30 p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-2xl font-bold gradient-text">Community Discussion</h3>
-                <span className="text-sm text-muted-foreground">{comments?.length || 0} comments</span>
+                <span className="text-sm text-white">{comments?.length || 0} comments</span>
               </div>
 
               <CommentsSection dappDay={dapp.day} initialComments={comments || []} />

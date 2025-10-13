@@ -62,7 +62,7 @@ export function DappSidebar({
         <Link href="/">
           <Button
             variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:text-foreground transition-colors"
+            className="w-full justify-start text-white hover:text-white hover:bg-white/10 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Gallery
@@ -71,19 +71,17 @@ export function DappSidebar({
 
         {/* Submit DApp Card */}
         <Card className="glass-card border-accent/30 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-neon-purple">
             <Upload className="w-4 h-4" />
             <span className="font-semibold">Submit Your Build</span>
           </div>
           <SubmitButton dappDay={dappDay} variant="card" />
-          <p className="text-xs text-muted-foreground">
-            Built something for Day {dappDay}? Share it with the community!
-          </p>
+          <p className="text-xs text-white">Built something for Day {dappDay}? Share it with the community!</p>
         </Card>
 
         {/* Like Card */}
         <Card className="glass-card border-primary/30 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-neon-purple">
             <Heart className="w-4 h-4" />
             <span className="font-semibold">Show Support</span>
           </div>
@@ -92,31 +90,31 @@ export function DappSidebar({
 
         {/* Stats Card */}
         <Card className="glass-card border-primary/30 p-4 space-y-4">
-          <h3 className="text-sm font-semibold gradient-text">Quick Stats</h3>
+          <h3 className="text-sm font-semibold text-neon-purple">Quick Stats</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-white">
                 <Heart className="w-4 h-4" />
                 <span>Likes</span>
               </div>
               <span className="text-sm font-bold text-accent">{likesCount}</span>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-white">
                 <MessageSquare className="w-4 h-4" />
                 <span>Comments</span>
               </div>
               <span className="text-sm font-bold text-accent">{commentsCount}</span>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-white">
                 <Eye className="w-4 h-4" />
                 <span>Views</span>
               </div>
               <span className="text-sm font-bold text-accent">{viewsCount}k</span>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-white">
                 <Users className="w-4 h-4" />
                 <span>Users</span>
               </div>
@@ -127,11 +125,11 @@ export function DappSidebar({
 
         {/* Quick Actions Card */}
         <Card className="glass-card border-primary/30 p-4 space-y-3">
-          <h3 className="text-sm font-semibold gradient-text">Quick Actions</h3>
+          <h3 className="text-sm font-semibold text-neon-purple">Quick Actions</h3>
           <div className="space-y-2">
             <Button
               variant="outline"
-              className="w-full justify-start text-sm border-primary/30 hover:bg-primary/10 bg-transparent"
+              className="w-full justify-start text-sm text-white border-primary/30 hover:bg-primary/10 bg-transparent"
               onClick={scrollToComments}
             >
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -139,7 +137,7 @@ export function DappSidebar({
             </Button>
             <Button
               variant="outline"
-              className="w-full justify-start text-sm border-primary/30 hover:bg-primary/10 bg-transparent"
+              className="w-full justify-start text-sm text-white border-primary/30 hover:bg-primary/10 bg-transparent"
               onClick={handleShare}
             >
               <Share2 className="w-4 h-4 mr-2" />
@@ -155,8 +153,8 @@ export function DappSidebar({
               <span className="text-lg font-bold gradient-text">{dappDay}</span>
             </div>
             <div className="text-left">
-              <div className="text-xs text-muted-foreground">Dapptober Day</div>
-              <div className="text-sm font-semibold text-foreground">#{dappDay} of 31</div>
+              <div className="text-xs text-white">Dapptober Day</div>
+              <div className="text-sm font-semibold text-neon-purple">#{dappDay} of 31</div>
             </div>
           </div>
         </Card>

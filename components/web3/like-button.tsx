@@ -112,7 +112,7 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
         <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-sm">{likes}</span>
       </Button>
 
-      {!account && <p className="text-xs text-muted-foreground text-center">Connect your wallet to like this DApp</p>}
+      {!account && <p className="text-xs text-white text-center">Connect your wallet to like this DApp</p>}
     </div>
   )
 }
