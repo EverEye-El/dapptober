@@ -58,7 +58,7 @@ export function Sidebar() {
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                   item.active
                     ? "bg-primary/10 text-white border border-primary/30 neon-glow-orange"
-                    : "text-white/70 hover:text-white hover:bg-secondary/50"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 } ${isCollapsed ? "justify-center" : ""}`}
                 aria-current={item.active ? "page" : undefined}
                 title={isCollapsed ? item.label : undefined}
