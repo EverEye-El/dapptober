@@ -24,23 +24,39 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
       wallets={wallets}
       theme="dark"
       auth={{
-        isLoggedIn: async (address) => {
-          // Check if user has valid auth session
-          const response = await fetch("/api/me")
-          if (!response.ok) return false
-          const data = await response.json()
-          return data.address?.toLowerCase() === address.toLowerCase()
+        getLoginPayload: async ({ address }) => {
+          const response = await fetch("/api/auth/payload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ address }),
+          })
+          if (!response.ok) {
+            throw new Error("Failed to get login payload")
+          }
+          return await response.json()
         },
         doLogin: async (params) => {
-          // thirdweb handles the SIWE flow and calls /api/auth/[...thirdweb]
-          console.log("[v0] User logged in:", params.address)
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(params),
+          })
+          if (!response.ok) {
+            throw new Error("Failed to login")
+          }
         },
-        getLoginPayload: async ({ address }) => ({
-          address,
-          statement: "Sign this message to authenticate with Dapptober",
-        }),
         doLogout: async () => {
-          console.log("[v0] User logged out")
+          await fetch("/api/auth/logout", { method: "POST" })
+        },
+        isLoggedIn: async (address) => {
+          try {
+            const response = await fetch("/api/me")
+            if (!response.ok) return false
+            const data = await response.json()
+            return data.address?.toLowerCase() === address.toLowerCase()
+          } catch {
+            return false
+          }
         },
       }}
       connectButton={{

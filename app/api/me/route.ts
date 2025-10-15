@@ -1,7 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { cookies } from "next/headers"
 import { createAuth } from "thirdweb/auth"
 import { privateKeyToAccount } from "thirdweb/wallets"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { serverClient } from "@/lib/web3/thirdweb-server-client"
 
 /**
  * Creates a thirdweb Auth instance with dynamic domain detection
@@ -10,37 +12,81 @@ function getAuthForRequest(req: NextRequest) {
   const domain = req.headers.get("host") || "localhost:3000"
 
   const privateKey = process.env.THIRDWEB_AUTH_PRIVATE_KEY
-  if (!privateKey) {
-    throw new Error("THIRDWEB_AUTH_PRIVATE_KEY environment variable is required")
+  if (!privateKey || privateKey.trim() === "") {
+    throw new Error(
+      "THIRDWEB_AUTH_PRIVATE_KEY environment variable is required. " + "Please add it to your environment variables.",
+    )
   }
+
+  const formattedKey = privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`
 
   return createAuth({
     domain,
-    adminAccount: privateKeyToAccount(privateKey),
+    client: serverClient,
+    adminAccount: privateKeyToAccount({ privateKey: formattedKey }),
   })
 }
 
 /**
  * GET /api/me
  * Returns the currently authenticated user's wallet address and profile
- * Requires valid thirdweb Auth cookie
+ * Requires valid thirdweb Auth JWT cookie
  */
 export async function GET(req: NextRequest) {
   try {
-    const auth = getAuthForRequest(req)
-    const user = await auth.getUser(req)
+    console.log("[v0] /api/me called")
 
-    if (!user?.address) {
+    // Get the JWT from cookies
+    const cookieStore = cookies()
+    const allCookies = cookieStore.getAll()
+    console.log("[v0] All cookies:", allCookies.map((c) => c.name).join(", "))
+
+    const jwtCookie = cookieStore.get("thirdweb_auth_token")
+
+    if (!jwtCookie?.value) {
+      console.log("[v0] No JWT cookie found")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const domain = req.headers.get("host") || "localhost:3000"
+    const privateKey = process.env.THIRDWEB_AUTH_PRIVATE_KEY
+
+    if (!privateKey) {
+      console.log("[v0] Server configuration error")
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    }
+
+    const formattedKey = privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`
+
+    const auth = createAuth({
+      domain,
+      client: serverClient,
+      adminAccount: privateKeyToAccount({ privateKey: formattedKey }),
+    })
+
+    const verifiedJWT = await auth.verifyJWT({ jwt: jwtCookie.value })
+
+    if (!verifiedJWT.valid) {
+      console.log("[v0] Invalid JWT")
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Extract wallet address from JWT (it's in the 'sub' field)
+    const walletAddress = verifiedJWT.parsedJWT.sub
+    if (!walletAddress) {
+      console.log("[v0] No wallet address in JWT")
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    console.log("[v0] Verified wallet address:", walletAddress)
+
     const supabase = createAdminClient()
-    const walletAddress = user.address.toLowerCase()
+    const normalizedAddress = walletAddress.toLowerCase()
 
     const { data: profile, error } = await supabase
       .from("profiles")
       .select("*")
-      .eq("wallet_address", walletAddress)
+      .eq("wallet_address", normalizedAddress)
       .maybeSingle()
 
     if (error) {
@@ -49,7 +95,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      address: user.address,
+      address: walletAddress,
       profile: profile || null,
     })
   } catch (error) {
