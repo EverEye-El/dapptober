@@ -1,12 +1,9 @@
 "use client"
 
-import { ConnectButton, useActiveAccount } from "thirdweb/react"
+import { ConnectButton } from "thirdweb/react"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
-import { useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
 import { Wallet } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 
 const wallets = [
   createWallet("io.metamask"),
@@ -20,125 +17,32 @@ interface WalletConnectButtonProps {
   isCollapsed?: boolean
 }
 
-// Global state to track authenticated addresses and prevent concurrent authentication
-const authenticatedAddresses = new Set<string>()
-let isAuthenticating = false
-let authenticationPromise: Promise<void> | null = null
-
 export function WalletConnectButton({ isCollapsed = false }: WalletConnectButtonProps) {
-  const account = useActiveAccount()
-  const router = useRouter()
-  const hasAttemptedAuth = useRef(false)
-
-  useEffect(() => {
-    async function handleAuth() {
-      if (!account?.address) {
-        console.log("[v0] No account connected")
-        hasAttemptedAuth.current = false
-        return
-      }
-
-      if (authenticatedAddresses.has(account.address)) {
-        console.log("[v0] Address already authenticated in this session, skipping")
-        return
-      }
-
-      if (isAuthenticating && authenticationPromise) {
-        console.log("[v0] Authentication already in progress, waiting...")
-        await authenticationPromise
-        return
-      }
-
-      if (hasAttemptedAuth.current) {
-        console.log("[v0] Already attempted auth for this component instance")
-        return
-      }
-
-      hasAttemptedAuth.current = true
-      console.log("[v0] Starting authentication for:", account.address)
-      isAuthenticating = true
-
-      authenticationPromise = (async () => {
-        try {
-          const supabase = createClient()
-
-          const {
-            data: { session },
-          } = await supabase.auth.getSession()
-
-          if (session) {
-            console.log("[v0] Existing Supabase session found, verifying profile")
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("wallet_address")
-              .eq("id", session.user.id)
-              .single()
-
-            if (profile?.wallet_address === account.address.toLowerCase()) {
-              console.log("[v0] Session matches wallet, authentication complete")
-              authenticatedAddresses.add(account.address)
-              router.refresh()
-              return
-            } else {
-              console.log("[v0] Session exists but wallet mismatch, signing out old session")
-              await supabase.auth.signOut()
-            }
-          }
-
-          console.log("[v0] Requesting signature from wallet")
-          const message = `Sign this message to authenticate with Dapptober.\n\nWallet: ${account.address}\nTimestamp: ${Date.now()}`
-          const signature = await account.signMessage({ message })
-
-          console.log("[v0] Signature received, calling auth API")
-          const response = await fetch("/api/auth/wallet", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              address: account.address,
-              signature,
-              message,
-            }),
-          })
-
-          const result = await response.json()
-
-          if (result.success && result.session) {
-            console.log("[v0] Setting session on client")
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token: result.session.access_token,
-              refresh_token: result.session.refresh_token,
-            })
-
-            if (sessionError) {
-              console.error("[v0] Failed to set session:", sessionError)
-            } else {
-              console.log("[v0] Session set successfully, authentication complete")
-              authenticatedAddresses.add(account.address)
-              router.refresh()
-            }
-          } else {
-            console.error("[v0] Authentication failed:", result.error)
-          }
-        } catch (error) {
-          console.error("[v0] Wallet auth error:", error)
-          hasAttemptedAuth.current = false
-        } finally {
-          isAuthenticating = false
-          authenticationPromise = null
-        }
-      })()
-
-      await authenticationPromise
-    }
-
-    handleAuth()
-  }, [account?.address, router])
-
   return (
     <ConnectButton
       client={client}
       wallets={wallets}
       theme="dark"
+      auth={{
+        isLoggedIn: async (address) => {
+          // Check if user has valid auth session
+          const response = await fetch("/api/me")
+          if (!response.ok) return false
+          const data = await response.json()
+          return data.address?.toLowerCase() === address.toLowerCase()
+        },
+        doLogin: async (params) => {
+          // thirdweb handles the SIWE flow and calls /api/auth/[...thirdweb]
+          console.log("[v0] User logged in:", params.address)
+        },
+        getLoginPayload: async ({ address }) => ({
+          address,
+          statement: "Sign this message to authenticate with Dapptober",
+        }),
+        doLogout: async () => {
+          console.log("[v0] User logged out")
+        },
+      }}
       connectButton={{
         label: isCollapsed ? <Wallet className="w-4 h-4" aria-label="Connect Wallet" /> : "Connect Wallet",
         className: isCollapsed

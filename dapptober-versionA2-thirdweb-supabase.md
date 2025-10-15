@@ -4,7 +4,7 @@
 
 It is tailored to **your repo structure**:
 
-```
+\`\`\`
 app/
   api/
     auth/
@@ -23,7 +23,7 @@ lib/
   web3/
     auth.ts                     # (DEPRECATE/optional)
     thirdweb-client.ts          # (KEEP)
-```
+\`\`\`
 
 ---
 
@@ -41,7 +41,7 @@ lib/
 
 Create/verify **`.env.local`** and your hosted env vars (v0.app & Vercel). You **must** set only the thirdweb auth private key + your existing thirdweb & Supabase vars. The **domain** is now optional.
 
-```env
+\`\`\`env
 # thirdweb — required for SIWE cookie auth (server secret; NOT a wallet key)
 THIRDWEB_AUTH_PRIVATE_KEY=0x<random-64-hex>
 
@@ -55,7 +55,7 @@ SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 
 # (Optional) Only if you want to *force* a domain instead of auto-detecting it
 # THIRDWEB_AUTH_DOMAIN=dapptober.vercel.app
-```
+\`\`\`
 
 > **Generation tip:**  
 > - OpenSSL: `openssl rand -hex 32` → prefix with `0x`  
@@ -72,10 +72,10 @@ You already have:
 - `@supabase/supabase-js`
 
 If any are missing:
-```bash
+\`\`\`bash
 pnpm add thirdweb @supabase/ssr @supabase/supabase-js
 # or: npm i thirdweb @supabase/ssr @supabase/supabase-js
-```
+\`\`\`
 
 ---
 
@@ -100,7 +100,7 @@ Your repo already has SQL migration scripts. The following statements **add or a
 > Run in Supabase SQL editor. Each block is idempotent (uses `if not exists` or guarded updates).
 
 ### 4.1 Profiles (wallet-address keyed; last login tracking)
-```sql
+\`\`\`sql
 -- Ensure pgcrypto for UUIDs if you use them elsewhere
 create extension if not exists pgcrypto;
 
@@ -137,18 +137,18 @@ drop trigger if exists trg_profiles_touch on public.profiles;
 create trigger trg_profiles_touch
 before update on public.profiles
 for each row execute function public.touch_updated_at();
-```
+\`\`\`
 
 > **RLS:** You can leave RLS disabled for Version A.2 (service-role writes). If you enable RLS later, switch to Supabase-managed sessions (see Appendix).
 
 ### 4.2 (Optional) Comments/Likes/Submissions integrity helpers
 If needed, ensure FKs point to `profiles` by `id` (or to `auth.users(id)` if you use Supabase Auth elsewhere). The Version A.2 wallet login does **not** require `auth.users` rows.
 
-```sql
+\`\`\`sql
 -- Example only; adapt to your existing scripts
 -- alter table public.comments add column if not exists user_id uuid;
 -- alter table public.comments add constraint comments_user_fk foreign key (user_id) references public.profiles (id);
-```
+\`\`\`
 
 ---
 
@@ -156,7 +156,7 @@ If needed, ensure FKs point to `profiles` by `id` (or to `auth.users(id)` if you
 
 ### 5.1 **Service-role** (server only)
 **Add:** `lib/supabase/admin.ts`
-```ts
+\`\`\`ts
 import { createClient } from "@supabase/supabase-js";
 
 // Server-only Supabase client using the Service Role key.
@@ -166,7 +166,7 @@ export function createAdminClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!; // server-only
   return createClient(url, key, { auth: { persistSession: false } });
 }
-```
+\`\`\`
 
 ### 5.2 Keep your existing clients (no changes)
 - `lib/supabase/server.ts` (SSR anon via cookies)
@@ -178,7 +178,7 @@ export function createAdminClient() {
 ## 6) Auth Route — **dynamic** domain + cookie + profile upsert
 
 **Add:** `app/api/auth/[...thirdweb]/route.ts`
-```ts
+\`\`\`ts
 import { NextRequest } from "next/server";
 import { createAuth } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
@@ -226,14 +226,14 @@ export async function POST(req: NextRequest) {
 
   return res;
 }
-```
+\`\`\`
 
 ---
 
 ## 7) Protected API — current wallet info + profile
 
 **Add:** `app/api/me/route.ts`
-```ts
+\`\`\`ts
 import { NextRequest, NextResponse } from "next/server";
 import { createAuth } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
@@ -267,14 +267,14 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ address: user.address, profile });
 }
-```
+\`\`\`
 
 ---
 
 ## 8) Connect Wallet — UI wiring
 
 **Edit:** `components/web3/wallet-connect-button.tsx`
-```tsx
+\`\`\`tsx
 'use client';
 
 import { useState } from "react";
@@ -298,7 +298,7 @@ export default function WalletConnectButton() {
     </div>
   );
 }
-```
+\`\`\`
 
 > If you want to keep your custom modal UX (`components/web3/connect-modal.tsx`), you can still initiate the thirdweb Auth login programmatically; just target the same route.
 
@@ -325,14 +325,14 @@ Your `app/layout.tsx` already wraps with `<ThirdwebProvider>`. You can optionall
 ## 11) Deprecate old wallet route
 
 **Replace** `app/api/auth/wallet/route.ts` with a “Gone” response:
-```ts
+\`\`\`ts
 import { NextResponse } from "next/server";
 
 // Deprecated: use /api/auth/[...thirdweb] (thirdweb Auth cookie sessions)
 export async function POST() {
   return NextResponse.json({ error: "Deprecated. Use /api/auth/[...thirdweb]" }, { status: 410 });
 }
-```
+\`\`\`
 
 ---
 
@@ -374,7 +374,7 @@ If you prefer **Supabase** to mint the session (for full RLS/Storage/Realtime):
 
 1. Add `user_id uuid references auth.users(id) unique` to `profiles` and migrate data accordingly.
 2. Write RLS policies using `auth.uid()`:
-   ```sql
+   \`\`\`sql
    create policy "read own profile"
    on public.profiles for select
    using (auth.uid() = user_id);
@@ -382,16 +382,16 @@ If you prefer **Supabase** to mint the session (for full RLS/Storage/Realtime):
    create policy "update own profile"
    on public.profiles for update
    using (auth.uid() = user_id);
-   ```
+   \`\`\`
 3. Client login flow:
-   ```ts
+   \`\`\`ts
    import { createClient } from "@supabase/supabase-js";
    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
    const { data, error } = await supabase.auth.signInWithWeb3({
      provider: "ethereum",
      options: { domain: window.location.host },
    });
-   ```
+   \`\`\`
 4. Replace service-role usage in routes with anon/SSR clients and rely on RLS.
 5. Remove `/api/auth/[...thirdweb]` once everything is migrated.
 
