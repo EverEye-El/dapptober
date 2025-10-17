@@ -1,9 +1,11 @@
 "use client"
 
-import { ConnectButton } from "thirdweb/react"
+import { useState, useEffect } from "react"
+import { ConnectButton, useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
 import { Wallet } from "lucide-react"
+import { signInWithSupabaseWeb3, signOutSupabase } from "@/lib/web3/supabase-web3"
 
 const wallets = [
   createWallet("io.metamask"),
@@ -18,47 +20,37 @@ interface WalletConnectButtonProps {
 }
 
 export function WalletConnectButton({ isCollapsed = false }: WalletConnectButtonProps) {
+  const [isSupabaseAuthed, setIsSupabaseAuthed] = useState(false)
+  const account = useActiveAccount()
+
+  useEffect(() => {
+    if (account?.address && !isSupabaseAuthed) {
+      console.log("[v0] Wallet connected, signing in to Supabase")
+      signInWithSupabaseWeb3(account.address)
+        .then(() => {
+          console.log("[v0] Supabase auth successful")
+          setIsSupabaseAuthed(true)
+        })
+        .catch((error) => {
+          console.error("[v0] Supabase auth failed:", error)
+        })
+    } else if (!account?.address && isSupabaseAuthed) {
+      console.log("[v0] Wallet disconnected, signing out from Supabase")
+      signOutSupabase()
+        .then(() => {
+          setIsSupabaseAuthed(false)
+        })
+        .catch((error) => {
+          console.error("[v0] Supabase sign-out failed:", error)
+        })
+    }
+  }, [account?.address, isSupabaseAuthed])
+
   return (
     <ConnectButton
       client={client}
       wallets={wallets}
       theme="dark"
-      auth={{
-        getLoginPayload: async ({ address }) => {
-          const response = await fetch("/api/auth/payload", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ address }),
-          })
-          if (!response.ok) {
-            throw new Error("Failed to get login payload")
-          }
-          return await response.json()
-        },
-        doLogin: async (params) => {
-          const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(params),
-          })
-          if (!response.ok) {
-            throw new Error("Failed to login")
-          }
-        },
-        doLogout: async () => {
-          await fetch("/api/auth/logout", { method: "POST" })
-        },
-        isLoggedIn: async (address) => {
-          try {
-            const response = await fetch("/api/me")
-            if (!response.ok) return false
-            const data = await response.json()
-            return data.address?.toLowerCase() === address.toLowerCase()
-          } catch {
-            return false
-          }
-        },
-      }}
       connectButton={{
         label: isCollapsed ? <Wallet className="w-4 h-4" aria-label="Connect Wallet" /> : "Connect Wallet",
         className: isCollapsed

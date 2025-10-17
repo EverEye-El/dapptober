@@ -26,7 +26,7 @@ Backfill `profiles.user_id` on first Supabase login.
 Keep your `ConnectButton` for wallet UX, but actually sign in with Supabase right after connect.
 
 ### Add: `lib/web3/supabase-web3.ts`
-```ts
+\`\`\`ts
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
@@ -68,10 +68,10 @@ export async function signInWithSupabaseWeb3(address?: string) {
 
   return data;
 }
-```
+\`\`\`
 
 ### Edit: `components/web3/wallet-connect-button.tsx` (Switch to Supabase Sign-in)
-```tsx
+\`\`\`tsx
 'use client';
 
 import { useState } from "react";
@@ -107,7 +107,7 @@ export default function WalletConnectButton() {
     </div>
   );
 }
-```
+\`\`\`
 
 After this, client code can use `supabaseBrowser()` and RLS will enforce permissions.
 
@@ -118,7 +118,7 @@ After this, client code can use `supabaseBrowser()` and RLS will enforce permiss
 Run these in Supabase SQL Editor. They only add what's missing.
 
 ### 2.1 Profiles (tie to Supabase user; keep wallet)
-```sql
+\`\`\`sql
 create extension if not exists pgcrypto;
 
 create table if not exists public.profiles (
@@ -151,10 +151,10 @@ end; $$;
 drop trigger if exists trg_profiles_touch on public.profiles;
 create trigger trg_profiles_touch before update on public.profiles
 for each row execute function public.touch_updated_at();
-```
+\`\`\`
 
 ### 2.2 Comments
-```sql
+\`\`\`sql
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -169,10 +169,10 @@ create index if not exists idx_comments_day_created on public.comments (dapp_day
 drop trigger if exists trg_comments_touch on public.comments;
 create trigger trg_comments_touch before update on public.comments
 for each row execute function public.touch_updated_at();
-```
+\`\`\`
 
 ### 2.3 Likes
-```sql
+\`\`\`sql
 create table if not exists public.likes (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -182,10 +182,10 @@ create table if not exists public.likes (
 );
 
 create index if not exists idx_likes_day on public.likes (dapp_day);
-```
+\`\`\`
 
 ### 2.4 Submissions
-```sql
+\`\`\`sql
 create table if not exists public.submissions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -209,12 +209,12 @@ create index if not exists idx_submissions_day on public.submissions (day);
 drop trigger if exists trg_submissions_touch on public.submissions;
 create trigger trg_submissions_touch before update on public.submissions
 for each row execute function public.touch_updated_at();
-```
+\`\`\`
 
 ---
 
 ## 3) RLS Policies (Secure by Default)
-```sql
+\`\`\`sql
 alter table public.profiles enable row level security;
 alter table public.comments enable row level security;
 alter table public.likes enable row level security;
@@ -258,7 +258,7 @@ drop policy if exists "submissions own write" on public.submissions;
 create policy "submissions own write" on public.submissions
 for all using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
-```
+\`\`\`
 
 ---
 

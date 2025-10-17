@@ -1,21 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { createClient } from "@/lib/supabase/client"
-import { useActiveAccount, ConnectButton } from "thirdweb/react"
+import { supabaseBrowser } from "@/lib/web3/supabase-web3"
+import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
-import { client } from "@/lib/web3/thirdweb-client"
-import { createWallet } from "thirdweb/wallets"
-
-const wallets = [
-  createWallet("io.metamask"),
-  createWallet("com.coinbase.wallet"),
-  createWallet("me.rainbow"),
-  createWallet("io.rabby"),
-  createWallet("io.zerion.wallet"),
-]
+import { ConnectModal } from "./connect-modal"
 
 interface LikeButtonProps {
   dappDay: number
@@ -27,10 +18,10 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
   const [likes, setLikes] = useState(initialLikes)
   const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [isLoading, setIsLoading] = useState(false)
+  const [showConnectModal, setShowConnectModal] = useState(false)
   const account = useActiveAccount()
   const router = useRouter()
-  const supabase = createClient()
-  const connectButtonRef = useRef<HTMLDivElement>(null)
+  const supabase = supabaseBrowser()
 
   useEffect(() => {
     setLikes(initialLikes)
@@ -39,11 +30,8 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
 
   const handleLike = async () => {
     if (!account) {
-      // Trigger the connect button click
-      const connectBtn = connectButtonRef.current?.querySelector("button")
-      if (connectBtn) {
-        connectBtn.click()
-      }
+      console.log("[v0] No wallet connected, showing connect modal")
+      setShowConnectModal(true)
       return
     }
 
@@ -55,28 +43,33 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
       } = await supabase.auth.getUser()
 
       if (!user) {
-        // Trigger connect modal again if auth failed
-        const connectBtn = connectButtonRef.current?.querySelector("button")
-        if (connectBtn) {
-          connectBtn.click()
-        }
+        console.log("[v0] No Supabase user, showing connect modal")
+        setShowConnectModal(true)
         setIsLoading(false)
         return
       }
 
       if (isLiked) {
         // Unlike
+        console.log("[v0] Unliking DApp day:", dappDay)
         const { error } = await supabase.from("likes").delete().eq("user_id", user.id).eq("dapp_day", dappDay)
 
-        if (error) throw error
+        if (error) {
+          console.error("[v0] Unlike error:", error)
+          throw error
+        }
 
         setLikes((prev) => prev - 1)
         setIsLiked(false)
       } else {
         // Like
+        console.log("[v0] Liking DApp day:", dappDay)
         const { error } = await supabase.from("likes").insert({ user_id: user.id, dapp_day: dappDay })
 
-        if (error) throw error
+        if (error) {
+          console.error("[v0] Like error:", error)
+          throw error
+        }
 
         setLikes((prev) => prev + 1)
         setIsLiked(true)
@@ -86,33 +79,36 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
     } catch (error) {
       console.error("[v0] Like error:", error)
       alert("Failed to update like. Please try again.")
+      // Revert optimistic update
+      setLikes(initialLikes)
+      setIsLiked(initialIsLiked)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div ref={connectButtonRef} className="hidden">
-        <ConnectButton client={client} wallets={wallets} theme="dark" />
+    <>
+      <ConnectModal isOpen={showConnectModal} onClose={() => setShowConnectModal(false)} />
+
+      <div className="flex flex-col gap-2">
+        <Button
+          onClick={handleLike}
+          disabled={isLoading}
+          size="lg"
+          className={`w-full gap-2 transition-all font-semibold ${
+            isLiked
+              ? "neon-glow-purple bg-primary/80 hover:bg-primary border border-primary/50"
+              : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
+          }`}
+        >
+          <Heart className={`h-5 w-5 transition-all ${isLiked ? "fill-current" : ""}`} />
+          {isLiked ? "Liked" : "Like This DApp"}
+          <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-sm">{likes}</span>
+        </Button>
+
+        {!account && <p className="text-xs text-white text-center">Connect your wallet to like this DApp</p>}
       </div>
-
-      <Button
-        onClick={handleLike}
-        disabled={isLoading}
-        size="lg"
-        className={`w-full gap-2 transition-all font-semibold ${
-          isLiked
-            ? "neon-glow-purple bg-primary/80 hover:bg-primary border border-primary/50"
-            : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
-        }`}
-      >
-        <Heart className={`h-5 w-5 transition-all ${isLiked ? "fill-current" : ""}`} />
-        {isLiked ? "Liked" : "Like This DApp"}
-        <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-sm">{likes}</span>
-      </Button>
-
-      {!account && <p className="text-xs text-white text-center">Connect your wallet to like this DApp</p>}
-    </div>
+    </>
   )
 }
