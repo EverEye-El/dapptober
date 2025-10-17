@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ConnectButton, useActiveAccount } from "thirdweb/react"
+import { ConnectButton, useActiveAccount, useActiveWallet } from "thirdweb/react"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
 import { Wallet } from "lucide-react"
@@ -21,18 +21,31 @@ interface WalletConnectButtonProps {
 
 export function WalletConnectButton({ isCollapsed = false }: WalletConnectButtonProps) {
   const [isSupabaseAuthed, setIsSupabaseAuthed] = useState(false)
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
   const account = useActiveAccount()
+  const wallet = useActiveWallet()
 
   useEffect(() => {
-    if (account?.address && !isSupabaseAuthed) {
+    if (account?.address && wallet && !isSupabaseAuthed && !isAuthenticating) {
       console.log("[v0] Wallet connected, signing in to Supabase")
-      signInWithSupabaseWeb3(account.address)
+      setIsAuthenticating(true)
+
+      const signMessage = async (message: string) => {
+        if (!wallet) throw new Error("No wallet connected")
+        const signature = await wallet.signMessage({ message })
+        return signature
+      }
+
+      signInWithSupabaseWeb3(account.address, signMessage)
         .then(() => {
           console.log("[v0] Supabase auth successful")
           setIsSupabaseAuthed(true)
         })
         .catch((error) => {
           console.error("[v0] Supabase auth failed:", error)
+        })
+        .finally(() => {
+          setIsAuthenticating(false)
         })
     } else if (!account?.address && isSupabaseAuthed) {
       console.log("[v0] Wallet disconnected, signing out from Supabase")
@@ -44,7 +57,7 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
           console.error("[v0] Supabase sign-out failed:", error)
         })
     }
-  }, [account?.address, isSupabaseAuthed])
+  }, [account?.address, wallet, isSupabaseAuthed, isAuthenticating])
 
   return (
     <ConnectButton
