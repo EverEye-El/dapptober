@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { supabaseBrowser } from "@/lib/web3/supabase-web3"
+import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
@@ -58,9 +58,32 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
       return
     }
 
+    const normalizeUrl = (url: string) => {
+      const trimmed = url.trim()
+      if (!trimmed) return trimmed
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        return trimmed
+      }
+      return `https://${trimmed}`
+    }
+
     setIsSubmitting(true)
 
     try {
+      if (!account) {
+        setError("Please connect your wallet to submit")
+        setShowConnectModal(true)
+        setIsSubmitting(false)
+        return
+      }
+
+      const hasSession = await ensureSupabaseSession(account)
+      if (!hasSession) {
+        setError("Failed to authenticate. Please try again.")
+        setIsSubmitting(false)
+        return
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -81,9 +104,9 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           day: dappDay,
           title: formData.title.trim(),
           description: formData.description.trim(),
-          demo_url: formData.demo_url.trim(),
-          github_url: formData.github_url.trim() || null,
-          image_url: formData.image_url.trim() || null,
+          demo_url: normalizeUrl(formData.demo_url),
+          github_url: formData.github_url.trim() ? normalizeUrl(formData.github_url) : null,
+          image_url: formData.image_url.trim() ? normalizeUrl(formData.image_url) : null,
           status: "published",
         })
         .select()

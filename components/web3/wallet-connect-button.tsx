@@ -1,12 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ConnectButton, useActiveAccount, useActiveWallet } from "thirdweb/react"
-import { signMessage } from "thirdweb/utils"
+import { ConnectButton } from "thirdweb/react"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
 import { Wallet } from "lucide-react"
-import { signInWithSupabaseWeb3, signOutSupabase } from "@/lib/web3/supabase-web3"
 
 const wallets = [
   createWallet("io.metamask"),
@@ -21,48 +18,6 @@ interface WalletConnectButtonProps {
 }
 
 export function WalletConnectButton({ isCollapsed = false }: WalletConnectButtonProps) {
-  const [isSupabaseAuthed, setIsSupabaseAuthed] = useState(false)
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
-  const account = useActiveAccount()
-  const wallet = useActiveWallet()
-
-  useEffect(() => {
-    if (account?.address && wallet && !isSupabaseAuthed && !isAuthenticating) {
-      console.log("[v0] Wallet connected, signing in to Supabase")
-      setIsAuthenticating(true)
-
-      const signMessageFn = async (message: string) => {
-        if (!account) throw new Error("No account connected")
-        const signature = await signMessage({
-          message,
-          account,
-        })
-        return signature
-      }
-
-      signInWithSupabaseWeb3(account.address, signMessageFn)
-        .then(() => {
-          console.log("[v0] Supabase auth successful")
-          setIsSupabaseAuthed(true)
-        })
-        .catch((error) => {
-          console.error("[v0] Supabase auth failed:", error)
-        })
-        .finally(() => {
-          setIsAuthenticating(false)
-        })
-    } else if (!account?.address && isSupabaseAuthed) {
-      console.log("[v0] Wallet disconnected, signing out from Supabase")
-      signOutSupabase()
-        .then(() => {
-          setIsSupabaseAuthed(false)
-        })
-        .catch((error) => {
-          console.error("[v0] Supabase sign-out failed:", error)
-        })
-    }
-  }, [account, wallet, isSupabaseAuthed, isAuthenticating]) // Updated dependency array
-
   return (
     <ConnectButton
       client={client}

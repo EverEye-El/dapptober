@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { supabaseBrowser } from "@/lib/web3/supabase-web3"
+import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
@@ -38,6 +38,13 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
     setIsLoading(true)
 
     try {
+      const hasSession = await ensureSupabaseSession(account)
+      if (!hasSession) {
+        alert("Failed to authenticate. Please try again.")
+        setIsLoading(false)
+        return
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -50,7 +57,6 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
       }
 
       if (isLiked) {
-        // Unlike
         console.log("[v0] Unliking DApp day:", dappDay)
         const { error } = await supabase.from("likes").delete().eq("user_id", user.id).eq("dapp_day", dappDay)
 
@@ -62,7 +68,6 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
         setLikes((prev) => prev - 1)
         setIsLiked(false)
       } else {
-        // Like
         console.log("[v0] Liking DApp day:", dappDay)
         const { error } = await supabase.from("likes").insert({ user_id: user.id, dapp_day: dappDay })
 

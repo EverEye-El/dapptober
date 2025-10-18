@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
-import { supabaseBrowser } from "@/lib/web3/supabase-web3"
+import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
@@ -112,6 +112,13 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     setIsSubmitting(true)
 
     try {
+      const hasSession = await ensureSupabaseSession(account)
+      if (!hasSession) {
+        setError("Failed to authenticate. Please try again.")
+        setIsSubmitting(false)
+        return
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -154,7 +161,6 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
 
       console.log("[v0] Comment posted successfully:", data)
 
-      // Add comment to local state (real-time will also add it, but this is faster)
       setComments((prev) => {
         if (prev.some((c) => c.id === data.id)) return prev
         return [data as Comment, ...prev]
