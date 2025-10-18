@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ConnectButton, useActiveAccount, useActiveWallet } from "thirdweb/react"
+import { signMessage } from "thirdweb/utils"
 import { client } from "@/lib/web3/thirdweb-client"
 import { createWallet } from "thirdweb/wallets"
 import { Wallet } from "lucide-react"
@@ -30,13 +31,16 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
       console.log("[v0] Wallet connected, signing in to Supabase")
       setIsAuthenticating(true)
 
-      const signMessage = async (message: string) => {
-        if (!wallet) throw new Error("No wallet connected")
-        const signature = await wallet.signMessage({ message })
+      const signMessageFn = async (message: string) => {
+        if (!account) throw new Error("No account connected")
+        const signature = await signMessage({
+          message,
+          account,
+        })
         return signature
       }
 
-      signInWithSupabaseWeb3(account.address, signMessage)
+      signInWithSupabaseWeb3(account.address, signMessageFn)
         .then(() => {
           console.log("[v0] Supabase auth successful")
           setIsSupabaseAuthed(true)
@@ -57,7 +61,7 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
           console.error("[v0] Supabase sign-out failed:", error)
         })
     }
-  }, [account?.address, wallet, isSupabaseAuthed, isAuthenticating])
+  }, [account, wallet, isSupabaseAuthed, isAuthenticating]) // Updated dependency array
 
   return (
     <ConnectButton
