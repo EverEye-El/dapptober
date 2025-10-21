@@ -1,8 +1,6 @@
 "use client"
 
 import { createBrowserClient } from "@supabase/ssr"
-import { signMessage as thirdwebSignMessage } from "thirdweb/utils"
-import type { Account } from "thirdweb/wallets"
 
 let isSigningIn = false
 let signInPromise: Promise<any> | null = null
@@ -32,10 +30,13 @@ export function resetSignInState() {
 }
 
 /**
- * Ensure user has a Supabase session, creating one if needed
+ * Ensure user has a Supabase session, creating one if needed using SIWE
  * This is called lazily when user tries to perform an action
  */
-export async function ensureSupabaseSession(account: Account): Promise<boolean> {
+export async function ensureSupabaseSession(
+  walletAddress: string,
+  signMessage: (message: string) => Promise<string>,
+): Promise<boolean> {
   const hasSession = await hasSupabaseSession()
   if (hasSession) {
     console.log("[v0] Already has Supabase session")
@@ -48,61 +49,52 @@ export async function ensureSupabaseSession(account: Account): Promise<boolean> 
     return await hasSupabaseSession()
   }
 
-  console.log("[v0] No session found, initiating sign-in")
+  console.log("[v0] No session found, initiating SIWE sign-in")
 
   isSigningIn = true
   signInPromise = (async () => {
     try {
-      const address = account.address.toLowerCase()
-
-      const nonceResponse = await fetch("/api/auth/web3/nonce", {
+      const nonceRes = await fetch("/api/auth/web3/nonce", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address }),
+        body: JSON.stringify({ address: walletAddress }),
       })
 
-      if (!nonceResponse.ok) {
-        throw new Error("Failed to get nonce")
+      if (!nonceRes.ok) {
+        throw new Error(`Failed to get nonce: ${nonceRes.statusText}`)
       }
 
-      const { nonce } = await nonceResponse.json()
-      console.log("[v0] Received nonce, requesting signature")
+      const { nonce } = await nonceRes.json()
+      console.log("[v0] Got nonce from server")
 
-      const message = `Sign this message to authenticate with Dapptober.\n\nNonce: ${nonce}\nAddress: ${address}`
+      const message = `Sign in to Dapptober\n\nAddress: ${walletAddress}\nNonce: ${nonce}`
+      const signature = await signMessage(message)
+      console.log("[v0] Message signed by wallet")
 
-      const signature = await thirdwebSignMessage({
-        message,
-        account,
-      })
-
-      console.log("[v0] Message signed, verifying with backend")
-
-      const verifyResponse = await fetch("/api/auth/web3/verify", {
+      const verifyRes = await fetch("/api/auth/web3/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          address,
+          address: walletAddress,
           signature,
           message,
         }),
       })
 
-      if (!verifyResponse.ok) {
-        const error = await verifyResponse.json()
-        throw new Error(error.error || "Failed to verify signature")
+      if (!verifyRes.ok) {
+        const errorText = await verifyRes.text()
+        throw new Error(`Verification failed: ${errorText}`)
       }
 
-      const { session } = await verifyResponse.json()
-      console.log("[v0] Supabase session created successfully")
+      const { session } = await verifyRes.json()
+      console.log("[v0] Session created successfully")
+
+      const supabase = supabaseBrowser()
+      await supabase.auth.setSession(session)
 
       return session
     } catch (error: any) {
-      console.error("[v0] Supabase sign-in error:", error)
-
-      if (error?.code === -32002 || error?.message?.includes("already pending")) {
-        throw new Error("You have a pending signature request in your wallet. Please approve or reject it first.")
-      }
-
+      console.error("[v0] Supabase sign-in error:", error.message || error)
       throw error
     } finally {
       isSigningIn = false

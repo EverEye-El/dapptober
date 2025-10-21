@@ -112,7 +112,10 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     setIsSubmitting(true)
 
     try {
-      const hasSession = await ensureSupabaseSession(account)
+      const hasSession = await ensureSupabaseSession(account.address, async (message: string) => {
+        return await account.signMessage({ message })
+      })
+
       if (!hasSession) {
         setError("Failed to authenticate. Please try again.")
         setIsSubmitting(false)

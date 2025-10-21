@@ -23,6 +23,7 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
       client={client}
       wallets={wallets}
       theme="dark"
+      autoConnect={false}
       connectButton={{
         label: isCollapsed ? <Wallet className="w-4 h-4" aria-label="Connect Wallet" /> : "Connect Wallet",
         className: isCollapsed

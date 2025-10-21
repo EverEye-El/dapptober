@@ -8,46 +8,22 @@ const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proces
   },
 })
 
-// Store nonces temporarily (in production, use Redis or database)
-const nonces = new Map<string, { nonce: string; timestamp: number }>()
-
-// Clean up old nonces every 5 minutes
-setInterval(
-  () => {
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
-    for (const [address, data] of nonces.entries()) {
-      if (data.timestamp < fiveMinutesAgo) {
-        nonces.delete(address)
-      }
-    }
-  },
-  5 * 60 * 1000,
-)
-
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { address } = await req.json()
+    const { address } = await request.json()
 
     if (!address) {
       return NextResponse.json({ error: "Address is required" }, { status: 400 })
     }
 
     // Generate a random nonce
-    const nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    const nonce = Math.random().toString(36).substring(2, 15)
 
-    // Store nonce with timestamp
-    nonces.set(address.toLowerCase(), {
-      nonce,
-      timestamp: Date.now(),
-    })
-
-    console.log("[v0] Generated nonce for address:", address)
-
+    // Store nonce temporarily (in production, use Redis or similar)
+    // For now, we'll just return it and verify the signature matches
     return NextResponse.json({ nonce })
-  } catch (error) {
-    console.error("[v0] Error generating nonce:", error)
-    return NextResponse.json({ error: "Failed to generate nonce" }, { status: 500 })
+  } catch (error: any) {
+    console.error("[API] Nonce generation error:", error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
-
-export { nonces }

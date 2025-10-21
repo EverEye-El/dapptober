@@ -38,7 +38,10 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
     setIsLoading(true)
 
     try {
-      const hasSession = await ensureSupabaseSession(account)
+      const hasSession = await ensureSupabaseSession(account.address, async (message: string) => {
+        return await account.signMessage({ message })
+      })
+
       if (!hasSession) {
         alert("Failed to authenticate. Please try again.")
         setIsLoading(false)
