@@ -46,31 +46,31 @@ export default async function DappPage({ params }: DappPageProps) {
     ? await supabase.from("likes").select("id").eq("user_id", user.id).eq("dapp_day", dapp.day).single()
     : { data: null }
 
-  // Get comments with user_id
   const { data: commentsData } = await supabase
     .from("comments")
-    .select("id, content, created_at, user_id")
+    .select("id, content, created_at, wallet_address")
     .eq("dapp_day", dapp.day)
     .order("created_at", { ascending: false })
 
-  // Get unique user IDs from comments
-  const userIds = commentsData ? [...new Set(commentsData.map((c) => c.user_id))] : []
+  // Get unique wallet addresses from comments
+  const walletAddresses = commentsData ? [...new Set(commentsData.map((c) => c.wallet_address).filter(Boolean))] : []
 
-  // Fetch profiles for those users
+  // Fetch profiles for those wallet addresses
   const { data: profilesData } =
-    userIds.length > 0
-      ? await supabase.from("profiles").select("id, display_name, wallet_address").in("id", userIds)
+    walletAddresses.length > 0
+      ? await supabase.from("profiles").select("id, display_name, wallet_address").in("wallet_address", walletAddresses)
       : { data: [] }
 
-  // Create a map of profiles for quick lookup
-  const profilesMap = new Map(profilesData?.map((p) => [p.id, p]) || [])
+  // Create a map of profiles for quick lookup by wallet address
+  const profilesMap = new Map(profilesData?.map((p) => [p.wallet_address?.toLowerCase(), p]) || [])
 
   // Combine comments with profile data
   const comments = commentsData?.map((comment) => ({
     id: comment.id,
     content: comment.content,
     created_at: comment.created_at,
-    profiles: profilesMap.get(comment.user_id) || null,
+    wallet_address: comment.wallet_address,
+    profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
   }))
 
   const viewsCount = Math.floor(Math.random() * 500) + 100

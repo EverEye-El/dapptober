@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
+import { toggleLike } from "@/app/actions/likes"
+import { ensureProfile } from "@/app/actions/profiles"
 
 interface LikeButtonProps {
   dappDay: number
@@ -21,7 +22,6 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
   const [showConnectModal, setShowConnectModal] = useState(false)
   const account = useActiveAccount()
   const router = useRouter()
-  const supabase = supabaseBrowser()
 
   useEffect(() => {
     setLikes(initialLikes)
@@ -38,49 +38,28 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
     setIsLoading(true)
 
     try {
-      const hasSession = await ensureSupabaseSession(account.address, async (message: string) => {
-        return await account.signMessage({ message })
-      })
-
-      if (!hasSession) {
-        alert("Failed to authenticate. Please try again.")
+      const profileResult = await ensureProfile(account.address)
+      if (!profileResult.success) {
+        alert(profileResult.error || "Failed to create profile")
         setIsLoading(false)
         return
       }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const result = await toggleLike(dappDay, account.address)
 
-      if (!user) {
-        console.log("[v0] No Supabase user, showing connect modal")
-        setShowConnectModal(true)
+      if (!result.success) {
+        alert(result.error || "Failed to update like")
         setIsLoading(false)
         return
       }
 
-      if (isLiked) {
-        console.log("[v0] Unliking DApp day:", dappDay)
-        const { error } = await supabase.from("likes").delete().eq("user_id", user.id).eq("dapp_day", dappDay)
-
-        if (error) {
-          console.error("[v0] Unlike error:", error)
-          throw error
-        }
-
-        setLikes((prev) => prev - 1)
-        setIsLiked(false)
-      } else {
-        console.log("[v0] Liking DApp day:", dappDay)
-        const { error } = await supabase.from("likes").insert({ user_id: user.id, dapp_day: dappDay })
-
-        if (error) {
-          console.error("[v0] Like error:", error)
-          throw error
-        }
-
+      // Update UI based on result
+      if (result.isLiked) {
         setLikes((prev) => prev + 1)
         setIsLiked(true)
+      } else {
+        setLikes((prev) => prev - 1)
+        setIsLiked(false)
       }
 
       router.refresh()

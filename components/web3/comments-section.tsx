@@ -6,20 +6,23 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
-import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
+import { supabaseBrowser } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
 import { CheckCircle2, AlertCircle } from "lucide-react"
+import { addComment } from "@/app/actions/comments"
+import Link from "next/link"
 
 interface Comment {
   id: string
   content: string
   created_at: string
+  wallet_address: string | null
   profiles: {
     display_name: string | null
     wallet_address: string | null
-  }
+  } | null
 }
 
 interface CommentsSectionProps {
@@ -57,31 +60,37 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           table: "comments",
           filter: `dapp_day=eq.${dappDay}`,
         },
-        (payload) => {
+        async (payload) => {
           console.log("[v0] New comment received via real-time:", payload)
-          supabase
+
+          const { data: commentData } = await supabase
             .from("comments")
-            .select(
-              `
-              id,
-              content,
-              created_at,
-              profiles (
-                display_name,
-                wallet_address
-              )
-            `,
-            )
+            .select("id, content, created_at, wallet_address")
             .eq("id", payload.new.id)
             .single()
-            .then(({ data }) => {
-              if (data) {
-                setComments((prev) => {
-                  if (prev.some((c) => c.id === data.id)) return prev
-                  return [data as Comment, ...prev]
-                })
-              }
+
+          if (commentData) {
+            // Fetch profile for this wallet address
+            let profile = null
+            if (commentData.wallet_address) {
+              const { data: profileData } = await supabase
+                .from("profiles")
+                .select("id, display_name, wallet_address")
+                .eq("wallet_address", commentData.wallet_address.toLowerCase())
+                .single()
+              profile = profileData
+            }
+
+            const newComment: Comment = {
+              ...commentData,
+              profiles: profile,
+            }
+
+            setComments((prev) => {
+              if (prev.some((c) => c.id === newComment.id)) return prev
+              return [newComment, ...prev]
             })
+          }
         },
       )
       .subscribe()
@@ -112,62 +121,37 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     setIsSubmitting(true)
 
     try {
-      const hasSession = await ensureSupabaseSession(account.address, async (message: string) => {
-        return await account.signMessage({ message })
-      })
+      const result = await addComment(dappDay, newComment.trim(), account.address)
 
-      if (!hasSession) {
-        setError("Failed to authenticate. Please try again.")
+      if (!result.success) {
+        setError(result.error || "Failed to post comment")
         setIsSubmitting(false)
         return
       }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      console.log("[v0] Comment posted successfully:", result.data)
 
-      if (!user) {
-        setError("Please connect your wallet to comment")
-        setShowConnectModal(true)
-        setIsSubmitting(false)
-        return
-      }
+      if (result.data) {
+        let profile = null
+        if (result.data.wallet_address) {
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("id, display_name, wallet_address")
+            .eq("wallet_address", result.data.wallet_address.toLowerCase())
+            .single()
+          profile = profileData
+        }
 
-      console.log("[v0] Inserting comment for user:", user.id)
+        const newCommentWithProfile: Comment = {
+          ...result.data,
+          profiles: profile,
+        }
 
-      const { data, error: insertError } = await supabase
-        .from("comments")
-        .insert({
-          user_id: user.id,
-          dapp_day: dappDay,
-          content: newComment.trim(),
+        setComments((prev) => {
+          if (prev.some((c) => c.id === newCommentWithProfile.id)) return prev
+          return [newCommentWithProfile, ...prev]
         })
-        .select(
-          `
-          id,
-          content,
-          created_at,
-          profiles (
-            display_name,
-            wallet_address
-          )
-        `,
-        )
-        .single()
-
-      if (insertError) {
-        console.error("[v0] Comment insert error:", insertError)
-        setError(insertError.message || "Failed to post comment")
-        setIsSubmitting(false)
-        return
       }
-
-      console.log("[v0] Comment posted successfully:", data)
-
-      setComments((prev) => {
-        if (prev.some((c) => c.id === data.id)) return prev
-        return [data as Comment, ...prev]
-      })
 
       setNewComment("")
       setShowSuccess(true)
@@ -178,6 +162,11 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const formatWalletAddress = (address: string) => {
+    const cleanAddress = address.replace("@wallet.local", "")
+    return `${cleanAddress.slice(0, 6)}...${cleanAddress.slice(-4)}`
   }
 
   return (
@@ -230,28 +219,42 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
             No comments yet. Be the first to share your thoughts!
           </Card>
         ) : (
-          comments.map((comment) => (
-            <Card
-              key={comment.id}
-              className="p-4 bg-slate-900/90 border-primary/50 neon-glow-orange hover:border-primary/50 transition-colors"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-neon-purple">
-                      {comment.profiles?.display_name || "Anonymous"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), {
-                        addSuffix: true,
-                      })}
-                    </span>
+          comments.map((comment) => {
+            const cleanWalletAddress = comment.wallet_address?.replace("@wallet.local", "") || ""
+            const displayName =
+              comment.profiles?.display_name ||
+              (cleanWalletAddress ? formatWalletAddress(cleanWalletAddress) : "Anonymous")
+
+            return (
+              <Card
+                key={comment.id}
+                className="p-4 bg-slate-900/90 border-primary/50 neon-glow-orange hover:border-primary/50 transition-colors"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      {cleanWalletAddress ? (
+                        <Link
+                          href={`/profile/${cleanWalletAddress}`}
+                          className="font-semibold text-neon-purple hover:text-neon-orange transition-colors"
+                        >
+                          {displayName}
+                        </Link>
+                      ) : (
+                        <span className="font-semibold text-neon-purple">{displayName}</span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(comment.created_at), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-white leading-relaxed">{comment.content}</p>
                   </div>
-                  <p className="text-sm text-white leading-relaxed">{comment.content}</p>
                 </div>
-              </div>
-            </Card>
-          ))
+              </Card>
+            )
+          })
         )}
       </div>
     </div>
