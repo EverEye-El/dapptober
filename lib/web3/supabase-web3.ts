@@ -17,6 +17,7 @@ export async function hasSupabaseSession(): Promise<boolean> {
   const {
     data: { session },
   } = await supabase.auth.getSession()
+  console.log("[v0] Session check:", session ? "Active" : "None")
   return !!session
 }
 
@@ -45,8 +46,13 @@ export async function ensureSupabaseSession(
 
   if (isSigningIn && signInPromise) {
     console.log("[v0] Sign-in already in progress, waiting...")
-    await signInPromise
-    return await hasSupabaseSession()
+    try {
+      await signInPromise
+      return await hasSupabaseSession()
+    } catch (error) {
+      console.error("[v0] Waiting for sign-in failed:", error)
+      return false
+    }
   }
 
   console.log("[v0] No session found, initiating SIWE sign-in")
@@ -54,6 +60,7 @@ export async function ensureSupabaseSession(
   isSigningIn = true
   signInPromise = (async () => {
     try {
+      console.log("[v0] Requesting nonce for address:", walletAddress)
       const nonceRes = await fetch("/api/auth/web3/nonce", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,16 +68,20 @@ export async function ensureSupabaseSession(
       })
 
       if (!nonceRes.ok) {
+        const errorText = await nonceRes.text()
+        console.error("[v0] Nonce request failed:", errorText)
         throw new Error(`Failed to get nonce: ${nonceRes.statusText}`)
       }
 
       const { nonce } = await nonceRes.json()
-      console.log("[v0] Got nonce from server")
+      console.log("[v0] Got nonce from server:", nonce)
 
       const message = `Sign in to Dapptober\n\nAddress: ${walletAddress}\nNonce: ${nonce}`
+      console.log("[v0] Requesting signature for message")
       const signature = await signMessage(message)
       console.log("[v0] Message signed by wallet")
 
+      console.log("[v0] Verifying signature with server")
       const verifyRes = await fetch("/api/auth/web3/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,15 +94,25 @@ export async function ensureSupabaseSession(
 
       if (!verifyRes.ok) {
         const errorText = await verifyRes.text()
+        console.error("[v0] Verification failed:", errorText)
         throw new Error(`Verification failed: ${errorText}`)
       }
 
       const { session } = await verifyRes.json()
-      console.log("[v0] Session created successfully")
+      console.log("[v0] Session received from server")
 
       const supabase = supabaseBrowser()
-      await supabase.auth.setSession(session)
+      const { error: setSessionError } = await supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+      })
 
+      if (setSessionError) {
+        console.error("[v0] Failed to set session:", setSessionError)
+        throw setSessionError
+      }
+
+      console.log("[v0] Session set successfully in browser")
       return session
     } catch (error: any) {
       console.error("[v0] Supabase sign-in error:", error.message || error)
@@ -104,7 +125,9 @@ export async function ensureSupabaseSession(
 
   try {
     await signInPromise
-    return true
+    const finalCheck = await hasSupabaseSession()
+    console.log("[v0] Final session check after sign-in:", finalCheck)
+    return finalCheck
   } catch (error) {
     console.error("[v0] Failed to create session:", error)
     return false
@@ -122,4 +145,5 @@ export async function signOutSupabase() {
     throw error
   }
   resetSignInState()
+  console.log("[v0] Signed out successfully")
 }
