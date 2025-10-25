@@ -165,8 +165,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   }
 
   const formatWalletAddress = (address: string) => {
-    const cleanAddress = address.replace("@wallet.local", "")
-    return `${cleanAddress.slice(0, 6)}...${cleanAddress.slice(-4)}`
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
   return (
@@ -220,10 +219,9 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           </Card>
         ) : (
           comments.map((comment) => {
-            const cleanWalletAddress = comment.wallet_address?.replace("@wallet.local", "") || ""
+            const walletAddress = comment.wallet_address || ""
             const displayName =
-              comment.profiles?.display_name ||
-              (cleanWalletAddress ? formatWalletAddress(cleanWalletAddress) : "Anonymous")
+              comment.profiles?.display_name || (walletAddress ? formatWalletAddress(walletAddress) : "Anonymous")
 
             return (
               <Card
@@ -233,9 +231,9 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
                 <div className="flex items-start gap-3">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
-                      {cleanWalletAddress ? (
+                      {walletAddress ? (
                         <Link
-                          href={`/profile/${cleanWalletAddress}`}
+                          href={`/profile/${walletAddress}`}
                           className="font-semibold text-neon-purple hover:text-neon-orange transition-colors"
                         >
                           {displayName}

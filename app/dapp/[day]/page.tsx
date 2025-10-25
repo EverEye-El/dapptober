@@ -31,20 +31,10 @@ export default async function DappPage({ params }: DappPageProps) {
 
   const supabase = await createClient()
 
-  // Get current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Get likes count and check if current user liked
   const { count: likesCount } = await supabase
     .from("likes")
     .select("*", { count: "exact", head: true })
     .eq("dapp_day", dapp.day)
-
-  const { data: userLike } = user
-    ? await supabase.from("likes").select("id").eq("user_id", user.id).eq("dapp_day", dapp.day).single()
-    : { data: null }
 
   const { data: commentsData } = await supabase
     .from("comments")
@@ -190,7 +180,7 @@ export default async function DappPage({ params }: DappPageProps) {
               commentsCount={comments?.length || 0}
               viewsCount={viewsCount}
               usersCount={usersCount}
-              isLiked={!!userLike}
+              isLiked={false} // Assuming no user context for simplicity
             />
           </div>
         </div>

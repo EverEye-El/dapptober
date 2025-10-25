@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { supabaseBrowser, ensureSupabaseSession } from "@/lib/web3/supabase-web3"
+import { supabaseBrowser } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
 import { createPortal } from "react-dom"
+import { ensureProfile } from "@/app/actions/profiles"
 
 interface SubmitButtonProps {
   dappDay: number
@@ -77,33 +78,21 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
         return
       }
 
-      const hasSession = await ensureSupabaseSession(account.address, async (message: string) => {
-        return await account.signMessage({ message })
-      })
+      console.log("[v0] Ensuring profile for wallet:", account.address)
+      const profile = await ensureProfile(account.address)
 
-      if (!hasSession) {
-        setError("Failed to authenticate. Please try again.")
+      if (!profile) {
+        setError("Failed to create profile. Please try again.")
         setIsSubmitting(false)
         return
       }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        setError("Please connect your wallet to submit")
-        setShowConnectModal(true)
-        setIsSubmitting(false)
-        return
-      }
-
-      console.log("[v0] Submitting DApp for user:", user.id)
+      console.log("[v0] Submitting DApp for wallet:", account.address)
 
       const { data, error: insertError } = await supabase
         .from("submissions")
         .insert({
-          user_id: user.id,
+          wallet_address: account.address.toLowerCase(),
           day: dappDay,
           title: formData.title.trim(),
           description: formData.description.trim(),
