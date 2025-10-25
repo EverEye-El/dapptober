@@ -28,7 +28,8 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const isOwnProfile = account?.address.toLowerCase() === profile.wallet_address.toLowerCase()
 
   const formatWalletAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
+    const cleanAddress = address.replace("@wallet.local", "")
+    return `${cleanAddress.slice(0, 6)}...${cleanAddress.slice(-4)}`
   }
 
   const handleSave = async () => {
@@ -99,7 +100,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                 <h1 className="text-3xl font-bold gradient-text">
                   {profile.display_name || formatWalletAddress(profile.wallet_address)}
                 </h1>
-                <p className="text-sm text-gray-400 font-mono">{profile.wallet_address}</p>
+                <p className="text-sm text-gray-400 font-mono">{profile.wallet_address.replace("@wallet.local", "")}</p>
               </div>
 
               {profile.bio && <p className="text-white leading-relaxed">{profile.bio}</p>}

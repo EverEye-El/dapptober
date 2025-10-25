@@ -20,22 +20,20 @@ export function Sidebar() {
 
   const navItems = [
     { href: "/", label: "Prompts", icon: Sparkles, active: false },
+    ...(account?.address
+      ? [
+          {
+            href: `/profile/${account.address}`,
+            label: "Profile",
+            icon: User,
+            active: false,
+          },
+        ]
+      : []),
     { href: "/showcase", label: "Showcase", icon: Grid3x3, active: false },
     { href: "/rules", label: "Rules", icon: ScrollText, active: false },
     { href: "/about", label: "About", icon: Info, active: false },
   ]
-
-  const profileNavItems = account?.address
-    ? [
-        ...navItems,
-        {
-          href: `/profile/${account.address}`,
-          label: "Profile",
-          icon: User,
-          active: false,
-        },
-      ]
-    : navItems
 
   return (
     <>
@@ -65,7 +63,7 @@ export function Sidebar() {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Main navigation">
-            {profileNavItems.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

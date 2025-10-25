@@ -165,7 +165,8 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   }
 
   const formatWalletAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
+    const cleanAddress = address.replace("@wallet.local", "")
+    return `${cleanAddress.slice(0, 6)}...${cleanAddress.slice(-4)}`
   }
 
   return (
@@ -219,7 +220,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           </Card>
         ) : (
           comments.map((comment) => {
-            const walletAddress = comment.wallet_address || ""
+            const walletAddress = (comment.wallet_address || "").replace("@wallet.local", "")
             const displayName =
               comment.profiles?.display_name || (walletAddress ? formatWalletAddress(walletAddress) : "Anonymous")
 

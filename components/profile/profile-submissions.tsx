@@ -28,14 +28,16 @@ export function ProfileSubmissions({ submissions }: ProfileSubmissionsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {submissions.map((submission) => (
-        <Link key={submission.id} href={`/dapp/${submission.dapp_day}`}>
+        <Link key={submission.id} href={`/dapp/${submission.dapp_day || submission.id}`}>
           <Card className="glass-card border-primary/30 p-4 hover:border-primary/50 transition-colors cursor-pointer">
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-semibold text-white line-clamp-1">{submission.title}</h3>
-                <Badge variant="secondary" className="text-xs">
-                  Day {submission.dapp_day}
-                </Badge>
+                {submission.dapp_day && (
+                  <Badge variant="secondary" className="text-xs">
+                    Day {submission.dapp_day}
+                  </Badge>
+                )}
               </div>
 
               <p className="text-sm text-gray-400 line-clamp-2">{submission.description}</p>
