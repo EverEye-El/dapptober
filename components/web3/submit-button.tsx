@@ -253,6 +253,9 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
                           placeholder="https://example.com/screenshot.png"
                           className="bg-slate-900/90 border-primary/50 text-white placeholder:text-gray-400"
                         />
+                        <p className="text-xs text-gray-400">
+                          Use a direct image URL (ending in .png, .jpg, .gif, etc.)
+                        </p>
                       </div>
 
                       {error && (

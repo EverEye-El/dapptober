@@ -19,12 +19,7 @@ export async function GET() {
         github_url,
         image_url,
         created_at,
-        user_id,
-        profiles:user_id (
-          display_name,
-          wallet_address,
-          avatar_url
-        )
+        wallet_address
       `,
       )
       .order("created_at", { ascending: false })
@@ -38,6 +33,13 @@ export async function GET() {
 
     const formattedSubmissions = await Promise.all(
       (submissions || []).map(async (sub: any) => {
+        // Fetch profile by wallet_address
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name, wallet_address, avatar_url")
+          .eq("wallet_address", sub.wallet_address)
+          .single()
+
         const { count: likesCount } = await supabase
           .from("likes")
           .select("*", { count: "exact", head: true })
@@ -57,13 +59,11 @@ export async function GET() {
           github_url: sub.github_url,
           image_url: sub.image_url,
           created_at: sub.created_at,
-          profile: sub.profiles
-            ? {
-                display_name: sub.profiles.display_name,
-                wallet_address: sub.profiles.wallet_address,
-                avatar_url: sub.profiles.avatar_url,
-              }
-            : null,
+          profile: profile || {
+            display_name: null,
+            wallet_address: sub.wallet_address,
+            avatar_url: null,
+          },
           likes_count: likesCount || 0,
           comments_count: commentsCount || 0,
         }
