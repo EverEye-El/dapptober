@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { supabaseBrowser } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
 import { createPortal } from "react-dom"
+import { submitDapp } from "@/app/actions/submissions"
 import { ensureProfile } from "@/app/actions/profiles"
 
 interface SubmitButtonProps {
@@ -35,7 +35,6 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
   })
   const account = useActiveAccount()
   const router = useRouter()
-  const supabase = supabaseBrowser()
 
   const handleClick = () => {
     console.log("[v0] Submit button clicked", { account: account?.address })
@@ -89,33 +88,21 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
 
       console.log("[v0] Submitting DApp for wallet:", account.address)
 
-      const { data, error: insertError } = await supabase
-        .from("submissions")
-        .insert({
-          wallet_address: account.address.toLowerCase(),
-          day: dappDay,
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          demo_url: normalizeUrl(formData.demo_url),
-          github_url: formData.github_url.trim() ? normalizeUrl(formData.github_url) : null,
-          image_url: formData.image_url.trim() ? normalizeUrl(formData.image_url) : null,
-          status: "published",
-        })
-        .select()
-        .single()
+      const result = await submitDapp(dappDay, account.address, {
+        title: formData.title,
+        description: formData.description,
+        demo_url: normalizeUrl(formData.demo_url),
+        github_url: formData.github_url ? normalizeUrl(formData.github_url) : undefined,
+        image_url: formData.image_url ? normalizeUrl(formData.image_url) : undefined,
+      })
 
-      if (insertError) {
-        console.error("[v0] Submission insert error:", insertError)
-        if (insertError.code === "23505") {
-          setError("You have already submitted a DApp for this day")
-        } else {
-          setError(insertError.message || "Failed to submit DApp")
-        }
+      if (!result.success) {
+        setError(result.error || "Failed to submit DApp")
         setIsSubmitting(false)
         return
       }
 
-      console.log("[v0] DApp submitted successfully:", data)
+      console.log("[v0] DApp submitted successfully:", result.data)
 
       setShowSuccess(true)
       setTimeout(() => {
