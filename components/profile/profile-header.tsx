@@ -21,11 +21,12 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const account = useActiveAccount()
   const [isEditing, setIsEditing] = useState(false)
-  const [displayName, setDisplayName] = useState(profile.display_name || "")
+  const [displayName, setDisplayName] = useState(profile.display_name?.replace("@wallet.local", "") || "")
   const [bio, setBio] = useState(profile.bio || "")
   const [isSaving, setIsSaving] = useState(false)
 
-  const isOwnProfile = account?.address.toLowerCase() === profile.wallet_address.toLowerCase()
+  const cleanWalletAddress = profile.wallet_address.replace("@wallet.local", "")
+  const isOwnProfile = account?.address.toLowerCase() === cleanWalletAddress.toLowerCase()
 
   const formatWalletAddress = (address: string) => {
     const cleanAddress = address.replace("@wallet.local", "")
@@ -48,10 +49,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
   }
 
   const handleCancel = () => {
-    setDisplayName(profile.display_name || "")
+    setDisplayName(profile.display_name?.replace("@wallet.local", "") || "")
     setBio(profile.bio || "")
     setIsEditing(false)
   }
+
+  const cleanDisplayName = profile.display_name?.replace("@wallet.local", "")
 
   return (
     <Card className="glass-card border-primary/30 p-6 space-y-6">
@@ -98,9 +101,9 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             <>
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold gradient-text">
-                  {profile.display_name || formatWalletAddress(profile.wallet_address)}
+                  {cleanDisplayName || formatWalletAddress(profile.wallet_address)}
                 </h1>
-                <p className="text-sm text-gray-400 font-mono">{profile.wallet_address.replace("@wallet.local", "")}</p>
+                <p className="text-sm text-gray-400 font-mono">{cleanWalletAddress}</p>
               </div>
 
               {profile.bio && <p className="text-white leading-relaxed">{profile.bio}</p>}
