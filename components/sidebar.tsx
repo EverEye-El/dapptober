@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info, ScrollText } from "lucide-react"
+import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info, ScrollText, User } from "lucide-react"
 import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
 import Link from "next/link"
+import { useActiveAccount } from "thirdweb/react"
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const account = useActiveAccount()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,6 +24,18 @@ export function Sidebar() {
     { href: "/rules", label: "Rules", icon: ScrollText, active: false },
     { href: "/about", label: "About", icon: Info, active: false },
   ]
+
+  const profileNavItems = account?.address
+    ? [
+        ...navItems,
+        {
+          href: `/profile/${account.address}`,
+          label: "Profile",
+          icon: User,
+          active: false,
+        },
+      ]
+    : navItems
 
   return (
     <>
@@ -51,7 +65,7 @@ export function Sidebar() {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Main navigation">
-            {navItems.map((item) => (
+            {profileNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
