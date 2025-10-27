@@ -83,13 +83,13 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
           size="lg"
           className={`w-full gap-2 transition-all duration-300 font-semibold ${
             isLiked
-              ? "bg-gradient-to-r from-neon-purple to-neon-orange text-white hover:opacity-90 border-2 border-neon-purple/50 neon-glow-purple"
+              ? "bg-gradient-to-r from-neon-purple to-neon-orange text-white hover:opacity-90 border-2 border-neon-orange/50 neon-glow-orange"
               : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 text-white"
           }`}
         >
           <Heart
             className={`h-5 w-5 transition-all duration-300 ${
-              isLiked ? "fill-current text-neon-purple" : "fill-transparent text-white"
+              isLiked ? "fill-white text-white" : "fill-transparent text-white"
             }`}
           />
           Love this Dapp
