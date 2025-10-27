@@ -83,15 +83,25 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
           onClick={handleLike}
           disabled={isLoading}
           size="lg"
-          className={`w-full gap-2 transition-all font-semibold ${
+          className={`w-full gap-2 transition-all duration-300 font-semibold ${
             isLiked
-              ? "neon-glow-purple bg-primary/80 hover:bg-primary border border-primary/50"
-              : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
+              ? "neon-glow-purple bg-gradient-to-r from-neon-purple to-neon-violet hover:from-neon-violet hover:to-neon-purple border-2 border-neon-purple/50 text-white"
+              : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 text-white hover:neon-glow-purple"
           }`}
         >
-          <Heart className={`h-5 w-5 transition-all ${isLiked ? "fill-current" : ""}`} />
-          {isLiked ? "Liked" : "Like This DApp"}
-          <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-sm">{likes}</span>
+          <Heart
+            className={`h-5 w-5 transition-all duration-300 ${
+              isLiked ? "fill-neon-purple text-neon-purple animate-pulse" : ""
+            }`}
+          />
+          {isLiked ? "Liked" : "Like this DApp"}
+          <span
+            className={`ml-2 px-2 py-0.5 rounded-full text-sm font-bold ${
+              isLiked ? "bg-neon-purple/20 text-white" : "bg-background/20 text-white"
+            }`}
+          >
+            {likes}
+          </span>
         </Button>
 
         {!account && <p className="text-xs text-white text-center">Connect your wallet to like this DApp</p>}
