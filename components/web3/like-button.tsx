@@ -85,14 +85,18 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
           size="lg"
           className={`w-full gap-2 transition-all duration-300 font-semibold ${
             isLiked
-              ? "bg-gradient-to-r from-neon-purple to-neon-orange text-white hover:opacity-90 border-2 border-neon-purple/50"
+              ? "bg-gradient-to-r from-neon-purple to-neon-orange text-white hover:opacity-90 border-2 border-neon-purple/50 neon-glow-purple"
               : "neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 text-white"
           }`}
         >
-          <Heart className={`h-5 w-5 transition-all duration-300 ${isLiked ? "fill-white" : ""}`} />
-          {isLiked ? "Liked" : "Like this DApp"}
+          <Heart
+            className={`h-5 w-5 transition-all duration-300 ${
+              isLiked ? "fill-current text-neon-purple" : "fill-transparent text-white"
+            }`}
+          />
+          Love this Dapp
           <span
-            className={`ml-2 px-2 py-0.5 rounded-full text-sm font-bold ${
+            className={`ml-2 px-2 py-0.5 rounded-full text-sm font-bold transition-all duration-300 ${
               isLiked ? "bg-white/20 text-white" : "bg-background/20 text-white"
             }`}
           >
