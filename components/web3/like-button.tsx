@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useActiveAccount } from "thirdweb/react"
-import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
 import { toggleLike } from "@/app/actions/likes"
 import { ensureProfile } from "@/app/actions/profiles"
@@ -21,12 +20,6 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
   const [isLoading, setIsLoading] = useState(false)
   const [showConnectModal, setShowConnectModal] = useState(false)
   const account = useActiveAccount()
-  const router = useRouter()
-
-  useEffect(() => {
-    setLikes(initialLikes)
-    setIsLiked(initialIsLiked)
-  }, [initialLikes, initialIsLiked])
 
   const handleLike = async () => {
     if (!account) {
@@ -37,9 +30,22 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
 
     setIsLoading(true)
 
+    const previousLikes = likes
+    const previousIsLiked = isLiked
+
+    if (isLiked) {
+      setLikes((prev) => prev - 1)
+      setIsLiked(false)
+    } else {
+      setLikes((prev) => prev + 1)
+      setIsLiked(true)
+    }
+
     try {
       const profileResult = await ensureProfile(account.address)
       if (!profileResult.success) {
+        setLikes(previousLikes)
+        setIsLiked(previousIsLiked)
         alert(profileResult.error || "Failed to create profile")
         setIsLoading(false)
         return
@@ -48,27 +54,19 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
       const result = await toggleLike(dappDay, account.address)
 
       if (!result.success) {
+        setLikes(previousLikes)
+        setIsLiked(previousIsLiked)
         alert(result.error || "Failed to update like")
         setIsLoading(false)
         return
       }
 
-      // Update UI based on result
-      if (result.isLiked) {
-        setLikes((prev) => prev + 1)
-        setIsLiked(true)
-      } else {
-        setLikes((prev) => prev - 1)
-        setIsLiked(false)
-      }
-
-      router.refresh()
+      console.log("[v0] Like toggled successfully:", result.isLiked)
     } catch (error) {
       console.error("[v0] Like error:", error)
+      setLikes(previousLikes)
+      setIsLiked(previousIsLiked)
       alert("Failed to update like. Please try again.")
-      // Revert optimistic update
-      setLikes(initialLikes)
-      setIsLiked(initialIsLiked)
     } finally {
       setIsLoading(false)
     }
