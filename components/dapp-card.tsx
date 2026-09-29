@@ -24,8 +24,9 @@ export function DappCard({ dapp }: DappCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="absolute top-3 left-3 z-10">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full glass-card border-primary/50 neon-glow-orange">
-          <span className="text-xs font-bold gradient-text">{dapp.day}</span>
+        <div className="term-chip">
+          <span>DAY</span>
+          <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
         </div>
       </div>
 
@@ -71,11 +72,7 @@ export function DappCard({ dapp }: DappCardProps) {
             </div>
           </div>
           <Link href={`/dapp/${dapp.day}`}>
-            <Button
-              size="sm"
-              variant="default"
-              className="h-8 text-xs font-semibold neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50"
-            >
+            <Button size="sm" variant="outline" className="term-btn h-8">
               View Prompt
             </Button>
           </Link>

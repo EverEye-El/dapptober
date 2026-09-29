@@ -186,7 +186,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           <Button
             type="submit"
             disabled={isSubmitting || !newComment.trim()}
-            className="bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="term-btn h-10 px-5 disabled:opacity-50"
           >
             {isSubmitting ? "Posting..." : "Post Comment"}
           </Button>

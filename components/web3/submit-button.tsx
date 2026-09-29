@@ -134,7 +134,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           onClick={handleClick}
           disabled={isSubmitting}
           size="lg"
-          className="w-full gap-2 bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="term-btn w-full gap-2 h-11 disabled:opacity-50"
         >
           <Upload className="h-5 w-5" />
           Submit Your DApp
@@ -144,7 +144,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           onClick={handleClick}
           disabled={isSubmitting}
           size="lg"
-          className="gap-2 bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="term-btn gap-2 h-11 px-6 disabled:opacity-50"
         >
           <Upload className="h-5 w-5" />
           Submit DApp
@@ -277,7 +277,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
                         <Button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-1 bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90"
+                          className="term-btn flex-1 h-10"
                         >
                           {isSubmitting ? "Submitting..." : "Submit DApp"}
                         </Button>

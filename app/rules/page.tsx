@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
+import { PageHero } from "@/components/terminal/page-hero"
 
 interface Rule {
   emoji: string
@@ -154,19 +155,15 @@ export default function RulesPage() {
       <Sidebar />
 
       <main>
-        <header className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">
-              🕸️ DAPPTOBER {DAPPTOBER_YEAR}: THE RULES
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 font-medium">31 days. 31 agents. gtfol!</p>
-            <p className="text-sm md:text-base text-white/70 max-w-2xl mx-auto text-balance mt-4">
-              Welcome, builder. You've entered <strong className="text-[#FF6B35]">Dapptober {DAPPTOBER_YEAR}</strong>:
-              31 days of AI agents, onchain chaos, creativity, and glory. There are no prizes. No judges. No safety
-              nets. Just you, your agents, and the chain. ⚡
-            </p>
-          </div>
-        </header>
+        <PageHero kicker={`man dapptober --section=rules`} word="RULES">
+          <p className="text-base md:text-lg tracking-[0.12em] uppercase text-copper-bright">
+            31 days. 31 agents. gtfol.
+          </p>
+          <p className="text-sm md:text-base text-copper-dim text-balance">
+            Welcome, builder. You&apos;ve entered Dapptober {DAPPTOBER_YEAR}: 31 days of AI agents, onchain chaos,
+            creativity, and glory. There are no prizes. No judges. No safety nets. Just you, your agents, and the chain.
+          </p>
+        </PageHero>
 
         <section className="container mx-auto px-4 lg:px-8 py-6 relative z-10 max-w-4xl">
           <div className="space-y-8">

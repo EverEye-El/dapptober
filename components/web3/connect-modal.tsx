@@ -78,7 +78,7 @@ export function ConnectModal({ isOpen, onClose }: ConnectModalProps) {
                 connectButton={{
                   label: "Connect Wallet",
                   className:
-                    "!w-full !bg-gradient-to-r !from-neon-purple !to-neon-orange !text-white !font-semibold !px-6 !py-3 !rounded-xl !transition-all hover:!opacity-90 hover:!scale-[1.02] !text-base neon-glow-orange",
+                    "term-btn !w-full !px-6 !py-3 !text-sm",
                 }}
                 connectModal={{
                   size: "compact",

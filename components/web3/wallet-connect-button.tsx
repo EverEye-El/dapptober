@@ -27,13 +27,13 @@ export function WalletConnectButton({ isCollapsed = false }: WalletConnectButton
       connectButton={{
         label: isCollapsed ? <Wallet className="w-4 h-4" aria-label="Connect Wallet" /> : "Connect Wallet",
         className: isCollapsed
-          ? "!bg-primary/80 hover:!bg-primary !text-white !font-semibold !px-2 !h-8 !rounded-lg !transition-all !text-xs !w-full !min-w-0 !border !border-primary/50 neon-glow-orange !flex !items-center !justify-center"
-          : "!bg-primary/80 hover:!bg-primary !text-white !font-semibold !px-4 !h-8 !rounded-lg !transition-all !text-xs !w-full !border !border-primary/50 neon-glow-orange",
+          ? "term-btn !px-2 !h-8 !w-full !min-w-0 !text-xs"
+          : "term-btn !px-4 !h-8 !w-full !text-xs",
       }}
       detailsButton={{
         className: isCollapsed
-          ? "!bg-primary/80 hover:!bg-primary !border !border-primary/50 !text-white !rounded-lg !transition-all !px-2 !h-8 !text-xs !w-full !min-w-0 !truncate neon-glow-orange !flex !items-center !justify-center"
-          : "!bg-primary/80 hover:!bg-primary !border !border-primary/50 !text-white !rounded-lg !transition-all !px-4 !h-8 !text-xs !w-full !truncate neon-glow-orange",
+          ? "term-btn !px-2 !h-8 !w-full !min-w-0 !truncate !text-xs"
+          : "term-btn !px-4 !h-8 !w-full !truncate !text-xs",
       }}
     />
   )

@@ -78,8 +78,9 @@ export default async function DappPage({ params }: DappPageProps) {
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full glass-card border-primary/50 neon-glow-orange lg:hidden">
-                      <span className="text-sm font-bold gradient-text">{dapp.day}</span>
+                    <div className="term-chip lg:hidden">
+                      <span>DAY</span>
+                      <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold gradient-text-main text-balance">{dapp.title}</h1>
                   </div>
@@ -119,7 +120,7 @@ export default async function DappPage({ params }: DappPageProps) {
                 <div className="absolute inset-0 flex items-end p-6">
                   <Button
                     size="lg"
-                    className="neon-glow-orange bg-primary/80 hover:bg-primary border border-primary/50 font-semibold"
+                    className="h-11 px-5 bg-copper text-ink hover:bg-copper-bright border-0 tracking-[0.14em] uppercase text-xs font-semibold"
                   >
                     Launch Interactive Demo
                   </Button>
