@@ -32,7 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable}`}>
+      {/* md:pl-20 reserves room for the fixed collapsed sidebar rail; expanding it overlays content. */}
+      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} md:pl-20`}>
         <Suspense fallback={<div>Loading...</div>}>
           <ThirdwebProvider>{children}</ThirdwebProvider>
         </Suspense>
