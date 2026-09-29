@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { LikeButton } from "@/components/web3/like-button"
 import { SubmitButton } from "@/components/web3/submit-button"
 import Link from "next/link"
+import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 
 interface DappSidebarProps {
   dappDay: number
@@ -34,7 +35,7 @@ export function DappSidebar({
       try {
         await navigator.share({
           title: dappTitle,
-          text: `Check out ${dappTitle} on Dapptober!`,
+          text: `Check out ${dappTitle} on Dapptober ${DAPPTOBER_YEAR}!`,
           url: window.location.href,
         })
       } catch (error) {
@@ -153,7 +154,7 @@ export function DappSidebar({
               <span className="text-lg font-bold gradient-text">{dappDay}</span>
             </div>
             <div className="text-left">
-              <div className="text-xs text-white">Dapptober Day</div>
+              <div className="text-xs text-white">Dapptober {DAPPTOBER_YEAR} Day</div>
               <div className="text-sm font-semibold text-neon-purple">#{dappDay} of 31</div>
             </div>
           </div>

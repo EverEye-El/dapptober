@@ -19,8 +19,9 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Dapptober - 31 Days of Web3 Apps",
-  description: "A showcase of vibe coded web3 applications - one for each day of October",
+  title: "Dapptober 2026 - 31 Days of AI Agents x Crypto",
+  description:
+    "31 vibe-coded prompts for October 2026: build AI agents that hold wallets, pay each other, and act onchain.",
   generator: "v0.app",
 }
 

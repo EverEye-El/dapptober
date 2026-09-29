@@ -7,12 +7,14 @@
 
 ## Overview
 
-A showcase of 31 vibe-coded Web3 applications - one for each day of October. Built with Next.js, thirdweb, and Supabase, featuring full wallet authentication and community interactions.
+Dapptober 2026: 31 vibe-coded prompts for October, one per day, themed around **AI agents x crypto** (agent wallets, x402 payments, onchain agent identity and reputation, intents, prediction markets, and more). Built with Next.js, thirdweb, and Supabase, featuring full wallet authentication and community interactions.
+
+Prompts live in `lib/dapp-prompts.ts` (each has a vibe, brief, key features, and suggested stack) and their cover art lives in `public/prompts/`.
 
 ## Features
 
 ### 🎨 Vibe-Coded Design
-- 31 unique DApp concepts with custom aesthetics
+- 31 unique AI-agent x crypto concepts with custom aesthetics and cover art
 - Neon gradient themes with glass-morphism effects
 - Responsive design optimized for all devices
 

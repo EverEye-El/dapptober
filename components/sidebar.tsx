@@ -50,7 +50,7 @@ export function Sidebar() {
               {!isCollapsed && (
                 <div className="flex-1">
                   <h1 className="text-xl font-bold tracking-tight gradient-text">DAPPTOBER</h1>
-                  <p className="text-xs text-white/70 mt-1">Vibe-Coded Web3</p>
+                  <p className="text-xs text-white/70 mt-1">2026 · AI Agents x Crypto</p>
                 </div>
               )}
               {isCollapsed && (
