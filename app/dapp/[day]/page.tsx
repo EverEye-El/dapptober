@@ -1,4 +1,4 @@
-import { dappPrompts } from "@/lib/dapp-prompts"
+import { dappPrompts, getDappStats } from "@/lib/dapp-prompts"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
@@ -63,8 +63,7 @@ export default async function DappPage({ params }: DappPageProps) {
     profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
   }))
 
-  const viewsCount = Math.floor(Math.random() * 500) + 100
-  const usersCount = Math.floor(Math.random() * 100) + 10
+  const { views: viewsCount, users: usersCount } = getDappStats(dapp.day)
 
   return (
     <div className="min-h-screen">
@@ -135,28 +134,37 @@ export default async function DappPage({ params }: DappPageProps) {
                 <p className="text-lg">{dapp.description}</p>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
+                  <h3 className="text-lg font-semibold text-neon-purple">The Brief</h3>
+                  <p>{dapp.brief}</p>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-primary/20">
                   <h3 className="text-lg font-semibold text-neon-purple">Vibe Aesthetic</h3>
                   <p className="italic text-white">{dapp.vibe}</p>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">Technical Implementation</h3>
-                  <p>
-                    This DApp leverages blockchain technology to create a decentralized experience that embodies the{" "}
-                    {dapp.vibe} aesthetic. Built with modern Web3 tools and frameworks, it provides users with a
-                    seamless, trustless interaction model while maintaining the unique character and vision of the
-                    project.
-                  </p>
+                  <h3 className="text-lg font-semibold text-neon-purple">Key Features</h3>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    {dapp.features.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">Key Features</h3>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>Decentralized architecture ensuring transparency and security</li>
-                    <li>Smart contract integration for automated, trustless operations</li>
-                    <li>User-friendly interface designed with Web3 best practices</li>
-                    <li>Community-driven governance and participation mechanisms</li>
-                  </ul>
+                  <h3 className="text-lg font-semibold text-neon-purple">Suggested Stack</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {dapp.stack.map((tool) => (
+                      <Badge key={tool} variant="outline" className="border-accent/40 text-accent px-3 py-1">
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
+                  <p className="text-sm text-white/70">
+                    Swap in whatever you like. Ship on a testnet first, and keep agent spending limits enforced
+                    onchain, not just in the prompt.
+                  </p>
                 </div>
               </div>
             </Card>

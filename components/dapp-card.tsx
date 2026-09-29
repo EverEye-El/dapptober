@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Users } from "lucide-react"
 import { useState } from "react"
-import type { DappPrompt } from "@/lib/dapp-prompts"
+import { getDappStats, type DappPrompt } from "@/lib/dapp-prompts"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -15,6 +15,7 @@ interface DappCardProps {
 
 export function DappCard({ dapp }: DappCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const stats = getDappStats(dapp.day)
 
   return (
     <Card
@@ -62,11 +63,11 @@ export function DappCard({ dapp }: DappCardProps) {
           <div className="flex items-center gap-3 text-xs text-white">
             <div className="flex items-center gap-1">
               <Eye className="w-3 h-3" />
-              <span>{Math.floor(Math.random() * 500) + 100}k</span>
+              <span>{stats.views}k</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-3 h-3" />
-              <span>{Math.floor(Math.random() * 100) + 10}+</span>
+              <span>{stats.users}+</span>
             </div>
           </div>
           <Link href={`/dapp/${dapp.day}`}>

@@ -1,6 +1,7 @@
 import { DappCard } from "@/components/dapp-card"
-import { dappPrompts } from "@/lib/dapp-prompts"
+import { DAPPTOBER_YEAR, dappPrompts } from "@/lib/dapp-prompts"
 import { Sidebar } from "@/components/sidebar"
+import { SiteFooter } from "@/components/site-footer"
 
 export default function Home() {
   return (
@@ -10,8 +11,14 @@ export default function Home() {
       <main>
         <header className="container mx-auto px-4 lg:px-8 py-4 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">DAPPTOBER</h1>
-            <p className="text-sm text-white">31 Days of Vibe-Coded Web3</p>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight gradient-text-main mb-2">
+              DAPPTOBER {DAPPTOBER_YEAR}
+            </h1>
+            <p className="text-sm text-white">31 Days of AI Agents x Crypto</p>
+            <p className="text-xs text-white/70 mt-2 max-w-2xl mx-auto text-balance">
+              This year's prompts are about agents that hold wallets, pay each other, earn reputation, and act onchain,
+              plus the guardrails that keep them honest.
+            </p>
           </div>
         </header>
 
@@ -23,19 +30,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="glass-card border-t border-primary/20 mt-12 relative z-10">
-          <div className="container mx-auto px-4 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">Built with Next.js 15, shadcn/ui, and ThirdWeb</p>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-                </svg>
-                <span className="text-sm font-medium">Thirdweb</span>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </main>
     </div>
   )

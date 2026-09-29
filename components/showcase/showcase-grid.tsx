@@ -74,7 +74,7 @@ export function ShowcaseGrid() {
         <div className="glass-card max-w-md mx-auto p-8 space-y-4">
           <h3 className="text-xl font-bold gradient-text">No Submissions Yet</h3>
           <p className="text-sm text-muted-foreground">
-            Be the first to submit your Dapptober project! Check out the prompts and start building.
+            Be the first to submit your Dapptober 2026 build! Pick a prompt, give your agent a wallet, and ship it.
           </p>
         </div>
       </div>

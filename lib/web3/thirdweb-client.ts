@@ -5,7 +5,7 @@ export const client = createThirdwebClient({
   config: {
     appMetadata: {
       name: "Dapptober",
-      description: "31 Days of Vibe-Coded Web3",
+      description: "Dapptober 2026: 31 Days of AI Agents x Crypto",
       url: typeof window !== "undefined" ? window.location.origin : "https://dapptober.com",
       logoUrl: typeof window !== "undefined" ? `${window.location.origin}/logo.png` : "https://dapptober.com/logo.png",
     },
