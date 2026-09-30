@@ -43,14 +43,4 @@ export function renderAscii(word: string): string {
   return lines.join("\n")
 }
 
-export const ISO_CUBE = [
-  "       +------+",
-  "      /      /|",
-  "     /  D>  / |",
-  "    +------+  |",
-  "    | OCT  |  |",
-  "    |  31  | / ",
-  "    +------+   ",
-].join("\n")
-
 export const RAIL_MARK = ["+--+", "|D>|", "+--+"].join("\n")
