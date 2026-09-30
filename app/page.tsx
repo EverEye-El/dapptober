@@ -10,7 +10,7 @@ export default function Home() {
       <Sidebar />
 
       <main>
-        <PageHero kicker={`boot --year=${DAPPTOBER_YEAR}`} word="DAPPTOBER" ornament>
+        <PageHero kicker={`boot --year=${DAPPTOBER_YEAR}`} word={`DAPPTOBER ${DAPPTOBER_YEAR}`}>
           <p className="text-sm tracking-[0.18em] uppercase text-copper-bright">
             31 days of AI agents x crypto
           </p>
