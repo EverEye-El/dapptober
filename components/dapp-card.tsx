@@ -1,11 +1,10 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Users } from "lucide-react"
-import { useState } from "react"
 import { getDappStats, type DappPrompt } from "@/lib/dapp-prompts"
+import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -14,29 +13,27 @@ interface DappCardProps {
 }
 
 export function DappCard({ dapp }: DappCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
   const stats = getDappStats(dapp.day)
 
   return (
-    <Card
+    <ParallaxTiltCard
+      pulseOnButtonClick
       className="glass-card group relative overflow-hidden transition-all duration-300 border-primary/30 hover:border-primary/60"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute top-3 left-3 z-10">
+      <div className="absolute top-3 left-3 z-10 parallax-tilt-card__float">
         <div className="term-chip">
           <span>DAY</span>
           <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
         </div>
       </div>
 
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10">
+      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10 parallax-tilt-card__media-shell">
         <Image
           src={dapp.image || "/placeholder.svg"}
           alt={dapp.title}
           width={384}
           height={192}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          className="w-full h-full object-cover parallax-tilt-card__media transition-transform duration-300 group-hover:scale-110"
         />
         <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-all duration-300 group-hover:neon-glow-orange" />
       </div>
@@ -72,7 +69,7 @@ export function DappCard({ dapp }: DappCardProps) {
             </div>
           </div>
           <Link href={`/dapp/${dapp.day}`}>
-            <Button size="sm" variant="outline" className="term-btn h-8">
+            <Button size="sm" variant="outline" className="term-btn interactive-action-btn h-8">
               View Prompt
             </Button>
           </Link>
@@ -80,6 +77,6 @@ export function DappCard({ dapp }: DappCardProps) {
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-    </Card>
+    </ParallaxTiltCard>
   )
 }
