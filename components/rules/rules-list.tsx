@@ -16,11 +16,13 @@ interface RulesListProps {
 export function RulesList({ rules }: RulesListProps) {
   return (
     <div className="space-y-8">
-      {rules.map((rule) => (
+      {rules.map((rule, index) => (
         <InteractiveGlassCard
           key={rule.title}
           className="p-6 border border-primary/20 rounded-xl"
           title={rule.title}
+          typewriterTitle
+          titleStartDelay={index * 120}
           titleClassName="text-2xl font-bold gradient-text inline"
           titlePrefix={<span>{rule.emoji} </span>}
         >
@@ -31,6 +33,8 @@ export function RulesList({ rules }: RulesListProps) {
       <InteractiveGlassCard
         className="p-6 border border-primary/30 rounded-xl bg-primary/5"
         title="Bonus Rule: Don't Just Build. Vibe."
+        typewriterTitle
+        titleStartDelay={rules.length * 120}
         titleClassName="text-2xl font-bold gradient-text inline"
         titlePrefix={<span>🪩 </span>}
       >

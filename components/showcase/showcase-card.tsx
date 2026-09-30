@@ -5,10 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Heart, MessageCircle, ExternalLink, Github } from "lucide-react"
 import { useState } from "react"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import Image from "next/image"
 import Link from "next/link"
 
 interface ShowcaseCardProps {
+  titleStartDelay?: number
   submission: {
     id: string
     dapp_day: number
@@ -28,7 +30,7 @@ interface ShowcaseCardProps {
   }
 }
 
-export function ShowcaseCard({ submission }: ShowcaseCardProps) {
+export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardProps) {
   const [imageError, setImageError] = useState(false)
 
   const formatDate = (dateString: string) => {
@@ -90,7 +92,12 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
 
       <div className="p-4 space-y-3">
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-balance leading-tight text-white">{submission.title}</h3>
+          <TypewriterText
+            text={submission.title}
+            as="h3"
+            startDelay={titleStartDelay}
+            className="text-lg font-bold text-balance leading-tight text-white"
+          />
           <p className="text-sm text-gray-300 text-pretty leading-relaxed line-clamp-2">{submission.description}</p>
         </div>
 

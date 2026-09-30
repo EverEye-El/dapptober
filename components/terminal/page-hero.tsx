@@ -13,7 +13,7 @@ export function PageHero({ kicker, word, children }: PageHeroProps) {
   return (
     <header className="container mx-auto px-4 lg:px-8 pt-8 pb-4 relative z-10">
       <ParallaxBlock depth={0.28} className="flex flex-col items-center text-center">
-        <TypewriterText text={kicker} as="p" className="term-kicker mb-4" charMs={24} />
+        <TypewriterText text={kicker} as="p" className="term-kicker mb-4" charMs={24} showCursor />
         <AsciiLogo word={word} />
         {children ? <div className="mt-5 max-w-2xl space-y-2">{children}</div> : null}
       </ParallaxBlock>
