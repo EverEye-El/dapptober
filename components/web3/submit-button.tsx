@@ -134,7 +134,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           onClick={handleClick}
           disabled={isSubmitting}
           size="lg"
-          className="term-btn w-full gap-2 h-11 disabled:opacity-50"
+          className="term-btn interactive-action-btn w-full gap-2 h-11 disabled:opacity-50"
         >
           <Upload className="h-5 w-5" />
           Submit Your DApp

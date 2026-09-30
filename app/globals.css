@@ -488,6 +488,17 @@ body > :not(.parallax-field) {
   border: 2px solid oklch(0.13 0.01 55);
 }
 
+.parallax-tilt-card.prompt-page-card {
+  transform: translate3d(0, var(--card-scroll), 0)
+    perspective(920px)
+    rotateX(calc(var(--tilt-y) * -12deg))
+    rotateY(calc(var(--tilt-x) * 14deg));
+}
+
+.parallax-tilt-card.prompt-page-card .parallax-tilt-card__media {
+  transform: translate3d(calc(var(--tilt-x) * 22px), calc(var(--tilt-y) * 16px), 0) scale(1.1);
+}
+
 .parallax-tilt-card {
   --tilt-x: 0;
   --tilt-y: 0;

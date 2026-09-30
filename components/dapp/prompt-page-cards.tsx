@@ -40,7 +40,7 @@ interface PromptDetailCardProps {
 
 export function PromptDetailCard({ dapp }: PromptDetailCardProps) {
   return (
-    <ParallaxTiltCard className="glass-card border-primary/30 p-6 space-y-4 prompt-page-card">
+    <ParallaxTiltCard pulseOnButtonClick className="glass-card border-primary/30 p-6 space-y-4 prompt-page-card">
       <h2 className="text-2xl font-bold gradient-text parallax-tilt-card__float">Full Prompt</h2>
       <div className="space-y-4 text-white leading-relaxed">
         <p className="text-lg">{dapp.description}</p>
