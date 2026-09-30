@@ -81,7 +81,7 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
           onClick={handleLike}
           disabled={isLoading}
           size="lg"
-          className="term-btn w-full gap-2 h-11"
+          className="term-btn interactive-action-btn w-full gap-2 h-11"
         >
           <Heart
             className={`h-5 w-5 transition-all duration-300 ${isLiked ? "fill-current" : "fill-transparent"}`}
