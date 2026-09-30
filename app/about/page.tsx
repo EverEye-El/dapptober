@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
-import { Card } from "@/components/ui/card"
+import { InteractiveGlassCard } from "@/components/terminal/interactive-glass-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import { Calendar, Bot, Users, ShieldCheck, Trophy, Rocket, Wallet } from "lucide-react"
 import Link from "next/link"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
@@ -62,11 +63,14 @@ export default function AboutPage() {
         </PageHero>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <Card className="glass-card p-8 md:p-12 border-primary/20">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 gradient-text">Our Mission</h2>
+          <InteractiveGlassCard
+            className="p-8 md:p-12 border-primary/20"
+            title="Our Mission"
+            titleClassName="text-3xl md:text-4xl font-bold gradient-text"
+          >
             <div className="space-y-4 text-white/80 leading-relaxed">
               <p className="text-lg">
-                <span className="text-neon-orange font-bold">GTFOL!</span> That's right,{" "}
+                <span className="text-neon-orange font-bold">GTFOL!</span> That&apos;s right,{" "}
                 <span className="text-white font-semibold">Get The F*ck Off Localhost!</span> Dapptober exists to help
                 builders stop tinkering and actually ship. In {DAPPTOBER_YEAR} that means shipping agents, not just
                 demos.
@@ -74,7 +78,7 @@ export default function AboutPage() {
               <p className="text-lg">
                 AI agents are becoming real economic actors. They can pay for APIs with stablecoins, hire other agents,
                 trade, and govern. That only works if the rails are open, verifiable, and owned by users, which is
-                exactly what crypto is good at. This year's prompts sit right at that intersection.
+                exactly what crypto is good at. This year&apos;s prompts sit right at that intersection.
               </p>
               <p className="text-lg">
                 We care about building it safely. Every prompt nudges you toward onchain guardrails, transparent logs,
@@ -82,54 +86,75 @@ export default function AboutPage() {
                 GTFOL! 🚀
               </p>
             </div>
-          </Card>
+          </InteractiveGlassCard>
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">What Makes Us Special</h2>
+          <TypewriterText
+            text="What Makes Us Special"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {features.map((feature) => (
-              <Card
+            {features.map((feature, index) => (
+              <InteractiveGlassCard
                 key={feature.title}
-                className="glass-card p-6 border-primary/20 hover:border-neon-orange/50 transition-all"
+                className="p-6 border-primary/20 hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex items-start gap-4">
                   <div className="term-icon">
                     <feature.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
+                    <TypewriterText
+                      text={feature.title}
+                      as="h3"
+                      startDelay={index * 120}
+                      className="text-xl font-semibold mb-2 text-white"
+                    />
                     <p className="text-white/70 leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
-              </Card>
+              </InteractiveGlassCard>
             ))}
           </div>
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">By The Numbers</h2>
+          <TypewriterText
+            text="By The Numbers"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text"
+          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {achievements.map((achievement) => (
-              <Card
+            {achievements.map((achievement, index) => (
+              <InteractiveGlassCard
                 key={achievement.label}
-                className="glass-card p-8 border-primary/20 text-center hover:border-neon-orange/50 transition-all"
+                className="p-8 border-primary/20 text-center hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex justify-center mb-4">
                   <div className="term-icon">
                     <achievement.icon className="w-8 h-8" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-2 gradient-text-main">{achievement.value}</h3>
+                <TypewriterText
+                  text={achievement.value}
+                  as="h3"
+                  startDelay={index * 140}
+                  className="text-2xl font-bold mb-2 gradient-text-main"
+                />
                 <p className="text-white/70">{achievement.label}</p>
-              </Card>
+              </InteractiveGlassCard>
             ))}
           </div>
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <Card className="glass-card p-8 md:p-12 border-primary/20">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 gradient-text">Built With Modern Tools</h2>
+          <InteractiveGlassCard
+            className="p-8 md:p-12 border-primary/20"
+            title="Built With Modern Tools"
+            titleClassName="text-3xl md:text-4xl font-bold gradient-text"
+          >
             <div className="space-y-4 text-white/80 leading-relaxed">
               <p className="text-lg">Dapptober runs on a modern stack, and the prompts point you at agent tooling:</p>
               <ul className="space-y-3 text-lg">
@@ -143,24 +168,28 @@ export default function AboutPage() {
                 ))}
               </ul>
             </div>
-          </Card>
+          </InteractiveGlassCard>
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <Card className="glass-card p-8 md:p-12 border-primary/20 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text-main">Join the Journey</h2>
+          <InteractiveGlassCard
+            className="p-8 md:p-12 border-primary/20 text-center"
+            title="Join the Journey"
+            titleClassName="text-3xl md:text-4xl font-bold gradient-text-main"
+            pulseOnButtonClick
+          >
             <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto text-balance">
               Ready to build? Pick a prompt, give your agent a wallet, and share what you ship in the showcase.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/" className="term-btn inline-flex px-8 py-3">
+              <Link href="/" className="term-btn interactive-action-btn inline-flex px-8 py-3">
                 View Prompts
               </Link>
-              <Link href="/showcase" className="term-btn inline-flex px-8 py-3">
+              <Link href="/showcase" className="term-btn interactive-action-btn inline-flex px-8 py-3">
                 Explore Showcase
               </Link>
             </div>
-          </Card>
+          </InteractiveGlassCard>
         </section>
 
         <SiteFooter />
