@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThirdwebProvider } from "thirdweb/react"
 import { Suspense } from "react"
+import { ParallaxField } from "@/components/terminal/parallax-field"
 import "./globals.css"
 
 const inter = Inter({
@@ -32,9 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* md:pl-20 reserves room for the fixed collapsed sidebar rail; expanding it overlays content. */}
-      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} md:pl-20`}>
-        <Suspense fallback={<div>Loading...</div>}>
+      <body className={`font-mono ${inter.variable} ${jetbrainsMono.variable}`}>
+        <ParallaxField />
+        <Suspense fallback={<div className="term-kicker px-6 py-8">boot://dapptober</div>}>
           <ThirdwebProvider>{children}</ThirdwebProvider>
         </Suspense>
         <Analytics />

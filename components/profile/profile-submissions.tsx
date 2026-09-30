@@ -50,7 +50,7 @@ export function ProfileSubmissions({ submissions }: ProfileSubmissionsProps) {
                 <span>{formatDistanceToNow(new Date(submission.created_at), { addSuffix: true })}</span>
                 <Badge
                   variant="outline"
-                  className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+                  className="term-chip text-[10px] border-copper/40"
                 >
                   {submission.status}
                 </Badge>

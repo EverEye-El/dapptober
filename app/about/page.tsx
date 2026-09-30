@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Calendar, Bot, Users, ShieldCheck, Trophy, Rocket, Wallet } from "lucide-react"
 import Link from "next/link"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
+import { PageHero } from "@/components/terminal/page-hero"
 
 export default function AboutPage() {
   const features = [
@@ -53,17 +54,12 @@ export default function AboutPage() {
       <Sidebar />
 
       <main>
-        <header className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <div className="text-center space-y-6 max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight gradient-text-main mb-4">
-              About Dapptober {DAPPTOBER_YEAR}
-            </h1>
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed text-balance">
-              A month-long build-a-thon where developers ship 31 crypto apps powered by AI agents: agents that hold
-              wallets, pay for what they use, earn reputation, and answer to the humans who deploy them.
-            </p>
-          </div>
-        </header>
+        <PageHero kicker={`cat ./about --year=${DAPPTOBER_YEAR}`} word="ABOUT">
+          <p className="text-base md:text-lg text-copper leading-relaxed text-balance">
+            A month-long build-a-thon where developers ship 31 crypto apps powered by AI agents: agents that hold
+            wallets, pay for what they use, earn reputation, and answer to the humans who deploy them.
+          </p>
+        </PageHero>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
           <Card className="glass-card p-8 md:p-12 border-primary/20">
@@ -98,8 +94,8 @@ export default function AboutPage() {
                 className="glass-card p-6 border-primary/20 hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg bg-gradient-to-r from-neon-purple to-neon-orange">
-                    <feature.icon className="w-6 h-6 text-white" />
+                  <div className="term-icon">
+                    <feature.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
@@ -120,8 +116,8 @@ export default function AboutPage() {
                 className="glass-card p-8 border-primary/20 text-center hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex justify-center mb-4">
-                  <div className="p-4 rounded-full bg-gradient-to-r from-neon-purple to-neon-orange">
-                    <achievement.icon className="w-8 h-8 text-white" />
+                  <div className="term-icon">
+                    <achievement.icon className="w-8 h-8" />
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold mb-2 gradient-text-main">{achievement.value}</h3>
@@ -157,16 +153,10 @@ export default function AboutPage() {
               Ready to build? Pick a prompt, give your agent a wallet, and share what you ship in the showcase.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/"
-                className="px-8 py-3 rounded-lg bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold hover:opacity-90 transition-opacity"
-              >
+              <Link href="/" className="term-btn inline-flex px-8 py-3">
                 View Prompts
               </Link>
-              <Link
-                href="/showcase"
-                className="px-8 py-3 rounded-lg border border-neon-orange/50 text-white font-semibold hover:bg-neon-orange/10 transition-colors"
-              >
+              <Link href="/showcase" className="term-btn inline-flex px-8 py-3">
                 Explore Showcase
               </Link>
             </div>

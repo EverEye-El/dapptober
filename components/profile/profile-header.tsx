@@ -86,7 +86,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="bg-gradient-to-r from-neon-purple to-neon-orange"
+                  className="term-btn"
                 >
                   <Check className="w-4 h-4 mr-2" />
                   {isSaving ? "Saving..." : "Save"}

@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, MessageCircle, ExternalLink, Github, Sparkles } from "lucide-react"
+import { Heart, MessageCircle, ExternalLink, Github } from "lucide-react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -47,19 +47,6 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
     avatar_url: null,
   }
 
-  const getGradientColors = (id: string) => {
-    const colors = [
-      "from-orange-500 via-red-500 to-pink-500",
-      "from-purple-500 via-pink-500 to-red-500",
-      "from-blue-500 via-purple-500 to-pink-500",
-      "from-green-500 via-teal-500 to-blue-500",
-      "from-yellow-500 via-orange-500 to-red-500",
-      "from-indigo-500 via-purple-500 to-pink-500",
-    ]
-    const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return colors[hash % colors.length]
-  }
-
   return (
     <Card
       className="glass-card group relative overflow-hidden transition-all duration-300 border-primary/30 hover:border-primary/60"
@@ -67,8 +54,9 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="absolute top-3 left-3 z-10">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full glass-card border-primary/50 neon-glow-orange">
-          <span className="text-xs font-bold gradient-text">{submission.dapp_day}</span>
+        <div className="term-chip">
+          <span>DAY</span>
+          <span className="text-sm tracking-normal">{String(submission.dapp_day).padStart(2, "0")}</span>
         </div>
       </div>
 
@@ -83,20 +71,19 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
             onError={() => setImageError(true)}
           />
         ) : (
-          <div
-            className={`w-full h-full flex flex-col items-center justify-center gap-4 bg-gradient-to-br ${getGradientColors(
-              submission.id,
-            )} relative`}
-          >
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-            <div className="relative z-10 flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-white mb-1">{submission.title}</p>
-                <p className="text-sm text-white/80 font-medium">Day {submission.dapp_day}</p>
-              </div>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[oklch(0.16_0.014_55)] relative">
+            <div
+              className="absolute inset-0 opacity-40"
+              style={{
+                backgroundImage:
+                  "linear-gradient(oklch(0.78 0.11 62 / 0.18) 1px, transparent 1px), linear-gradient(90deg, oklch(0.78 0.11 62 / 0.18) 1px, transparent 1px)",
+                backgroundSize: "16px 16px",
+              }}
+            />
+            <div className="relative z-10 flex flex-col items-center gap-2 px-4 text-center">
+              <span className="term-kicker">no.signal</span>
+              <p className="text-lg font-bold text-copper-bright">{submission.title}</p>
+              <p className="text-xs tracking-[0.16em] uppercase text-copper-dim">Day {submission.dapp_day}</p>
             </div>
           </div>
         )}

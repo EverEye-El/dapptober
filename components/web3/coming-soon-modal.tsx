@@ -59,13 +59,8 @@ export function ComingSoonModal({ isOpen, onClose, feature }: ComingSoonModalPro
             {/* Icon */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-neon-orange to-neon-purple rounded-full blur-xl opacity-50" />
-                <div className="relative bg-gradient-to-r from-neon-orange to-neon-purple p-4 rounded-full">
-                  {feature === "comments" ? (
-                    <Sparkles className="w-8 h-8 text-white" />
-                  ) : (
-                    <Rocket className="w-8 h-8 text-white" />
-                  )}
+                <div className="term-icon p-4">
+                  {feature === "comments" ? <Sparkles className="w-8 h-8" /> : <Rocket className="w-8 h-8" />}
                 </div>
               </div>
             </div>
@@ -86,7 +81,7 @@ export function ComingSoonModal({ isOpen, onClose, feature }: ComingSoonModalPro
             <div className="pt-2">
               <button
                 onClick={onClose}
-                className="w-full bg-gradient-to-r from-neon-purple to-neon-orange text-white font-semibold px-6 py-3 rounded-xl transition-all hover:opacity-90 hover:scale-[1.02] neon-glow-orange"
+                className="term-btn inline-flex w-full px-6 py-3"
               >
                 Got it, thanks!
               </button>
