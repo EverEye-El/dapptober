@@ -16,14 +16,13 @@ interface RulesListProps {
 export function RulesList({ rules }: RulesListProps) {
   return (
     <div className="space-y-8">
-      {rules.map((rule, index) => (
+      {rules.map((rule) => (
         <InteractiveGlassCard
           key={rule.title}
           className="p-6 border border-primary/20 rounded-xl"
           title={rule.title}
           titleClassName="text-2xl font-bold gradient-text inline"
           titlePrefix={<span>{rule.emoji} </span>}
-          titleStartDelay={index * 180}
         >
           {rule.body}
         </InteractiveGlassCard>
@@ -34,7 +33,6 @@ export function RulesList({ rules }: RulesListProps) {
         title="Bonus Rule: Don't Just Build. Vibe."
         titleClassName="text-2xl font-bold gradient-text inline"
         titlePrefix={<span>🪩 </span>}
-        titleStartDelay={rules.length * 180}
       >
         <p className="text-white/70 mb-2">Remember, Dapptober isn&apos;t about perfection.</p>
         <p className="text-white/70">
