@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Eye, Users } from "lucide-react"
 import { getDappStats, type DappPrompt } from "@/lib/dapp-prompts"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -40,7 +41,12 @@ export function DappCard({ dapp }: DappCardProps) {
 
       <div className="p-4 space-y-3">
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-balance leading-tight gradient-text">{dapp.title}</h3>
+          <TypewriterText
+            text={dapp.title}
+            as="h3"
+            startDelay={Math.min(dapp.day * 35, 800)}
+            className="text-lg font-bold text-balance leading-tight gradient-text"
+          />
           <p className="text-xs text-accent italic">{dapp.vibe}</p>
           <p className="text-sm text-white text-pretty leading-relaxed line-clamp-2">{dapp.description}</p>
         </div>

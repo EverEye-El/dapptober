@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import { cn } from "@/lib/utils"
 
 interface InteractiveGlassCardProps {
@@ -11,6 +12,8 @@ interface InteractiveGlassCardProps {
   titleAs?: "h2" | "h3"
   titleClassName?: string
   titlePrefix?: ReactNode
+  titleStartDelay?: number
+  typewriterTitle?: boolean
   pulseOnButtonClick?: boolean
 }
 
@@ -21,6 +24,8 @@ export function InteractiveGlassCard({
   titleAs = "h2",
   titleClassName,
   titlePrefix,
+  titleStartDelay = 0,
+  typewriterTitle = false,
   pulseOnButtonClick = false,
 }: InteractiveGlassCardProps) {
   const TitleTag = titleAs
@@ -32,7 +37,11 @@ export function InteractiveGlassCard({
           className={cn(titleAs === "h3" ? "mb-2" : "mb-3", "parallax-tilt-card__float", titleClassName)}
         >
           {titlePrefix}
-          {title}
+          {typewriterTitle ? (
+            <TypewriterText text={title} as="span" startDelay={titleStartDelay} className="inline" />
+          ) : (
+            title
+          )}
         </TitleTag>
       ) : null}
       {children}

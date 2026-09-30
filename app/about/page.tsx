@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
 import { InteractiveGlassCard } from "@/components/terminal/interactive-glass-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import { Calendar, Bot, Users, ShieldCheck, Trophy, Rocket, Wallet } from "lucide-react"
 import Link from "next/link"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
@@ -65,6 +66,7 @@ export default function AboutPage() {
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20"
             title="Our Mission"
+            typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text"
           >
             <div className="space-y-4 text-white/80 leading-relaxed">
@@ -89,9 +91,13 @@ export default function AboutPage() {
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">What Makes Us Special</h2>
+          <TypewriterText
+            text="What Makes Us Special"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {features.map((feature) => (
+            {features.map((feature, index) => (
               <InteractiveGlassCard
                 key={feature.title}
                 className="p-6 border-primary/20 hover:border-neon-orange/50 transition-all"
@@ -101,7 +107,12 @@ export default function AboutPage() {
                     <feature.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
+                    <TypewriterText
+                      text={feature.title}
+                      as="h3"
+                      startDelay={index * 100}
+                      className="text-xl font-semibold mb-2 text-white"
+                    />
                     <p className="text-white/70 leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
@@ -111,9 +122,13 @@ export default function AboutPage() {
         </section>
 
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">By The Numbers</h2>
+          <TypewriterText
+            text="By The Numbers"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text"
+          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {achievements.map((achievement) => (
+            {achievements.map((achievement, index) => (
               <InteractiveGlassCard
                 key={achievement.label}
                 className="p-8 border-primary/20 text-center hover:border-neon-orange/50 transition-all"
@@ -123,7 +138,12 @@ export default function AboutPage() {
                     <achievement.icon className="w-8 h-8" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-2 gradient-text-main">{achievement.value}</h3>
+                <TypewriterText
+                  text={achievement.value}
+                  as="h3"
+                  startDelay={index * 120}
+                  className="text-2xl font-bold mb-2 gradient-text-main"
+                />
                 <p className="text-white/70">{achievement.label}</p>
               </InteractiveGlassCard>
             ))}
@@ -134,6 +154,7 @@ export default function AboutPage() {
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20"
             title="Built With Modern Tools"
+            typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text"
           >
             <div className="space-y-4 text-white/80 leading-relaxed">
@@ -156,6 +177,7 @@ export default function AboutPage() {
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20 text-center"
             title="Join the Journey"
+            typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text-main"
             pulseOnButtonClick
           >

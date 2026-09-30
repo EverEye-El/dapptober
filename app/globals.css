@@ -403,7 +403,7 @@ body {
 }
 
 .cursor-blink::after,
-.typewriter-text::after {
+.typewriter-text--cursor::after {
   content: "█";
   margin-left: 0.35rem;
   color: var(--copper);
@@ -618,7 +618,7 @@ body > :not(.parallax-field) {
     display: none;
   }
 
-  .typewriter-text::after {
+  .typewriter-text--cursor::after {
     display: none;
   }
 }

@@ -11,6 +11,7 @@ interface TypewriterTextProps {
   as?: TypewriterElement
   startDelay?: number
   charMs?: number
+  showCursor?: boolean
 }
 
 export function TypewriterText({
@@ -19,6 +20,7 @@ export function TypewriterText({
   as: Tag = "span",
   startDelay = 0,
   charMs = 28,
+  showCursor = false,
 }: TypewriterTextProps) {
   const [visible, setVisible] = useState("")
   const [typing, setTyping] = useState(true)
@@ -54,7 +56,14 @@ export function TypewriterText({
   }, [text, startDelay, charMs])
 
   return (
-    <Tag className={cn("typewriter-text", typing ? "typewriter-text--typing" : "typewriter-text--done", className)}>
+    <Tag
+      className={cn(
+        "typewriter-text",
+        showCursor && "typewriter-text--cursor",
+        typing ? "typewriter-text--typing" : "typewriter-text--done",
+        className,
+      )}
+    >
       {visible}
     </Tag>
   )
