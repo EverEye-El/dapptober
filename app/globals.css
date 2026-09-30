@@ -340,16 +340,6 @@ body {
   display: inline-block;
 }
 
-.ascii-lockup-ornament {
-  padding-right: 0;
-}
-
-@media (min-width: 1180px) {
-  .ascii-lockup-ornament {
-    padding-right: 10.5rem;
-  }
-}
-
 .ascii-stage {
   position: relative;
   display: inline-block;
@@ -359,17 +349,12 @@ body {
 }
 
 .ascii-face,
-.ascii-shadow,
-.ascii-cube {
+.ascii-shadow {
   margin: 0;
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
   line-height: 1.05;
   letter-spacing: 0;
   white-space: pre;
-}
-
-.ascii-face,
-.ascii-shadow {
   font-size: clamp(8px, 1.35vw, 16px);
 }
 
@@ -391,23 +376,6 @@ body {
   transform: translate3d(5px, 6px, -14px);
 }
 
-.ascii-cube {
-  display: none;
-  position: absolute;
-  top: 8px;
-  right: 0;
-  font-size: 11px;
-  color: var(--copper);
-  text-shadow: 3px 4px 0 var(--copper-deep);
-  transform: translate3d(calc(var(--px) * 22px), calc(var(--py) * 16px), 0);
-}
-
-@media (min-width: 1180px) {
-  .ascii-lockup-ornament .ascii-cube {
-    display: block;
-  }
-}
-
 @media (max-width: 767px) {
   .ascii-face,
   .ascii-shadow {
@@ -416,21 +384,6 @@ body {
 
   .ascii-shadow {
     transform: translate3d(3px, 4px, -8px);
-  }
-
-  .ascii-lockup-ornament {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.85rem;
-  }
-
-  .ascii-lockup-ornament .ascii-cube {
-    display: block;
-    position: static;
-    order: 2;
-    font-size: 11px;
-    margin-top: 0.15rem;
   }
 
   .parallax-watermark {
@@ -537,7 +490,6 @@ body > :not(.parallax-field) {
 
 @media (prefers-reduced-motion: reduce) {
   .ascii-stage,
-  .ascii-cube,
   .cursor-blink::after,
   .parallax-grid {
     animation: none;
