@@ -21,22 +21,27 @@ export function ParallaxField() {
     if (reduce) return
 
     let frame = 0
-    let x = 0
-    let y = 0
+    let pointerX = 0
+    let pointerY = 0
     let scroll = 0
+
+    const clamp = (value: number) => Math.max(-0.9, Math.min(0.9, value))
 
     const apply = () => {
       frame = 0
+      const travel = Math.min(scroll / 640, 1)
+      const x = clamp(pointerX + (travel - 0.2) * 0.65)
+      const y = clamp(pointerY + travel * 0.4)
       root.style.setProperty("--px", x.toFixed(4))
       root.style.setProperty("--py", y.toFixed(4))
       if (gridRef.current) {
-        gridRef.current.style.transform = `translate3d(${x * -16}px, ${y * -12 + scroll * 0.05}px, 0)`
+        gridRef.current.style.transform = `translate3d(${x * -28}px, ${y * -18 + scroll * 0.18}px, 0)`
       }
       if (midRef.current) {
-        midRef.current.style.transform = `translate3d(${x * 26}px, ${y * 18 - scroll * 0.16}px, 0)`
+        midRef.current.style.transform = `translate3d(${x * 36}px, ${y * 22 - scroll * 0.28}px, 0)`
       }
       if (farRef.current) {
-        farRef.current.style.transform = `translate3d(${x * -10}px, ${scroll * 0.22}px, 0)`
+        farRef.current.style.transform = `translate3d(${x * -18}px, ${scroll * -0.42}px, 0)`
       }
     }
 
@@ -44,9 +49,9 @@ export function ParallaxField() {
       if (!frame) frame = window.requestAnimationFrame(apply)
     }
 
-    const onMove = (event: MouseEvent) => {
-      x = event.clientX / window.innerWidth - 0.5
-      y = event.clientY / window.innerHeight - 0.5
+    const onPointer = (event: PointerEvent) => {
+      pointerX = event.clientX / window.innerWidth - 0.5
+      pointerY = event.clientY / window.innerHeight - 0.5
       schedule()
     }
 
@@ -55,12 +60,12 @@ export function ParallaxField() {
       schedule()
     }
 
-    window.addEventListener("mousemove", onMove, { passive: true })
+    window.addEventListener("pointermove", onPointer, { passive: true })
     window.addEventListener("scroll", onScroll, { passive: true })
     onScroll()
 
     return () => {
-      window.removeEventListener("mousemove", onMove)
+      window.removeEventListener("pointermove", onPointer)
       window.removeEventListener("scroll", onScroll)
       if (frame) window.cancelAnimationFrame(frame)
     }
@@ -69,7 +74,7 @@ export function ParallaxField() {
   return (
     <div className="parallax-field pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       <div ref={gridRef} className="parallax-grid absolute -inset-[10%]" />
-      <div ref={farRef} className="absolute inset-x-0 top-[58%] flex justify-center">
+      <div ref={farRef} className="absolute inset-x-0 top-[34%] flex justify-center">
         <pre className="parallax-watermark">31</pre>
       </div>
       <div ref={midRef} className="absolute inset-0">
