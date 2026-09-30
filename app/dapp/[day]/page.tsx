@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Eye, Users } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
+import { PromptPageHeader } from "@/components/dapp/prompt-page-header"
 import { PromptCommentsCard, PromptDetailCard, PromptPreviewCard } from "@/components/dapp/prompt-page-cards"
 import { CommentsSection } from "@/components/web3/comments-section"
 import { DappSidebar } from "@/components/web3/dapp-sidebar"
@@ -74,15 +75,12 @@ export default async function DappPage({ params }: DappPageProps) {
             {/* Header Section */}
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-3">
-                    <div className="term-chip lg:hidden">
-                      <span>DAY</span>
-                      <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-bold gradient-text-main text-balance">{dapp.title}</h1>
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="term-chip lg:hidden shrink-0">
+                    <span>DAY</span>
+                    <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
                   </div>
-                  <p className="text-lg text-white italic">{dapp.vibe}</p>
+                  <PromptPageHeader title={dapp.title} vibe={dapp.vibe} />
                 </div>
 
                 {/* Stats - Mobile Only */}

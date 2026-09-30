@@ -402,7 +402,8 @@ body {
   }
 }
 
-.cursor-blink::after {
+.cursor-blink::after,
+.typewriter-text::after {
   content: "█";
   margin-left: 0.35rem;
   color: var(--copper);
@@ -614,6 +615,10 @@ body > :not(.parallax-field) {
   }
 
   .parallax-tilt-card__glare {
+    display: none;
+  }
+
+  .typewriter-text::after {
     display: none;
   }
 }
