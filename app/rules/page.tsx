@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
+import { RulesList } from "@/components/rules/rules-list"
 import { PageHero } from "@/components/terminal/page-hero"
 
 interface Rule {
@@ -166,33 +167,7 @@ export default function RulesPage() {
         </PageHero>
 
         <section className="container mx-auto px-4 lg:px-8 py-6 relative z-10 max-w-4xl">
-          <div className="space-y-8">
-            {rules.map((rule) => (
-              <div key={rule.title} className="glass-card p-6 border border-primary/20 rounded-xl">
-                <h2 className="text-2xl font-bold mb-3">
-                  <span>{rule.emoji} </span>
-                  <span className="gradient-text">{rule.title}</span>
-                </h2>
-                {rule.body}
-              </div>
-            ))}
-
-            <div className="glass-card p-6 border border-primary/30 rounded-xl bg-primary/5">
-              <h2 className="text-2xl font-bold mb-3">
-                <span>🪩 </span>
-                <span className="gradient-text">Bonus Rule: Don't Just Build. Vibe.</span>
-              </h2>
-              <p className="text-white/70 mb-2">Remember, Dapptober isn't about perfection.</p>
-              <p className="text-white/70">
-                It's about momentum, memes, and making the chain (and its agents) a little weirder every day.
-              </p>
-            </div>
-
-            <div className="text-center py-8">
-              <p className="text-lg text-white/90 font-medium mb-2">gm & good luck, builder.</p>
-              <p className="text-white/70">Your commit history is your legacy. Your agent's logs are its alibi. ⚡</p>
-            </div>
-          </div>
+          <RulesList rules={rules} />
         </section>
 
         <SiteFooter />

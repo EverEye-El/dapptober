@@ -1,14 +1,16 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Heart, MessageCircle, ExternalLink, Github } from "lucide-react"
 import { useState } from "react"
+import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
+import { TypewriterText } from "@/components/terminal/typewriter-text"
 import Image from "next/image"
 import Link from "next/link"
 
 interface ShowcaseCardProps {
+  titleStartDelay?: number
   submission: {
     id: string
     dapp_day: number
@@ -28,8 +30,7 @@ interface ShowcaseCardProps {
   }
 }
 
-export function ShowcaseCard({ submission }: ShowcaseCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
+export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardProps) {
   const [imageError, setImageError] = useState(false)
 
   const formatDate = (dateString: string) => {
@@ -48,10 +49,9 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
   }
 
   return (
-    <Card
-      className="glass-card group relative overflow-hidden transition-all duration-300 border-primary/30 hover:border-primary/60"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <ParallaxTiltCard
+      pulseOnButtonClick
+      className="glass-card group relative overflow-hidden transition-all duration-300 border-primary/30 hover:border-primary/60 prompt-page-card"
     >
       <div className="absolute top-3 left-3 z-10">
         <div className="term-chip">
@@ -60,14 +60,14 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
         </div>
       </div>
 
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden parallax-tilt-card__media-shell">
         {!imageError && submission.image_url ? (
           <Image
             src={submission.image_url || "/placeholder.svg"}
             alt={submission.title}
             width={384}
             height={192}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            className="w-full h-full object-cover parallax-tilt-card__media transition-transform duration-300 group-hover:scale-110"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -92,7 +92,12 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
 
       <div className="p-4 space-y-3">
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-balance leading-tight text-white">{submission.title}</h3>
+          <TypewriterText
+            text={submission.title}
+            as="h3"
+            startDelay={titleStartDelay}
+            className="text-lg font-bold text-balance leading-tight text-white"
+          />
           <p className="text-sm text-gray-300 text-pretty leading-relaxed line-clamp-2">{submission.description}</p>
         </div>
 
@@ -128,7 +133,7 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 text-gray-300 hover:bg-primary/20 hover:text-white"
+                  className="interactive-action-btn h-7 w-7 p-0 text-gray-300 hover:bg-primary/20 hover:text-white"
                   title="View Demo"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -140,7 +145,7 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 text-gray-300 hover:bg-primary/20 hover:text-white"
+                  className="interactive-action-btn h-7 w-7 p-0 text-gray-300 hover:bg-primary/20 hover:text-white"
                   title="View Code"
                 >
                   <Github className="w-3.5 h-3.5" />
@@ -152,6 +157,6 @@ export function ShowcaseCard({ submission }: ShowcaseCardProps) {
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-    </Card>
+    </ParallaxTiltCard>
   )
 }

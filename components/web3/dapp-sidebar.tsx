@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Heart, MessageSquare, Eye, Users, Share2, ArrowLeft, Upload } from "lucide-react"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { LikeButton } from "@/components/web3/like-button"
 import { SubmitButton } from "@/components/web3/submit-button"
 import Link from "next/link"
@@ -71,27 +71,27 @@ export function DappSidebar({
         </Link>
 
         {/* Submit DApp Card */}
-        <Card className="glass-card border-accent/30 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm text-neon-purple">
+        <ParallaxTiltCard pulseOnButtonClick className="glass-card border-accent/30 p-4 space-y-3 prompt-page-card">
+          <div className="flex items-center gap-2 text-sm text-neon-purple parallax-tilt-card__float">
             <Upload className="w-4 h-4" />
             <span className="font-semibold">Submit Your Build</span>
           </div>
           <SubmitButton dappDay={dappDay} variant="card" />
           <p className="text-xs text-white">Built something for Day {dappDay}? Share it with the community!</p>
-        </Card>
+        </ParallaxTiltCard>
 
         {/* Like Card */}
-        <Card className="glass-card border-primary/30 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm text-neon-purple">
+        <ParallaxTiltCard pulseOnButtonClick className="glass-card border-primary/30 p-4 space-y-3 prompt-page-card">
+          <div className="flex items-center gap-2 text-sm text-neon-purple parallax-tilt-card__float">
             <Heart className="w-4 h-4" />
             <span className="font-semibold">Show Support</span>
           </div>
           <LikeButton dappDay={dappDay} initialLikes={likesCount} initialIsLiked={isLiked} />
-        </Card>
+        </ParallaxTiltCard>
 
         {/* Stats Card */}
-        <Card className="glass-card border-primary/30 p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-neon-purple">Quick Stats</h3>
+        <ParallaxTiltCard className="glass-card border-primary/30 p-4 space-y-4 prompt-page-card">
+          <h3 className="text-sm font-semibold text-neon-purple parallax-tilt-card__float">Quick Stats</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-white">
@@ -122,15 +122,15 @@ export function DappSidebar({
               <span className="text-sm font-bold text-accent">{usersCount}+</span>
             </div>
           </div>
-        </Card>
+        </ParallaxTiltCard>
 
         {/* Quick Actions Card */}
-        <Card className="glass-card border-primary/30 p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-neon-purple">Quick Actions</h3>
+        <ParallaxTiltCard pulseOnButtonClick className="glass-card border-primary/30 p-4 space-y-3 prompt-page-card">
+          <h3 className="text-sm font-semibold text-neon-purple parallax-tilt-card__float">Quick Actions</h3>
           <div className="space-y-2">
             <Button
               variant="outline"
-              className="w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
+              className="interactive-action-btn w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
               onClick={scrollToComments}
             >
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -138,17 +138,17 @@ export function DappSidebar({
             </Button>
             <Button
               variant="outline"
-              className="w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
+              className="interactive-action-btn w-full justify-start text-sm text-white border-primary/30 hover:text-white hover:neon-glow-orange hover:bg-accent/10 bg-transparent transition-all"
               onClick={handleShare}
             >
               <Share2 className="w-4 h-4 mr-2" />
               Share DApp
             </Button>
           </div>
-        </Card>
+        </ParallaxTiltCard>
 
         {/* Day Badge */}
-        <Card className="glass-card border-primary/30 p-4">
+        <ParallaxTiltCard className="glass-card border-primary/30 p-4 prompt-page-card">
           <div className="flex items-center justify-center gap-3">
             <div className="flex items-center justify-center w-12 h-12 rounded-full glass-card border-primary/50 neon-glow-orange">
               <span className="text-lg font-bold gradient-text">{dappDay}</span>
@@ -158,7 +158,7 @@ export function DappSidebar({
               <div className="text-sm font-semibold text-neon-purple">#{dappDay} of 31</div>
             </div>
           </div>
-        </Card>
+        </ParallaxTiltCard>
       </aside>
 
       {/* Mobile Floating Action Button */}

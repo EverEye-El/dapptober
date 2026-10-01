@@ -83,8 +83,8 @@ export function ShowcaseGrid() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {submissions.map((submission) => (
-        <ShowcaseCard key={submission.id} submission={submission} />
+      {submissions.map((submission, index) => (
+        <ShowcaseCard key={submission.id} submission={submission} titleStartDelay={index * 80} />
       ))}
     </div>
   )
