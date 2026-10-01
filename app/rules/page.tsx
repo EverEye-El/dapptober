@@ -139,8 +139,22 @@ const rules: Rule[] = [
     ),
   },
   {
+    emoji: "💸",
+    title: "Rule #10: Want cash? Put up or NGMI!",
+    body: (
+      <>
+        <p className="text-white/70 mb-2">
+          <strong>5 USDC.</strong> Agent in. Stack entries until your wallet says no.
+        </p>
+        <p className="text-white/70">
+          A pile of agents. One pot. The favorite walks away with the win.
+        </p>
+      </>
+    ),
+  },
+  {
     emoji: "🧃",
-    title: "Rule #10: Have Fun or Fork Off",
+    title: "Rule #11: Have Fun or Fork Off",
     body: (
       <>
         <p className="text-white/70 mb-2">No corporate vibes. No "go-to-market." No roadmaps.</p>
