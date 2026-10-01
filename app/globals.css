@@ -603,6 +603,65 @@ body > :not(.parallax-field) {
   border-color: oklch(0.78 0.11 62 / 0.75);
 }
 
+/* thirdweb ConnectButton / wallet modals — match copper terminal HUD */
+.tw-modal,
+.tw-modal__connect-wallet,
+.tw-modal__sign-in,
+.tw-modal__wallet-details,
+.tw-modal__switch-network,
+.tw-modal__view-transaction {
+  border-radius: 2px !important;
+  box-shadow:
+    inset 0 0 0 1px oklch(0.78 0.11 62 / 0.08),
+    0 24px 80px oklch(0 0 0 / 0.55) !important;
+}
+
+.tw-modal h2,
+.tw-modal h3,
+.tw-modal [class*="ScreenHeader"] {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+}
+
+.tw-modal a,
+.tw-modal [data-link="true"] {
+  color: var(--copper-bright) !important;
+}
+
+.tw-modal a:hover {
+  color: var(--copper) !important;
+}
+
+.tw-modal .tw-back-button {
+  border-radius: 2px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+}
+
+.tw-modal .tw-internal-network-switcher-button,
+.tw-modal .tw-switch-network-button,
+.tw-modal [class*="MenuButton"] {
+  border-radius: 2px !important;
+  border: 1px solid oklch(0.78 0.11 62 / 0.2) !important;
+}
+
+.tw-modal .tw-internal-network-switcher-button:hover,
+.tw-modal .tw-switch-network-button:hover,
+.tw-modal [class*="MenuButton"]:hover {
+  border-color: oklch(0.78 0.11 62 / 0.5) !important;
+}
+
+.tw-connect-wallet:not(.term-btn),
+.tw-connected-wallet:not(.term-btn) {
+  border-radius: 2px !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ascii-stage,
   .cursor-blink::after,

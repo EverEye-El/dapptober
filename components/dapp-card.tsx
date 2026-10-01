@@ -11,9 +11,14 @@ import Link from "next/link"
 
 interface DappCardProps {
   dapp: DappPrompt
+  /** Position in the home grid; used for short within-row stagger (not day number). */
+  gridIndex?: number
 }
 
-export function DappCard({ dapp }: DappCardProps) {
+/** Title-only: nudge trigger slightly before the line hits the fold (not whole-card). */
+const TITLE_VIEW_ROOT_MARGIN = "0px 0px 10% 0px"
+
+export function DappCard({ dapp, gridIndex = 0 }: DappCardProps) {
   const stats = getDappStats(dapp.day)
 
   return (
@@ -44,7 +49,11 @@ export function DappCard({ dapp }: DappCardProps) {
           <TypewriterText
             text={dapp.title}
             as="h3"
-            startDelay={Math.min(dapp.day * 35, 800)}
+            viewRootMargin={TITLE_VIEW_ROOT_MARGIN}
+            viewThreshold={0.06}
+            charMs={22}
+            startDelay={Math.min((gridIndex % 4) * 55, 165)}
+            idleRepeatMs={0}
             className="text-lg font-bold text-balance leading-tight gradient-text"
           />
           <p className="text-xs text-accent italic">{dapp.vibe}</p>

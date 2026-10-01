@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { TypewriterText } from "@/components/terminal/typewriter-text"
+import { isJevCoreIntegration, splitPromptFeatures } from "@/lib/dapp-prompt-jev"
 import type { DappPrompt } from "@/lib/dapp-prompts"
 import type { ReactNode } from "react"
 
@@ -40,6 +41,9 @@ interface PromptDetailCardProps {
 }
 
 export function PromptDetailCard({ dapp }: PromptDetailCardProps) {
+  const { coreFeatures, jevLayerFeatures } = splitPromptFeatures(dapp.features)
+  const showOptionalJevLayer = !isJevCoreIntegration(dapp.day) && jevLayerFeatures.length > 0
+
   return (
     <ParallaxTiltCard pulseOnButtonClick className="glass-card border-primary/30 p-6 space-y-4 prompt-page-card">
       <TypewriterText
@@ -63,11 +67,26 @@ export function PromptDetailCard({ dapp }: PromptDetailCardProps) {
         <div className="space-y-2 pt-4 border-t border-primary/20">
           <h3 className="text-lg font-semibold text-neon-purple">Key Features</h3>
           <ul className="list-disc list-inside space-y-1 ml-2">
-            {dapp.features.map((feature) => (
+            {(showOptionalJevLayer ? coreFeatures : dapp.features).map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
           </ul>
         </div>
+
+        {showOptionalJevLayer ? (
+          <div className="space-y-2 pt-4 border-t border-primary/20">
+            <h3 className="text-lg font-semibold text-neon-purple">Optional Jev Layer</h3>
+            <p className="text-sm text-white/70">
+              TypeSafe Jev (System One) can sit beside your LLM for fast, typed routing and gates—you can ship v1 without
+              it and add this layer when you want calibrated decisions in code.
+            </p>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              {jevLayerFeatures.map((feature) => (
+                <li key={feature}>{feature}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <div className="space-y-2 pt-4 border-t border-primary/20">
           <h3 className="text-lg font-semibold text-neon-purple">Suggested Stack</h3>
