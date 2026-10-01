@@ -11,10 +11,11 @@ import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
 
 interface CompetitionEntryPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export default async function CompetitionEntryPage({ params }: CompetitionEntryPageProps) {
+export default async function CompetitionEntryPage(props: CompetitionEntryPageProps) {
+  const params = await props.params;
   if (!isSupabaseConfigured()) notFound()
   const supabase = await createClient()
   const { data: entry } = await supabase

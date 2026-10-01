@@ -11,9 +11,9 @@ import { DappSidebar } from "@/components/web3/dapp-sidebar"
 import { Sidebar } from "@/components/sidebar"
 
 interface DappPageProps {
-  params: {
+  params: Promise<{
     day: string
-  }
+  }>
 }
 
 export function generateStaticParams() {
@@ -22,7 +22,8 @@ export function generateStaticParams() {
   }))
 }
 
-export default async function DappPage({ params }: DappPageProps) {
+export default async function DappPage(props: DappPageProps) {
+  const params = await props.params;
   const dapp = dappPrompts.find((d) => d.day === Number.parseInt(params.day))
 
   if (!dapp) {

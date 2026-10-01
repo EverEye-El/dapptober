@@ -3,12 +3,13 @@ import { Sidebar } from "@/components/sidebar"
 import { ProfileAccess } from "@/components/profile/profile-access"
 
 interface ProfilePageProps {
-  params: {
+  params: Promise<{
     address: string
-  }
+  }>
 }
 
-export default function ProfilePage({ params }: ProfilePageProps) {
+export default async function ProfilePage(props: ProfilePageProps) {
+  const params = await props.params;
   const { address } = params
 
   if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {

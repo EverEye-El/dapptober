@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, MessageCircle, ExternalLink, Github } from "lucide-react"
+import { Heart, MessageCircle, ExternalLink } from "lucide-react"
+import { Github } from "@/components/icons/github"
 import { useState } from "react"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { TypewriterText } from "@/components/terminal/typewriter-text"
