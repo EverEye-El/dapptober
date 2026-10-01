@@ -128,6 +128,11 @@ export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardPr
             </div>
           </div>
           <div className="flex items-center gap-1">
+            <Link href={`/showcase/${submission.id}`}>
+              <Button size="sm" variant="outline" className="term-btn interactive-action-btn h-7 px-2 text-[10px]">
+                View
+              </Button>
+            </Link>
             {submission.demo_url && (
               <Link href={submission.demo_url} target="_blank" rel="noopener noreferrer">
                 <Button
