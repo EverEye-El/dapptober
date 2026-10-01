@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info, ScrollText, User, Menu, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info, ScrollText, Trophy, User, Menu, X } from "lucide-react"
 import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
 import Link from "next/link"
 import { useActiveAccount } from "thirdweb/react"
@@ -46,6 +46,7 @@ export function Sidebar() {
         ]
       : []),
     { href: "/showcase", label: "Showcase", icon: Grid3x3, active: false },
+    { href: "/competition", label: "Competition", icon: Trophy, active: false },
     { href: "/rules", label: "Rules", icon: ScrollText, active: false },
     { href: "/about", label: "About", icon: Info, active: false },
   ]

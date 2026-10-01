@@ -1,11 +1,11 @@
 import { dappPrompts, getDappStats } from "@/lib/dapp-prompts"
 import { notFound } from "next/navigation"
-import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Eye, Users } from "lucide-react"
+import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
+import { PromptPageHeader } from "@/components/dapp/prompt-page-header"
+import { PromptCommentsCard, PromptDetailCard, PromptPreviewCard } from "@/components/dapp/prompt-page-cards"
 import { CommentsSection } from "@/components/web3/comments-section"
 import { DappSidebar } from "@/components/web3/dapp-sidebar"
 import { Sidebar } from "@/components/sidebar"
@@ -29,39 +29,55 @@ export default async function DappPage({ params }: DappPageProps) {
     notFound()
   }
 
-  const supabase = await createClient()
+  let likesCount = 0
+  let comments: {
+    id: string
+    content: string
+    created_at: string
+    wallet_address: string | null
+    profiles: { id: string; display_name: string | null; wallet_address: string | null } | null
+  }[] = []
 
-  const { count: likesCount } = await supabase
-    .from("likes")
-    .select("*", { count: "exact", head: true })
-    .eq("dapp_day", dapp.day)
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient()
 
-  const { data: commentsData } = await supabase
-    .from("comments")
-    .select("id, content, created_at, wallet_address")
-    .eq("dapp_day", dapp.day)
-    .order("created_at", { ascending: false })
+    const { count } = await supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .eq("dapp_day", dapp.day)
+      .is("submission_id", null)
+    likesCount = count ?? 0
 
-  // Get unique wallet addresses from comments
-  const walletAddresses = commentsData ? [...new Set(commentsData.map((c) => c.wallet_address).filter(Boolean))] : []
+    const { data: commentsData } = await supabase
+      .from("comments")
+      .select("id, content, created_at, wallet_address")
+      .eq("dapp_day", dapp.day)
+      .is("submission_id", null)
+      .order("created_at", { ascending: false })
 
-  // Fetch profiles for those wallet addresses
-  const { data: profilesData } =
-    walletAddresses.length > 0
-      ? await supabase.from("profiles").select("id, display_name, wallet_address").in("wallet_address", walletAddresses)
-      : { data: [] }
+    const walletAddresses = commentsData
+      ? [...new Set(commentsData.map((c) => c.wallet_address).filter(Boolean))]
+      : []
 
-  // Create a map of profiles for quick lookup by wallet address
-  const profilesMap = new Map(profilesData?.map((p) => [p.wallet_address?.toLowerCase(), p]) || [])
+    const { data: profilesData } =
+      walletAddresses.length > 0
+        ? await supabase
+            .from("profiles")
+            .select("id, display_name, wallet_address")
+            .in("wallet_address", walletAddresses)
+        : { data: [] }
 
-  // Combine comments with profile data
-  const comments = commentsData?.map((comment) => ({
-    id: comment.id,
-    content: comment.content,
-    created_at: comment.created_at,
-    wallet_address: comment.wallet_address,
-    profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
-  }))
+    const profilesMap = new Map(profilesData?.map((p) => [p.wallet_address?.toLowerCase(), p]) || [])
+
+    comments =
+      commentsData?.map((comment) => ({
+        id: comment.id,
+        content: comment.content,
+        created_at: comment.created_at,
+        wallet_address: comment.wallet_address,
+        profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
+      })) ?? []
+  }
 
   const { views: viewsCount, users: usersCount } = getDappStats(dapp.day)
 
@@ -76,15 +92,12 @@ export default async function DappPage({ params }: DappPageProps) {
             {/* Header Section */}
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-3">
-                    <div className="term-chip lg:hidden">
-                      <span>DAY</span>
-                      <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-bold gradient-text-main text-balance">{dapp.title}</h1>
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="term-chip lg:hidden shrink-0">
+                    <span>DAY</span>
+                    <span className="text-sm tracking-normal">{String(dapp.day).padStart(2, "0")}</span>
                   </div>
-                  <p className="text-lg text-white italic">{dapp.vibe}</p>
+                  <PromptPageHeader title={dapp.title} vibe={dapp.vibe} />
                 </div>
 
                 {/* Stats - Mobile Only */}
@@ -110,83 +123,23 @@ export default async function DappPage({ params }: DappPageProps) {
               </div>
             </div>
 
-            {/* DApp Preview Section */}
-            <Card className="glass-card border-primary/30 overflow-hidden">
-              <div className="relative h-[400px] md:h-[500px] bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10">
-                <Image src={dapp.image || "/placeholder.svg"} alt={dapp.title} fill className="object-cover" priority />
-                <div className="absolute inset-0 border-2 border-primary/30 neon-glow-orange" />
+            <PromptPreviewCard title={dapp.title} image={dapp.image || "/placeholder.svg"} />
 
-                {/* Interactive Preview Overlay */}
-                <div className="absolute inset-0 flex items-end p-6">
-                  <Button
-                    size="lg"
-                    className="h-11 px-5 bg-copper text-ink hover:bg-copper-bright border-0 tracking-[0.14em] uppercase text-xs font-semibold"
-                  >
-                    Launch Interactive Demo
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <PromptDetailCard dapp={dapp} />
 
-            {/* Full Prompt Section */}
-            <Card className="glass-card border-primary/30 p-6 space-y-4">
-              <h2 className="text-2xl font-bold gradient-text">Full Prompt</h2>
-              <div className="space-y-4 text-white leading-relaxed">
-                <p className="text-lg">{dapp.description}</p>
-
-                <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">The Brief</h3>
-                  <p>{dapp.brief}</p>
-                </div>
-
-                <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">Vibe Aesthetic</h3>
-                  <p className="italic text-white">{dapp.vibe}</p>
-                </div>
-
-                <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">Key Features</h3>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
-                    {dapp.features.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="space-y-2 pt-4 border-t border-primary/20">
-                  <h3 className="text-lg font-semibold text-neon-purple">Suggested Stack</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {dapp.stack.map((tool) => (
-                      <Badge key={tool} variant="outline" className="border-accent/40 text-accent px-3 py-1">
-                        {tool}
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-sm text-white/70">
-                    Swap in whatever you like. Ship on a testnet first, and keep agent spending limits enforced
-                    onchain, not just in the prompt.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Comments Section */}
-            <Card id="comments-section" className="glass-card border-primary/30 p-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold gradient-text">Community Discussion</h3>
-                <span className="text-sm text-white">{comments?.length || 0} comments</span>
-              </div>
-
-              <CommentsSection dappDay={dapp.day} initialComments={comments || []} />
-            </Card>
+            <div id="comments-section">
+              <PromptCommentsCard commentCount={comments.length}>
+                <CommentsSection target={{ kind: "prompt", dappDay: dapp.day }} initialComments={comments} />
+              </PromptCommentsCard>
+            </div>
           </div>
 
           <div className="hidden lg:block w-80 flex-shrink-0">
             <DappSidebar
               dappDay={dapp.day}
               dappTitle={dapp.title}
-              likesCount={likesCount || 0}
-              commentsCount={comments?.length || 0}
+              likesCount={likesCount}
+              commentsCount={comments.length}
               viewsCount={viewsCount}
               usersCount={usersCount}
               isLiked={false} // Assuming no user context for simplicity

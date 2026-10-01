@@ -6,12 +6,15 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
+import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { supabaseBrowser } from "@/lib/web3/supabase-web3"
 import { useActiveAccount } from "thirdweb/react"
 import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 import { addComment } from "@/app/actions/comments"
+import type { EngagementTarget } from "@/lib/community/engagement"
+import { isPromptTarget } from "@/lib/community/engagement"
 import Link from "next/link"
 
 interface Comment {
@@ -26,11 +29,11 @@ interface Comment {
 }
 
 interface CommentsSectionProps {
-  dappDay: number
+  target: EngagementTarget
   initialComments: Comment[]
 }
 
-export function CommentsSection({ dappDay, initialComments }: CommentsSectionProps) {
+export function CommentsSection({ target, initialComments }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -38,7 +41,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const account = useActiveAccount()
-  const supabase = supabaseBrowser()
+  const supabaseConfigured = isSupabaseConfigured()
 
   useEffect(() => {
     if (account && showConnectModal) {
@@ -48,26 +51,36 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
   }, [account, showConnectModal])
 
   useEffect(() => {
-    console.log("[v0] Setting up real-time subscription for dapp day:", dappDay)
+    if (!supabaseConfigured) {
+      return
+    }
+
+    const supabase = supabaseBrowser()
+    const channelName = isPromptTarget(target) ? `comments:prompt:${target.dappDay}` : `comments:submission:${target.submissionId}`
+    const filter = isPromptTarget(target) ? `dapp_day=eq.${target.dappDay}` : `submission_id=eq.${target.submissionId}`
 
     const channel = supabase
-      .channel(`comments:${dappDay}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "comments",
-          filter: `dapp_day=eq.${dappDay}`,
+          filter,
         },
         async (payload) => {
           console.log("[v0] New comment received via real-time:", payload)
 
           const { data: commentData } = await supabase
             .from("comments")
-            .select("id, content, created_at, wallet_address")
+            .select("id, content, created_at, wallet_address, submission_id")
             .eq("id", payload.new.id)
             .single()
+
+          if (commentData && isPromptTarget(target) && commentData.submission_id) {
+            return
+          }
 
           if (commentData) {
             // Fetch profile for this wallet address
@@ -99,11 +112,16 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
       console.log("[v0] Cleaning up real-time subscription")
       supabase.removeChannel(channel)
     }
-  }, [dappDay, supabase])
+  }, [target, supabaseConfigured])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+
+    if (!supabaseConfigured) {
+      setError("Comments require Supabase. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.")
+      return
+    }
 
     console.log("[v0] Comment submit triggered", { account: account?.address })
 
@@ -121,7 +139,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     setIsSubmitting(true)
 
     try {
-      const result = await addComment(dappDay, newComment.trim(), account.address)
+      const result = await addComment(target, newComment.trim(), account.address)
 
       if (!result.success) {
         setError(result.error || "Failed to post comment")
@@ -134,6 +152,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
       if (result.data) {
         let profile = null
         if (result.data.wallet_address) {
+          const supabase = supabaseBrowser()
           const { data: profileData } = await supabase
             .from("profiles")
             .select("id, display_name, wallet_address")
@@ -206,7 +225,15 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
           )}
         </div>
 
-        {!account && <p className="text-xs text-gray-400">Connect your wallet to post comments</p>}
+        {!supabaseConfigured && (
+          <p className="text-xs text-amber-400/90">
+            Supabase is not configured locally — you can read prompts, but comments and likes need{" "}
+            <code className="text-xs">.env.local</code> (see <code className="text-xs">.env.example</code>).
+          </p>
+        )}
+        {supabaseConfigured && !account && (
+          <p className="text-xs text-gray-400">Connect your wallet to post comments</p>
+        )}
       </form>
 
       <div className="space-y-4">

@@ -7,14 +7,16 @@ import { useActiveAccount } from "thirdweb/react"
 import { ConnectModal } from "./connect-modal"
 import { toggleLike } from "@/app/actions/likes"
 import { ensureProfile } from "@/app/actions/profiles"
+import type { EngagementTarget } from "@/lib/community/engagement"
 
 interface LikeButtonProps {
-  dappDay: number
+  target: EngagementTarget
   initialLikes: number
   initialIsLiked: boolean
+  label?: string
 }
 
-export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButtonProps) {
+export function LikeButton({ target, initialLikes, initialIsLiked, label = "Love this Dapp" }: LikeButtonProps) {
   const [likes, setLikes] = useState(initialLikes)
   const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,7 +53,7 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
         return
       }
 
-      const result = await toggleLike(dappDay, account.address)
+      const result = await toggleLike(target, account.address)
 
       if (!result.success) {
         setLikes(previousLikes)
@@ -81,12 +83,12 @@ export function LikeButton({ dappDay, initialLikes, initialIsLiked }: LikeButton
           onClick={handleLike}
           disabled={isLoading}
           size="lg"
-          className="term-btn w-full gap-2 h-11"
+          className="term-btn interactive-action-btn w-full gap-2 h-11"
         >
           <Heart
             className={`h-5 w-5 transition-all duration-300 ${isLiked ? "fill-current" : "fill-transparent"}`}
           />
-          Love this Dapp
+          {label}
           <span
             className={`ml-2 px-2 py-0.5 rounded-full text-sm font-bold transition-all duration-300 ${
               isLiked ? "bg-white/20 text-white" : "bg-background/20 text-white"

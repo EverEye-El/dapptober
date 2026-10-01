@@ -2,7 +2,12 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
+import { submitDayValidationError } from "@/lib/community/dapptober-calendar"
 import { ensureProfile } from "./profiles"
+
+const SUBMISSION_IMAGE_BUCKET = "submission-images"
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
 
 const supabaseAdmin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: {
@@ -10,6 +15,45 @@ const supabaseAdmin = createClient(process.env.SUPABASE_URL!, process.env.SUPABA
     persistSession: false,
   },
 })
+
+export async function uploadSubmissionImage(formData: FormData) {
+  try {
+    const file = formData.get("file")
+    if (!(file instanceof File)) {
+      return { success: false as const, error: "Choose an image file." }
+    }
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      return { success: false as const, error: "Use a PNG, JPG, WEBP, or GIF." }
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      return { success: false as const, error: "Image must be 5 MB or smaller." }
+    }
+
+    const { error: bucketError } = await supabaseAdmin.storage.createBucket(SUBMISSION_IMAGE_BUCKET, {
+      public: true,
+    })
+    if (bucketError && !/already exists/i.test(bucketError.message)) {
+      return { success: false as const, error: bucketError.message }
+    }
+
+    const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") ?? "png"
+    const path = `${crypto.randomUUID()}.${ext}`
+    const bytes = Buffer.from(await file.arrayBuffer())
+
+    const { error: uploadError } = await supabaseAdmin.storage.from(SUBMISSION_IMAGE_BUCKET).upload(path, bytes, {
+      contentType: file.type,
+      upsert: false,
+    })
+    if (uploadError) {
+      return { success: false as const, error: uploadError.message }
+    }
+
+    const { data } = supabaseAdmin.storage.from(SUBMISSION_IMAGE_BUCKET).getPublicUrl(path)
+    return { success: true as const, url: data.publicUrl }
+  } catch {
+    return { success: false as const, error: "Failed to upload image." }
+  }
+}
 
 export async function submitDapp(
   dappDay: number,
@@ -30,6 +74,11 @@ export async function submitDapp(
     if (!profileResult.success || !profileResult.profile) {
       console.error("[v0] Server: Failed to ensure profile", profileResult.error)
       return { success: false, error: "Failed to create profile. Please try again." }
+    }
+
+    const dayError = submitDayValidationError(dappDay)
+    if (dayError) {
+      return { success: false, error: dayError }
     }
 
     const normalizedAddress = walletAddress.toLowerCase()
@@ -67,6 +116,7 @@ export async function submitDapp(
 
     console.log("[v0] Server: DApp submitted successfully", submission)
     revalidatePath(`/dapp/${dappDay}`)
+    revalidatePath("/showcase")
     revalidatePath("/")
     return { success: true, data: submission }
   } catch (error) {

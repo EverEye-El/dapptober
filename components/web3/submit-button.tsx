@@ -12,20 +12,26 @@ import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from "next/navigation"
 import { ConnectModal } from "./connect-modal"
 import { createPortal } from "react-dom"
-import { submitDapp } from "@/app/actions/submissions"
+import { submitDapp, uploadSubmissionImage } from "@/app/actions/submissions"
 import { ensureProfile } from "@/app/actions/profiles"
+import { getUnlockedSubmitDays } from "@/lib/community/dapptober-calendar"
 
 interface SubmitButtonProps {
-  dappDay: number
+  dappDay?: number
+  pickDay?: boolean
   variant?: "card" | "button"
 }
 
-export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps) {
+export function SubmitButton({ dappDay, pickDay = false, variant = "button" }: SubmitButtonProps) {
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showConnectModal, setShowConnectModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const unlockedDays = getUnlockedSubmitDays()
+  const [selectedDay, setSelectedDay] = useState(dappDay ?? unlockedDays[unlockedDays.length - 1] ?? 1)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -67,6 +73,12 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
       return `https://${trimmed}`
     }
 
+    const day = pickDay ? selectedDay : dappDay
+    if (!day) {
+      setError("Pick a prompt day")
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -88,12 +100,25 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
 
       console.log("[v0] Submitting DApp for wallet:", account.address)
 
-      const result = await submitDapp(dappDay, account.address, {
+      let imageUrl = formData.image_url ? normalizeUrl(formData.image_url) : undefined
+      if (imageFile) {
+        const uploadBody = new FormData()
+        uploadBody.set("file", imageFile)
+        const uploaded = await uploadSubmissionImage(uploadBody)
+        if (!uploaded.success) {
+          setError(uploaded.error || "Failed to upload image")
+          setIsSubmitting(false)
+          return
+        }
+        imageUrl = uploaded.url
+      }
+
+      const result = await submitDapp(day, account.address, {
         title: formData.title,
         description: formData.description,
         demo_url: normalizeUrl(formData.demo_url),
         github_url: formData.github_url ? normalizeUrl(formData.github_url) : undefined,
-        image_url: formData.image_url ? normalizeUrl(formData.image_url) : undefined,
+        image_url: imageUrl,
       })
 
       if (!result.success) {
@@ -108,6 +133,8 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
       setTimeout(() => {
         setShowSubmitModal(false)
         setShowSuccess(false)
+        setImageFile(null)
+        setImagePreview(null)
         setFormData({
           title: "",
           description: "",
@@ -134,7 +161,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           onClick={handleClick}
           disabled={isSubmitting}
           size="lg"
-          className="term-btn w-full gap-2 h-11 disabled:opacity-50"
+          className="term-btn interactive-action-btn w-full gap-2 h-11 disabled:opacity-50"
         >
           <Upload className="h-5 w-5" />
           Submit Your DApp
@@ -144,7 +171,7 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
           onClick={handleClick}
           disabled={isSubmitting}
           size="lg"
-          className="term-btn gap-2 h-11 px-6 disabled:opacity-50"
+          className="term-btn interactive-action-btn gap-2 h-11 px-6 disabled:opacity-50"
         >
           <Upload className="h-5 w-5" />
           Submit DApp
@@ -172,7 +199,9 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
                 <div className="relative space-y-6">
                   <div className="space-y-2">
                     <h2 className="text-2xl font-bold gradient-text">Submit Your DApp</h2>
-                    <p className="text-gray-300 text-sm">Share your Day {dappDay} creation with the community</p>
+                    <p className="text-gray-300 text-sm">
+                      Share your Day {pickDay ? selectedDay : dappDay} creation with the community
+                    </p>
                   </div>
 
                   {showSuccess ? (
@@ -183,6 +212,28 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
+                      {pickDay ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="prompt-day" className="text-white">
+                            Prompt day <span className="text-red-400">*</span>
+                          </Label>
+                          <select
+                            id="prompt-day"
+                            value={selectedDay}
+                            onChange={(e) => setSelectedDay(Number(e.target.value))}
+                            className="w-full h-10 bg-slate-900/90 border border-primary/50 text-white px-3"
+                          >
+                            {unlockedDays.map((day) => (
+                              <option key={day} value={day}>
+                                Day {String(day).padStart(2, "0")}
+                              </option>
+                            ))}
+                          </select>
+                          <p className="text-xs text-gray-400">
+                            A day unlocks on that date in October (US Eastern). You can submit on that day or later.
+                          </p>
+                        </div>
+                      ) : null}
                       <div className="space-y-2">
                         <Label htmlFor="title" className="text-white">
                           Title <span className="text-red-400">*</span>
@@ -239,6 +290,31 @@ export function SubmitButton({ dappDay, variant = "button" }: SubmitButtonProps)
                           placeholder="https://github.com/username/repo"
                           className="bg-slate-900/90 border-primary/50 text-white placeholder:text-gray-400"
                         />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="cover-image" className="text-white">
+                          Cover image
+                        </Label>
+                        <Input
+                          id="cover-image"
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/gif"
+                          className="bg-slate-900/90 border-primary/50 text-white file:text-copper-bright"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] ?? null
+                            setImageFile(file)
+                            setImagePreview((current) => {
+                              if (current) URL.revokeObjectURL(current)
+                              return file ? URL.createObjectURL(file) : null
+                            })
+                          }}
+                        />
+                        {imagePreview ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={imagePreview} alt="" className="h-32 w-full object-cover border border-primary/30" />
+                        ) : null}
+                        <p className="text-xs text-gray-400">PNG, JPG, WEBP, or GIF. Up to 5 MB. This is the image on your showcase card.</p>
                       </div>
 
                       <div className="space-y-2">

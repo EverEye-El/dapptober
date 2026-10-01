@@ -319,7 +319,7 @@ body {
   font-size: clamp(7rem, 18vw, 14rem);
   line-height: 0.8;
   letter-spacing: -0.08em;
-  color: oklch(0.78 0.11 62 / 0.035);
+  color: oklch(0.78 0.11 62 / 0.07);
   user-select: none;
 }
 
@@ -340,36 +340,21 @@ body {
   display: inline-block;
 }
 
-.ascii-lockup-ornament {
-  padding-right: 0;
-}
-
-@media (min-width: 1180px) {
-  .ascii-lockup-ornament {
-    padding-right: 10.5rem;
-  }
-}
-
 .ascii-stage {
   position: relative;
   display: inline-block;
-  transform: perspective(900px) rotateX(calc(var(--py) * -7deg)) rotateY(calc(var(--px) * 10deg));
+  transform: perspective(680px) rotateX(calc(var(--py) * -16deg)) rotateY(calc(var(--px) * 20deg));
   transform-style: preserve-3d;
-  transition: transform 80ms linear;
+  transition: transform 90ms linear;
 }
 
 .ascii-face,
-.ascii-shadow,
-.ascii-cube {
+.ascii-shadow {
   margin: 0;
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
   line-height: 1.05;
   letter-spacing: 0;
   white-space: pre;
-}
-
-.ascii-face,
-.ascii-shadow {
   font-size: clamp(8px, 1.35vw, 16px);
 }
 
@@ -377,38 +362,32 @@ body {
   position: relative;
   z-index: 1;
   color: var(--copper-bright);
-  text-shadow: 0 0 18px oklch(0.78 0.11 62 / 0.45);
+  text-shadow:
+    1px 1px 0 oklch(0.62 0.09 55),
+    2px 2px 0 oklch(0.48 0.07 50),
+    3px 3px 0 oklch(0.36 0.05 46),
+    0 0 16px oklch(0.78 0.11 62 / 0.4);
 }
 
 .ascii-shadow {
   position: absolute;
   inset: 0;
-  color: var(--copper-deep);
-  transform: translate3d(6px, 7px, -18px);
-}
-
-.ascii-cube {
-  display: none;
-  position: absolute;
-  top: 8px;
-  right: 0;
-  font-size: 11px;
-  color: var(--copper);
-  text-shadow: 3px 4px 0 var(--copper-deep);
-  transform: translate3d(calc(var(--px) * 22px), calc(var(--py) * 16px), 0);
-}
-
-@media (min-width: 1180px) {
-  .ascii-lockup-ornament .ascii-cube {
-    display: block;
-  }
+  color: oklch(0.55 0.08 52);
+  transform: translate3d(5px, 6px, -14px);
 }
 
 @media (max-width: 767px) {
-  .ascii-shadow,
-  .parallax-watermark,
-  .parallax-glyph {
-    display: none;
+  .ascii-face,
+  .ascii-shadow {
+    font-size: 9px;
+  }
+
+  .ascii-shadow {
+    transform: translate3d(3px, 4px, -8px);
+  }
+
+  .parallax-watermark {
+    font-size: 8.5rem;
   }
 }
 
@@ -423,7 +402,8 @@ body {
   }
 }
 
-.cursor-blink::after {
+.cursor-blink::after,
+.typewriter-text--cursor::after {
   content: "█";
   margin-left: 0.35rem;
   color: var(--copper);
@@ -509,12 +489,195 @@ body > :not(.parallax-field) {
   border: 2px solid oklch(0.13 0.01 55);
 }
 
+.parallax-tilt-card.prompt-page-card {
+  transform: translate3d(0, var(--card-scroll), 0)
+    perspective(920px)
+    rotateX(calc(var(--tilt-y) * -12deg))
+    rotateY(calc(var(--tilt-x) * 14deg));
+}
+
+.parallax-tilt-card.prompt-page-card .parallax-tilt-card__media {
+  transform: translate3d(calc(var(--tilt-x) * 22px), calc(var(--tilt-y) * 16px), 0) scale(1.1);
+}
+
+.parallax-tilt-card {
+  --tilt-x: 0;
+  --tilt-y: 0;
+  --card-scroll: 0px;
+  transform-style: preserve-3d;
+  transform: translate3d(0, var(--card-scroll), 0)
+    perspective(920px)
+    rotateX(calc(var(--tilt-y) * -9deg))
+    rotateY(calc(var(--tilt-x) * 11deg));
+  transition:
+    transform 140ms ease-out,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+  will-change: transform;
+}
+
+.parallax-tilt-card__inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+.parallax-tilt-card__glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(
+    circle at calc(50% + var(--tilt-x) * 95%) calc(50% + var(--tilt-y) * 95%),
+    oklch(0.88 0.075 74 / 0.2),
+    transparent 58%
+  );
+  transition: opacity 180ms ease;
+}
+
+.parallax-tilt-card:hover .parallax-tilt-card__glare {
+  opacity: 1;
+}
+
+.parallax-tilt-card__media-shell {
+  overflow: hidden;
+}
+
+.parallax-tilt-card__media {
+  transform: translate3d(calc(var(--tilt-x) * 16px), calc(var(--tilt-y) * 12px), 0) scale(1.08);
+  transition: transform 160ms ease-out;
+}
+
+.parallax-tilt-card__float {
+  transform: translate3d(calc(var(--tilt-x) * -10px), calc(var(--tilt-y) * -8px), 0);
+  transition: transform 160ms ease-out;
+}
+
+.parallax-tilt-card--pulse {
+  animation: card-interaction-pulse 480ms ease-out;
+}
+
+@keyframes card-interaction-pulse {
+  0% {
+    box-shadow:
+      inset 0 0 0 1px oklch(0.78 0.11 62 / 0.08),
+      0 0 0 0 oklch(0.78 0.11 62 / 0);
+  }
+  40% {
+    box-shadow:
+      inset 0 0 0 1px oklch(0.78 0.11 62 / 0.22),
+      0 0 32px oklch(0.78 0.11 62 / 0.28);
+  }
+  100% {
+    box-shadow:
+      inset 0 0 0 1px oklch(0.78 0.11 62 / 0.08),
+      0 0 0 0 oklch(0.78 0.11 62 / 0);
+  }
+}
+
+.interactive-action-btn {
+  transition:
+    transform 120ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.interactive-action-btn:hover {
+  box-shadow: 0 0 18px oklch(0.78 0.11 62 / 0.35);
+}
+
+.interactive-action-btn:active {
+  transform: scale(0.96);
+}
+
+.interactive-chip {
+  transition:
+    transform 140ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.interactive-chip:hover {
+  transform: translateY(-2px);
+  border-color: oklch(0.78 0.11 62 / 0.75);
+}
+
+/* thirdweb ConnectButton / wallet modals — match copper terminal HUD */
+.tw-modal,
+.tw-modal__connect-wallet,
+.tw-modal__sign-in,
+.tw-modal__wallet-details,
+.tw-modal__switch-network,
+.tw-modal__view-transaction {
+  border-radius: 2px !important;
+  box-shadow:
+    inset 0 0 0 1px oklch(0.78 0.11 62 / 0.08),
+    0 24px 80px oklch(0 0 0 / 0.55) !important;
+}
+
+.tw-modal h2,
+.tw-modal h3,
+.tw-modal [class*="ScreenHeader"] {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+}
+
+.tw-modal a,
+.tw-modal [data-link="true"] {
+  color: var(--copper-bright) !important;
+}
+
+.tw-modal a:hover {
+  color: var(--copper) !important;
+}
+
+.tw-modal .tw-back-button {
+  border-radius: 2px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+}
+
+.tw-modal .tw-internal-network-switcher-button,
+.tw-modal .tw-switch-network-button,
+.tw-modal [class*="MenuButton"] {
+  border-radius: 2px !important;
+  border: 1px solid oklch(0.78 0.11 62 / 0.2) !important;
+}
+
+.tw-modal .tw-internal-network-switcher-button:hover,
+.tw-modal .tw-switch-network-button:hover,
+.tw-modal [class*="MenuButton"]:hover {
+  border-color: oklch(0.78 0.11 62 / 0.5) !important;
+}
+
+.tw-connect-wallet:not(.term-btn),
+.tw-connected-wallet:not(.term-btn) {
+  border-radius: 2px !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ascii-stage,
-  .ascii-cube,
   .cursor-blink::after,
-  .parallax-grid {
+  .parallax-grid,
+  .parallax-tilt-card,
+  .parallax-tilt-card__media,
+  .parallax-tilt-card__float {
     animation: none;
     transform: none;
+  }
+
+  .parallax-tilt-card__glare {
+    display: none;
+  }
+
+  .typewriter-text--cursor::after {
+    display: none;
   }
 }
