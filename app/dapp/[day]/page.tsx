@@ -45,12 +45,14 @@ export default async function DappPage({ params }: DappPageProps) {
       .from("likes")
       .select("*", { count: "exact", head: true })
       .eq("dapp_day", dapp.day)
+      .is("submission_id", null)
     likesCount = count ?? 0
 
     const { data: commentsData } = await supabase
       .from("comments")
       .select("id, content, created_at, wallet_address")
       .eq("dapp_day", dapp.day)
+      .is("submission_id", null)
       .order("created_at", { ascending: false })
 
     const walletAddresses = commentsData
@@ -127,7 +129,7 @@ export default async function DappPage({ params }: DappPageProps) {
 
             <div id="comments-section">
               <PromptCommentsCard commentCount={comments.length}>
-                <CommentsSection dappDay={dapp.day} initialComments={comments} />
+                <CommentsSection target={{ kind: "prompt", dappDay: dapp.day }} initialComments={comments} />
               </PromptCommentsCard>
             </div>
           </div>

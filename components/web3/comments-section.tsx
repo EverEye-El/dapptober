@@ -13,6 +13,8 @@ import { formatDistanceToNow } from "date-fns"
 import { ConnectModal } from "./connect-modal"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 import { addComment } from "@/app/actions/comments"
+import type { EngagementTarget } from "@/lib/community/engagement"
+import { isPromptTarget } from "@/lib/community/engagement"
 import Link from "next/link"
 
 interface Comment {
@@ -27,11 +29,11 @@ interface Comment {
 }
 
 interface CommentsSectionProps {
-  dappDay: number
+  target: EngagementTarget
   initialComments: Comment[]
 }
 
-export function CommentsSection({ dappDay, initialComments }: CommentsSectionProps) {
+export function CommentsSection({ target, initialComments }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -54,26 +56,31 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     }
 
     const supabase = supabaseBrowser()
-    console.log("[v0] Setting up real-time subscription for dapp day:", dappDay)
+    const channelName = isPromptTarget(target) ? `comments:prompt:${target.dappDay}` : `comments:submission:${target.submissionId}`
+    const filter = isPromptTarget(target) ? `dapp_day=eq.${target.dappDay}` : `submission_id=eq.${target.submissionId}`
 
     const channel = supabase
-      .channel(`comments:${dappDay}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "comments",
-          filter: `dapp_day=eq.${dappDay}`,
+          filter,
         },
         async (payload) => {
           console.log("[v0] New comment received via real-time:", payload)
 
           const { data: commentData } = await supabase
             .from("comments")
-            .select("id, content, created_at, wallet_address")
+            .select("id, content, created_at, wallet_address, submission_id")
             .eq("id", payload.new.id)
             .single()
+
+          if (commentData && isPromptTarget(target) && commentData.submission_id) {
+            return
+          }
 
           if (commentData) {
             // Fetch profile for this wallet address
@@ -105,7 +112,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
       console.log("[v0] Cleaning up real-time subscription")
       supabase.removeChannel(channel)
     }
-  }, [dappDay, supabaseConfigured])
+  }, [target, supabaseConfigured])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -132,7 +139,7 @@ export function CommentsSection({ dappDay, initialComments }: CommentsSectionPro
     setIsSubmitting(true)
 
     try {
-      const result = await addComment(dappDay, newComment.trim(), account.address)
+      const result = await addComment(target, newComment.trim(), account.address)
 
       if (!result.success) {
         setError(result.error || "Failed to post comment")

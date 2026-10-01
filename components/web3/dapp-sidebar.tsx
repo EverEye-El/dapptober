@@ -86,7 +86,11 @@ export function DappSidebar({
             <Heart className="w-4 h-4" />
             <span className="font-semibold">Show Support</span>
           </div>
-          <LikeButton dappDay={dappDay} initialLikes={likesCount} initialIsLiked={isLiked} />
+          <LikeButton
+            target={{ kind: "prompt", dappDay }}
+            initialLikes={likesCount}
+            initialIsLiked={isLiked}
+          />
         </ParallaxTiltCard>
 
         {/* Stats Card */}

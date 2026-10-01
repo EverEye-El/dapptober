@@ -43,12 +43,12 @@ export async function GET() {
         const { count: likesCount } = await supabase
           .from("likes")
           .select("*", { count: "exact", head: true })
-          .eq("dapp_day", sub.day)
+          .eq("submission_id", sub.id)
 
         const { count: commentsCount } = await supabase
           .from("comments")
           .select("*", { count: "exact", head: true })
-          .eq("dapp_day", sub.day)
+          .eq("submission_id", sub.id)
 
         return {
           id: sub.id,

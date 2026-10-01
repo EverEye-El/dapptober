@@ -17,7 +17,7 @@ export default function ShowcasePage() {
             what the Dapptober community shipped this October and add your own build.
           </p>
           <div className="pt-3">
-            <SubmitButton dappDay={1} variant="button" />
+            <SubmitButton pickDay variant="button" />
           </div>
         </PageHero>
 
