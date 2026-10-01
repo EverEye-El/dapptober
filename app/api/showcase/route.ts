@@ -21,6 +21,7 @@ export async function GET(request: Request) {
         demo_url,
         github_url,
         image_url,
+        banner_position,
         created_at,
         wallet_address,
         edition_year
@@ -66,6 +67,7 @@ export async function GET(request: Request) {
           demo_url: sub.demo_url,
           github_url: sub.github_url,
           image_url: sub.image_url,
+          banner_position: sub.banner_position,
           created_at: sub.created_at,
           edition_year: sub.edition_year,
           profile: profile || {

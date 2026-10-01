@@ -16,6 +16,7 @@ interface Submission {
   demo_url?: string
   github_url?: string
   image_url?: string
+  banner_position?: string | null
   created_at: string
   edition_year?: number
   profile: {

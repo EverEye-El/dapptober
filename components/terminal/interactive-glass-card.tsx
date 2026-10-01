@@ -15,6 +15,7 @@ interface InteractiveGlassCardProps {
   titleStartDelay?: number
   typewriterTitle?: boolean
   pulseOnButtonClick?: boolean
+  id?: string
 }
 
 export function InteractiveGlassCard({
@@ -27,11 +28,16 @@ export function InteractiveGlassCard({
   titleStartDelay = 0,
   typewriterTitle = false,
   pulseOnButtonClick = false,
+  id,
 }: InteractiveGlassCardProps) {
   const TitleTag = titleAs
 
   return (
-    <ParallaxTiltCard pulseOnButtonClick={pulseOnButtonClick} className={cn("glass-card prompt-page-card", className)}>
+    <ParallaxTiltCard
+      id={id}
+      pulseOnButtonClick={pulseOnButtonClick}
+      className={cn("glass-card prompt-page-card", className)}
+    >
       {title ? (
         <TitleTag
           className={cn(titleAs === "h3" ? "mb-2" : "mb-3", "parallax-tilt-card__float", titleClassName)}

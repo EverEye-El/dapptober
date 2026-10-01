@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { InteractiveGlassCard } from "@/components/terminal/interactive-glass-card"
+import { searchSlug } from "@/lib/search-pages"
 
 interface RuleItem {
   emoji: string
@@ -19,7 +20,8 @@ export function RulesList({ rules }: RulesListProps) {
       {rules.map((rule, index) => (
         <InteractiveGlassCard
           key={rule.title}
-          className="p-6 border border-primary/20 rounded-xl"
+          id={searchSlug(rule.title)}
+          className="p-6 border border-primary/20 rounded-xl scroll-mt-24"
           title={rule.title}
           typewriterTitle
           titleStartDelay={index * 120}
@@ -31,7 +33,8 @@ export function RulesList({ rules }: RulesListProps) {
       ))}
 
       <InteractiveGlassCard
-        className="p-6 border border-primary/30 rounded-xl bg-primary/5"
+        id={searchSlug("Bonus Rule: Don't Just Build. Vibe.")}
+        className="p-6 border border-primary/30 rounded-xl bg-primary/5 scroll-mt-24"
         title="Bonus Rule: Don't Just Build. Vibe."
         typewriterTitle
         titleStartDelay={rules.length * 120}

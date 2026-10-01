@@ -14,6 +14,7 @@ import {
   type SearchHit,
   type SearchResults,
 } from "@/lib/search"
+import { searchPages } from "@/lib/search-pages"
 
 export const dynamic = "force-dynamic"
 
@@ -36,6 +37,14 @@ interface AgentRow {
   wallet_address: string
 }
 
+interface CommentRow {
+  id: string
+  content: string
+  dapp_day: number
+  submission_id: string | null
+  wallet_address: string | null
+}
+
 export async function GET(request: Request) {
   const query = new URL(request.url).searchParams.get("q") ?? ""
   if (!isSearchable(query)) {
@@ -47,6 +56,8 @@ export async function GET(request: Request) {
     prompts: searchPrompts(query),
     builds: [],
     agents: [],
+    pages: searchPages(query),
+    comments: [],
   }
 
   const term = ilikeTerm(query)
@@ -66,7 +77,7 @@ export async function GET(request: Request) {
       return fields.map((column) => `${column}.ilike."${pattern}"`).join(",")
     }
 
-    const [profilesResponse, buildsResponse, agentsResponse] = await Promise.all([
+    const [profilesResponse, buildsResponse, agentsResponse, commentsResponse] = await Promise.all([
       supabase.from("profiles").select("wallet_address, display_name").or(profileFilter).limit(6),
       supabase
         .from("submissions")
@@ -79,6 +90,12 @@ export async function GET(request: Request) {
         .select("id, name, wallet_address")
         .eq("status", "registered")
         .or(textOrWallet(["name", "description"]))
+        .order("created_at", { ascending: false })
+        .limit(6),
+      supabase
+        .from("comments")
+        .select("id, content, dapp_day, submission_id, wallet_address")
+        .ilike("content", pattern)
         .order("created_at", { ascending: false })
         .limit(6),
     ])
@@ -126,6 +143,23 @@ export async function GET(request: Request) {
       detail: shortAddress(agent.wallet_address),
       href: `/competition/${agent.id}`,
     }))
+
+    const comments = (commentsResponse.data ?? []) as CommentRow[]
+    results.comments = comments.map((comment) => {
+      const text = comment.content.replace(/\s+/g, " ").trim()
+      const wallet = comment.wallet_address ? shortAddress(comment.wallet_address) : "Comment"
+      const place = comment.submission_id ? "Showcase" : `Day ${String(comment.dapp_day).padStart(2, "0")}`
+      const href = comment.submission_id
+        ? `/showcase/${comment.submission_id}#comment-${comment.id}`
+        : `/dapp/${comment.dapp_day}#comment-${comment.id}`
+      return {
+        id: `comment-${comment.id}`,
+        kind: "comment" as const,
+        title: text.length > 80 ? `${text.slice(0, 77)}...` : text,
+        detail: `${place} · ${wallet}`,
+        href,
+      }
+    })
   } catch (error) {
     console.error("[search] lookup failed", error)
   }

@@ -254,7 +254,8 @@ export function CommentsSection({ target, initialComments }: CommentsSectionProp
             return (
               <Card
                 key={comment.id}
-                className="p-4 bg-slate-900/90 border-primary/50 neon-glow-orange hover:border-primary/50 transition-colors"
+                id={`comment-${comment.id}`}
+                className="scroll-mt-24 p-4 bg-slate-900/90 border-primary/50 neon-glow-orange hover:border-primary/50 transition-colors"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-1 space-y-2">

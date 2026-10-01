@@ -1,6 +1,6 @@
 import { DAPPTOBER_YEAR, dappPrompts } from "@/lib/dapp-prompts"
 
-export type SearchKind = "profile" | "prompt" | "build" | "agent"
+export type SearchKind = "profile" | "prompt" | "build" | "agent" | "page" | "comment"
 
 export interface SearchHit {
   id: string
@@ -15,6 +15,8 @@ export interface SearchResults {
   prompts: SearchHit[]
   builds: SearchHit[]
   agents: SearchHit[]
+  pages: SearchHit[]
+  comments: SearchHit[]
 }
 
 const EMPTY_RESULTS: SearchResults = {
@@ -22,6 +24,8 @@ const EMPTY_RESULTS: SearchResults = {
   prompts: [],
   builds: [],
   agents: [],
+  pages: [],
+  comments: [],
 }
 
 export function emptySearchResults(): SearchResults {
