@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
 import { submitDayValidationError } from "@/lib/community/dapptober-calendar"
+import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 import { ensureProfile } from "./profiles"
 
 const SUBMISSION_IMAGE_BUCKET = "submission-images"
@@ -88,7 +89,8 @@ export async function submitDapp(
       .select("id")
       .eq("wallet_address", normalizedAddress)
       .eq("day", dappDay)
-      .single()
+      .eq("edition_year", DAPPTOBER_YEAR)
+      .maybeSingle()
 
     if (existingSubmission) {
       return { success: false, error: "You have already submitted a DApp for this day" }
@@ -104,6 +106,7 @@ export async function submitDapp(
         demo_url: data.demo_url.trim(),
         github_url: data.github_url?.trim() || null,
         image_url: data.image_url?.trim() || null,
+        edition_year: DAPPTOBER_YEAR,
         status: "published",
       })
       .select()
@@ -122,5 +125,54 @@ export async function submitDapp(
   } catch (error) {
     console.error("[v0] Server: Unexpected error", error)
     return { success: false, error: "Failed to submit DApp" }
+  }
+}
+
+export async function updateSubmission(
+  submissionId: string,
+  walletAddress: string,
+  data: {
+    title: string
+    description: string
+    demo_url: string
+    github_url?: string
+    image_url?: string | null
+  },
+) {
+  try {
+    const normalizedAddress = walletAddress.toLowerCase()
+    const { data: existing, error: lookupError } = await supabaseAdmin
+      .from("submissions")
+      .select("id, wallet_address, day")
+      .eq("id", submissionId)
+      .maybeSingle()
+
+    if (lookupError || !existing) {
+      return { success: false as const, error: "That build was not found." }
+    }
+    if (existing.wallet_address?.toLowerCase() !== normalizedAddress) {
+      return { success: false as const, error: "Only the wallet that submitted this build can edit it." }
+    }
+
+    const { error } = await supabaseAdmin
+      .from("submissions")
+      .update({
+        title: data.title.trim(),
+        description: data.description.trim(),
+        demo_url: data.demo_url.trim(),
+        github_url: data.github_url?.trim() || null,
+        image_url: data.image_url?.trim() || null,
+      })
+      .eq("id", submissionId)
+
+    if (error) return { success: false as const, error: error.message }
+
+    revalidatePath("/showcase")
+    revalidatePath(`/showcase/${submissionId}`)
+    revalidatePath(`/dapp/${existing.day}`)
+    revalidatePath(`/profile/${normalizedAddress}`)
+    return { success: true as const }
+  } catch {
+    return { success: false as const, error: "Failed to update this build." }
   }
 }

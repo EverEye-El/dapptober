@@ -8,6 +8,7 @@ import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { TypewriterText } from "@/components/terminal/typewriter-text"
 import Image from "next/image"
 import Link from "next/link"
+import { isDisplayableImageUrl } from "@/lib/community/image-url"
 
 interface ShowcaseCardProps {
   titleStartDelay?: number
@@ -61,9 +62,9 @@ export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardPr
       </div>
 
       <div className="relative h-48 overflow-hidden parallax-tilt-card__media-shell">
-        {!imageError && submission.image_url ? (
+        {!imageError && isDisplayableImageUrl(submission.image_url) ? (
           <Image
-            src={submission.image_url || "/placeholder.svg"}
+            src={submission.image_url}
             alt={submission.title}
             width={384}
             height={192}
@@ -102,12 +103,14 @@ export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardPr
         </div>
 
         <div className="flex items-center gap-2 pt-2">
-          <Avatar className="w-6 h-6 border border-primary/30">
-            <AvatarImage src={profile.avatar_url || "/placeholder.svg"} alt={profile.display_name || "User"} />
-            <AvatarFallback className="text-xs bg-primary/20">
-              {profile.display_name?.[0]?.toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
+          <Link href={`/profile/${profile.wallet_address}`} aria-label="View profile">
+            <Avatar className="w-6 h-6 border border-primary/30">
+              <AvatarImage src={profile.avatar_url || "/placeholder.svg"} alt={profile.display_name || "User"} />
+              <AvatarFallback className="text-xs bg-primary/20">
+                {profile.display_name?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-gray-200 truncate">
               {profile.display_name || truncateAddress(profile.wallet_address)}
