@@ -2,6 +2,7 @@ import { dappPrompts, getDappStats } from "@/lib/dapp-prompts"
 import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Eye, Users } from "lucide-react"
+import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
 import { PromptPageHeader } from "@/components/dapp/prompt-page-header"
 import { PromptCommentsCard, PromptDetailCard, PromptPreviewCard } from "@/components/dapp/prompt-page-cards"
@@ -28,39 +29,53 @@ export default async function DappPage({ params }: DappPageProps) {
     notFound()
   }
 
-  const supabase = await createClient()
+  let likesCount = 0
+  let comments: {
+    id: string
+    content: string
+    created_at: string
+    wallet_address: string | null
+    profiles: { id: string; display_name: string | null; wallet_address: string | null } | null
+  }[] = []
 
-  const { count: likesCount } = await supabase
-    .from("likes")
-    .select("*", { count: "exact", head: true })
-    .eq("dapp_day", dapp.day)
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient()
 
-  const { data: commentsData } = await supabase
-    .from("comments")
-    .select("id, content, created_at, wallet_address")
-    .eq("dapp_day", dapp.day)
-    .order("created_at", { ascending: false })
+    const { count } = await supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .eq("dapp_day", dapp.day)
+    likesCount = count ?? 0
 
-  // Get unique wallet addresses from comments
-  const walletAddresses = commentsData ? [...new Set(commentsData.map((c) => c.wallet_address).filter(Boolean))] : []
+    const { data: commentsData } = await supabase
+      .from("comments")
+      .select("id, content, created_at, wallet_address")
+      .eq("dapp_day", dapp.day)
+      .order("created_at", { ascending: false })
 
-  // Fetch profiles for those wallet addresses
-  const { data: profilesData } =
-    walletAddresses.length > 0
-      ? await supabase.from("profiles").select("id, display_name, wallet_address").in("wallet_address", walletAddresses)
-      : { data: [] }
+    const walletAddresses = commentsData
+      ? [...new Set(commentsData.map((c) => c.wallet_address).filter(Boolean))]
+      : []
 
-  // Create a map of profiles for quick lookup by wallet address
-  const profilesMap = new Map(profilesData?.map((p) => [p.wallet_address?.toLowerCase(), p]) || [])
+    const { data: profilesData } =
+      walletAddresses.length > 0
+        ? await supabase
+            .from("profiles")
+            .select("id, display_name, wallet_address")
+            .in("wallet_address", walletAddresses)
+        : { data: [] }
 
-  // Combine comments with profile data
-  const comments = commentsData?.map((comment) => ({
-    id: comment.id,
-    content: comment.content,
-    created_at: comment.created_at,
-    wallet_address: comment.wallet_address,
-    profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
-  }))
+    const profilesMap = new Map(profilesData?.map((p) => [p.wallet_address?.toLowerCase(), p]) || [])
+
+    comments =
+      commentsData?.map((comment) => ({
+        id: comment.id,
+        content: comment.content,
+        created_at: comment.created_at,
+        wallet_address: comment.wallet_address,
+        profiles: comment.wallet_address ? profilesMap.get(comment.wallet_address.toLowerCase()) || null : null,
+      })) ?? []
+  }
 
   const { views: viewsCount, users: usersCount } = getDappStats(dapp.day)
 
@@ -111,8 +126,8 @@ export default async function DappPage({ params }: DappPageProps) {
             <PromptDetailCard dapp={dapp} />
 
             <div id="comments-section">
-              <PromptCommentsCard commentCount={comments?.length || 0}>
-                <CommentsSection dappDay={dapp.day} initialComments={comments || []} />
+              <PromptCommentsCard commentCount={comments.length}>
+                <CommentsSection dappDay={dapp.day} initialComments={comments} />
               </PromptCommentsCard>
             </div>
           </div>
@@ -121,8 +136,8 @@ export default async function DappPage({ params }: DappPageProps) {
             <DappSidebar
               dappDay={dapp.day}
               dappTitle={dapp.title}
-              likesCount={likesCount || 0}
-              commentsCount={comments?.length || 0}
+              likesCount={likesCount}
+              commentsCount={comments.length}
               viewsCount={viewsCount}
               usersCount={usersCount}
               isLiked={false} // Assuming no user context for simplicity
