@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     console.log("[v0] Fetching submissions from database...")
 
     const supabase = await createClient()
+    const edition = new URL(request.url).searchParams.get("edition")
+    const archive = edition === "archive"
 
-    const { data: submissions, error } = await supabase
+    let query = supabase
       .from("submissions")
       .select(
         `
@@ -19,10 +22,15 @@ export async function GET() {
         github_url,
         image_url,
         created_at,
-        wallet_address
+        wallet_address,
+        edition_year
       `,
       )
       .order("created_at", { ascending: false })
+
+    query = archive ? query.lt("edition_year", DAPPTOBER_YEAR) : query.eq("edition_year", DAPPTOBER_YEAR)
+
+    const { data: submissions, error } = await query
 
     if (error) {
       console.error("[v0] Supabase error:", error)
@@ -59,6 +67,7 @@ export async function GET() {
           github_url: sub.github_url,
           image_url: sub.image_url,
           created_at: sub.created_at,
+          edition_year: sub.edition_year,
           profile: profile || {
             display_name: null,
             wallet_address: sub.wallet_address,

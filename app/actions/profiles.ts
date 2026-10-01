@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@supabase/supabase-js"
+import { revalidatePath } from "next/cache"
 
 const supabaseAdmin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: {
@@ -88,9 +89,86 @@ export async function updateProfile(
       return { success: false, error: error.message }
     }
 
+    revalidatePath(`/profile/${normalizedAddress}`)
     return { success: true, profile: data }
   } catch (error) {
     return { success: false, error: "Failed to update profile" }
+  }
+}
+
+const AVATAR_BUCKET = "submission-images"
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024
+const AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
+
+export async function uploadProfileImage(formData: FormData) {
+  try {
+    const file = formData.get("file")
+    if (!(file instanceof File)) return { success: false as const, error: "Choose an image file." }
+    if (!AVATAR_TYPES.has(file.type)) return { success: false as const, error: "Use a PNG, JPG, WEBP, or GIF." }
+    if (file.size > MAX_AVATAR_BYTES) return { success: false as const, error: "Image must be 5 MB or smaller." }
+
+    const { error: bucketError } = await supabaseAdmin.storage.createBucket(AVATAR_BUCKET, { public: true })
+    if (bucketError && !/already exists/i.test(bucketError.message)) {
+      return { success: false as const, error: bucketError.message }
+    }
+
+    const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") ?? "png"
+    const path = `avatars/${crypto.randomUUID()}.${ext}`
+    const bytes = Buffer.from(await file.arrayBuffer())
+    const { error } = await supabaseAdmin.storage.from(AVATAR_BUCKET).upload(path, bytes, {
+      contentType: file.type,
+      upsert: false,
+    })
+    if (error) return { success: false as const, error: error.message }
+
+    const { data } = supabaseAdmin.storage.from(AVATAR_BUCKET).getPublicUrl(path)
+    return { success: true as const, url: data.publicUrl }
+  } catch {
+    return { success: false as const, error: "Failed to upload profile image." }
+  }
+}
+
+export async function getProfilePage(walletAddress: string) {
+  const normalizedAddress = walletAddress.toLowerCase().replace("@wallet.local", "")
+  const profileResult = await getProfile(normalizedAddress)
+  if (!profileResult.success || !profileResult.profile) {
+    return { success: false as const, error: profileResult.error || "Profile not found" }
+  }
+
+  const submissionsResult = await getProfileSubmissions(normalizedAddress)
+  const submissions = submissionsResult.success ? submissionsResult.submissions : []
+
+  const { count: commentsCount } = await supabaseAdmin
+    .from("comments")
+    .select("*", { count: "exact", head: true })
+    .eq("wallet_address", normalizedAddress)
+
+  const { count: likesCount } = await supabaseAdmin
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .eq("wallet_address", normalizedAddress)
+
+  const { data: comments } = await supabaseAdmin
+    .from("comments")
+    .select("id, content, created_at, dapp_day, submission_id")
+    .eq("wallet_address", normalizedAddress)
+    .order("created_at", { ascending: false })
+    .limit(20)
+
+  const { data: agents } = await supabaseAdmin
+    .from("competition_entries")
+    .select("id, name, description, created_at")
+    .eq("wallet_address", normalizedAddress)
+    .order("created_at", { ascending: false })
+
+  return {
+    success: true as const,
+    profile: profileResult.profile,
+    submissions: submissions ?? [],
+    commentsCount: commentsCount || 0,
+    likesCount: likesCount || 0,
+    comments: comments ?? [],
+    agents: agents ?? [],
   }
 }
 

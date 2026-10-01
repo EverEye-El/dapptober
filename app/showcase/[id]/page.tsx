@@ -8,6 +8,10 @@ import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { PromptCommentsCard } from "@/components/dapp/prompt-page-cards"
 import { CommentsSection } from "@/components/web3/comments-section"
 import { LikeButton } from "@/components/web3/like-button"
+import { AgentDemoFrame } from "@/components/competition/agent-demo-frame"
+import { SubmissionEditor } from "@/components/showcase/submission-editor"
+import { isDisplayableImageUrl } from "@/lib/community/image-url"
+import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
 
@@ -23,7 +27,7 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
   const supabase = await createClient()
   const { data: submission } = await supabase
     .from("submissions")
-    .select("id, day, title, description, demo_url, github_url, image_url, created_at, wallet_address")
+    .select("id, day, title, description, demo_url, github_url, image_url, created_at, wallet_address, edition_year")
     .eq("id", params.id)
     .maybeSingle()
 
@@ -69,11 +73,12 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
 
   const author = profile?.display_name || `${submission.wallet_address.slice(0, 6)}...${submission.wallet_address.slice(-4)}`
   const target = { kind: "submission" as const, submissionId: submission.id, dappDay: submission.day }
+  const cover = isDisplayableImageUrl(submission.image_url) ? submission.image_url : null
 
   return (
     <div className="min-h-screen">
       <Sidebar />
-      <div className="container mx-auto px-4 lg:px-8 py-8 max-w-4xl space-y-8">
+      <div className="container mx-auto px-4 lg:px-8 py-8 max-w-6xl space-y-8">
         <Link href="/showcase">
           <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -83,8 +88,8 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
 
         <ParallaxTiltCard className="glass-card border-primary/30 overflow-hidden prompt-page-card">
           <div className="relative h-72 md:h-96 bg-[oklch(0.16_0.014_55)]">
-            {submission.image_url ? (
-              <Image src={submission.image_url} alt={submission.title} fill className="object-cover" />
+            {cover ? (
+              <Image src={cover} alt={submission.title} fill className="object-cover" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="term-kicker">no cover image</span>
@@ -92,7 +97,7 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
             )}
             <div className="absolute top-3 left-3">
               <div className="term-chip">
-                <span>DAY</span>
+                <span>{submission.edition_year && submission.edition_year < DAPPTOBER_YEAR ? submission.edition_year : "DAY"}</span>
                 <span className="text-sm tracking-normal">{String(submission.day).padStart(2, "0")}</span>
               </div>
             </div>
@@ -125,8 +130,19 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
               ) : null}
             </div>
             <LikeButton target={target} initialLikes={likesCount ?? 0} initialIsLiked={false} label="Like this build" />
+            <SubmissionEditor
+              submissionId={submission.id}
+              ownerWallet={submission.wallet_address}
+              title={submission.title}
+              description={submission.description}
+              demoUrl={submission.demo_url}
+              githubUrl={submission.github_url}
+              imageUrl={submission.image_url}
+            />
           </div>
         </ParallaxTiltCard>
+
+        {submission.demo_url ? <AgentDemoFrame url={submission.demo_url} title={`${submission.title} demo`} /> : null}
 
         <div id="comments-section">
           <PromptCommentsCard commentCount={comments.length}>

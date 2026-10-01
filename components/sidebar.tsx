@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Sparkles, Grid3x3, Info, ScrollText, Trophy, User, Menu, X } from "lucide-react"
 import { WalletConnectButton } from "@/components/web3/wallet-connect-button"
+import { ConnectModal } from "@/components/web3/connect-modal"
 import Link from "next/link"
 import { useActiveAccount } from "thirdweb/react"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
@@ -11,6 +12,7 @@ import { RAIL_MARK } from "@/lib/ascii"
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [showConnect, setShowConnect] = useState(false)
   const account = useActiveAccount()
 
   useEffect(() => {
@@ -35,16 +37,6 @@ export function Sidebar() {
 
   const navItems = [
     { href: "/", label: "Prompts", icon: Sparkles, active: false },
-    ...(account?.address
-      ? [
-          {
-            href: `/profile/${account.address}`,
-            label: "Profile",
-            icon: User,
-            active: false,
-          },
-        ]
-      : []),
     { href: "/showcase", label: "Showcase", icon: Grid3x3, active: false },
     { href: "/competition", label: "Competition", icon: Trophy, active: false },
     { href: "/rules", label: "Rules", icon: ScrollText, active: false },
@@ -53,6 +45,7 @@ export function Sidebar() {
 
   return (
     <>
+      <ConnectModal isOpen={showConnect} onClose={() => setShowConnect(false)} />
       {/* Mobile top bar */}
       <div className="md:hidden sticky top-0 z-40 border-b border-copper/30 bg-background/90 backdrop-blur-md">
         <div className="flex items-center justify-between px-4 py-3">
@@ -140,9 +133,42 @@ export function Sidebar() {
             ))}
           </nav>
 
-          <div className="p-4 border-t border-copper/30 flex flex-col gap-4">
+          <div className="px-4 pb-3 flex flex-col gap-3">
+            {account?.address ? (
+              <Link
+                href="/profile"
+                onClick={closeMobile}
+                className={`flex items-center gap-3 px-3 py-2.5 border border-transparent text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5 font-mono text-xs tracking-[0.14em] uppercase ${showLabels ? "" : "justify-center"}`}
+                title={showLabels ? undefined : "Profile"}
+              >
+                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                {showLabels ? (
+                  <span>
+                    <span className="text-copper mr-2">&gt;</span>
+                    Profile
+                  </span>
+                ) : null}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowConnect(true)}
+                className={`flex items-center gap-3 px-3 py-2.5 border border-transparent text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5 font-mono text-xs tracking-[0.14em] uppercase ${showLabels ? "" : "justify-center"}`}
+                title={showLabels ? undefined : "Profile"}
+              >
+                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                {showLabels ? (
+                  <span>
+                    <span className="text-copper mr-2">&gt;</span>
+                    Profile
+                  </span>
+                ) : null}
+              </button>
+            )}
             <WalletConnectButton isCollapsed={!showLabels} />
+          </div>
 
+          <div className="p-4 border-t border-copper/30 flex flex-col gap-3">
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={`term-btn hidden md:flex w-full h-8 ${isCollapsed ? "px-2" : ""}`}
