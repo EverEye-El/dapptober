@@ -14,11 +14,12 @@ import { cn } from "@/lib/utils"
 interface ParallaxTiltCardProps {
   children: ReactNode
   className?: string
+  id?: string
   /** Pulse the card when a button or link inside is clicked */
   pulseOnButtonClick?: boolean
 }
 
-export function ParallaxTiltCard({ children, className, pulseOnButtonClick = false }: ParallaxTiltCardProps) {
+export function ParallaxTiltCard({ children, className, id, pulseOnButtonClick = false }: ParallaxTiltCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [pulsed, setPulsed] = useState(false)
   const pulseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -102,7 +103,8 @@ export function ParallaxTiltCard({ children, className, pulseOnButtonClick = fal
   return (
     <div
       ref={ref}
-      className={cn("parallax-tilt-card", pulsed && "parallax-tilt-card--pulse", className)}
+      id={id}
+      className={cn("parallax-tilt-card scroll-mt-24", pulsed && "parallax-tilt-card--pulse", className)}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       onClickCapture={onClickCapture}

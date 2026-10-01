@@ -10,6 +10,7 @@ import { CommentsSection } from "@/components/web3/comments-section"
 import { LikeButton } from "@/components/web3/like-button"
 import { AgentDemoFrame } from "@/components/competition/agent-demo-frame"
 import { SubmissionEditor } from "@/components/showcase/submission-editor"
+import { formatBannerPosition, parseBannerPosition } from "@/lib/community/banner-position"
 import { isDisplayableImageUrl } from "@/lib/community/image-url"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 import { isSupabaseConfigured } from "@/lib/supabase/env"
@@ -27,7 +28,7 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
   const supabase = await createClient()
   const { data: submission } = await supabase
     .from("submissions")
-    .select("id, day, title, description, demo_url, github_url, image_url, created_at, wallet_address, edition_year")
+    .select("id, day, title, description, demo_url, github_url, image_url, banner_position, created_at, wallet_address, edition_year")
     .eq("id", params.id)
     .maybeSingle()
 
@@ -74,11 +75,12 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
   const author = profile?.display_name || `${submission.wallet_address.slice(0, 6)}...${submission.wallet_address.slice(-4)}`
   const target = { kind: "submission" as const, submissionId: submission.id, dappDay: submission.day }
   const cover = isDisplayableImageUrl(submission.image_url) ? submission.image_url : null
+  const bannerPosition = formatBannerPosition(parseBannerPosition(submission.banner_position))
 
   return (
     <div className="min-h-screen">
       <Sidebar />
-      <div className="container mx-auto px-4 lg:px-8 py-8 max-w-6xl space-y-8">
+      <div className="container mx-auto px-4 lg:px-8 py-4 max-w-6xl space-y-5">
         <Link href="/showcase">
           <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -87,12 +89,12 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
         </Link>
 
         <ParallaxTiltCard className="glass-card border-primary/30 overflow-hidden prompt-page-card">
-          <div className="relative h-72 md:h-96 bg-[oklch(0.16_0.014_55)]">
+          <div className={`relative bg-[oklch(0.16_0.014_55)] ${cover ? "h-40 md:h-48" : "h-24"}`}>
             {cover ? (
-              <Image src={cover} alt={submission.title} fill className="object-cover" />
+              <Image src={cover} alt={submission.title} fill className="object-cover" style={{ objectPosition: bannerPosition }} />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="term-kicker">no cover image</span>
+                <span className="term-kicker">no banner image</span>
               </div>
             )}
             <div className="absolute top-3 left-3">
@@ -130,17 +132,19 @@ export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageP
               ) : null}
             </div>
             <LikeButton target={target} initialLikes={likesCount ?? 0} initialIsLiked={false} label="Like this build" />
-            <SubmissionEditor
-              submissionId={submission.id}
-              ownerWallet={submission.wallet_address}
-              title={submission.title}
-              description={submission.description}
-              demoUrl={submission.demo_url}
-              githubUrl={submission.github_url}
-              imageUrl={submission.image_url}
-            />
           </div>
         </ParallaxTiltCard>
+
+        <SubmissionEditor
+          submissionId={submission.id}
+          ownerWallet={submission.wallet_address}
+          title={submission.title}
+          description={submission.description}
+          demoUrl={submission.demo_url}
+          githubUrl={submission.github_url}
+          imageUrl={submission.image_url}
+          bannerPosition={submission.banner_position}
+        />
 
         {submission.demo_url ? <AgentDemoFrame url={submission.demo_url} title={`${submission.title} demo`} /> : null}
 

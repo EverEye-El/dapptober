@@ -8,6 +8,7 @@ import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
 import { TypewriterText } from "@/components/terminal/typewriter-text"
 import Image from "next/image"
 import Link from "next/link"
+import { formatBannerPosition, parseBannerPosition } from "@/lib/community/banner-position"
 import { isDisplayableImageUrl } from "@/lib/community/image-url"
 
 interface ShowcaseCardProps {
@@ -20,6 +21,7 @@ interface ShowcaseCardProps {
     demo_url?: string
     github_url?: string
     image_url?: string
+    banner_position?: string | null
     created_at: string
     profile: {
       display_name?: string
@@ -69,6 +71,7 @@ export function ShowcaseCard({ submission, titleStartDelay = 0 }: ShowcaseCardPr
             width={384}
             height={192}
             className="w-full h-full object-cover parallax-tilt-card__media transition-transform duration-300 group-hover:scale-110"
+            style={{ objectPosition: formatBannerPosition(parseBannerPosition(submission.banner_position)) }}
             onError={() => setImageError(true)}
           />
         ) : (

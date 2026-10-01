@@ -137,6 +137,7 @@ export async function updateSubmission(
     demo_url: string
     github_url?: string
     image_url?: string | null
+    banner_position?: string | null
   },
 ) {
   try {
@@ -162,6 +163,7 @@ export async function updateSubmission(
         demo_url: data.demo_url.trim(),
         github_url: data.github_url?.trim() || null,
         image_url: data.image_url?.trim() || null,
+        banner_position: data.banner_position?.trim() || null,
       })
       .eq("id", submissionId)
 

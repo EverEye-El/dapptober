@@ -8,6 +8,7 @@ import Link from "next/link"
 import { useActiveAccount } from "thirdweb/react"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 import { RAIL_MARK } from "@/lib/ascii"
+import { SiteSearch } from "@/components/search/site-search"
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true)
@@ -187,6 +188,7 @@ export function Sidebar() {
           </div>
         </div>
       </aside>
+      <SiteSearch />
     </>
   )
 }

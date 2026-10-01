@@ -5,6 +5,7 @@ import { TypewriterText } from "@/components/terminal/typewriter-text"
 import { Calendar, Bot, Users, ShieldCheck, Trophy, Rocket, Wallet } from "lucide-react"
 import Link from "next/link"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
+import { searchSlug } from "@/lib/search-pages"
 import { PageHero } from "@/components/terminal/page-hero"
 
 export default function AboutPage() {
@@ -65,6 +66,7 @@ export default function AboutPage() {
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20"
+            id={searchSlug("Our Mission")}
             title="Our Mission"
             typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text"
@@ -100,6 +102,7 @@ export default function AboutPage() {
             {features.map((feature, index) => (
               <InteractiveGlassCard
                 key={feature.title}
+                id={searchSlug(feature.title)}
                 className="p-6 border-primary/20 hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex items-start gap-4">
@@ -131,6 +134,7 @@ export default function AboutPage() {
             {achievements.map((achievement, index) => (
               <InteractiveGlassCard
                 key={achievement.label}
+                id={searchSlug(achievement.label)}
                 className="p-8 border-primary/20 text-center hover:border-neon-orange/50 transition-all"
               >
                 <div className="flex justify-center mb-4">
@@ -153,6 +157,7 @@ export default function AboutPage() {
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20"
+            id={searchSlug("Built With Modern Tools")}
             title="Built With Modern Tools"
             typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text"
@@ -176,6 +181,7 @@ export default function AboutPage() {
         <section className="container mx-auto px-4 lg:px-8 py-12 relative z-10">
           <InteractiveGlassCard
             className="p-8 md:p-12 border-primary/20 text-center"
+            id={searchSlug("Join the Journey")}
             title="Join the Journey"
             typewriterTitle
             titleClassName="text-3xl md:text-4xl font-bold gradient-text-main"
