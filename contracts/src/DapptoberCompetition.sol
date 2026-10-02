@@ -18,6 +18,9 @@ contract DapptoberCompetition {
     uint256 public constant CREATOR_FEE = 1_000_000;
     uint256 public constant POT_SHARE = 4_000_000;
 
+    /// Host wallet. Can register without paying the entry fee.
+    address public constant HOST = 0x97EAc0FB351c405FBCb2bB9d94C14c15c5Acaabc;
+
     struct Entry {
         address owner;
         string metadataUri;
@@ -53,11 +56,17 @@ contract DapptoberCompetition {
         _;
     }
 
+    function entryFeeFor(address account) external pure returns (uint256) {
+        return account == HOST ? 0 : ENTRY_FEE;
+    }
+
     function register(string calldata metadataUri) external returns (uint256 id) {
         require(bytes(metadataUri).length > 0, "metadata");
-        require(usdc.transferFrom(msg.sender, address(this), ENTRY_FEE), "fee");
-        pot += POT_SHARE;
-        creatorFees += CREATOR_FEE;
+        if (msg.sender != HOST) {
+            require(usdc.transferFrom(msg.sender, address(this), ENTRY_FEE), "fee");
+            pot += POT_SHARE;
+            creatorFees += CREATOR_FEE;
+        }
         id = nextEntryId;
         nextEntryId = id + 1;
         entries[id] = Entry({ owner: msg.sender, metadataUri: metadataUri, votes: 0, exists: true });

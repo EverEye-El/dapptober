@@ -18,3 +18,8 @@ export function isCompetitionOperator(address: string) {
   const normalized = address.toLowerCase()
   return normalized === competitionAdminAddress() || normalized === competitionOwnerAddress()
 }
+
+/** EverEyeDevz. The mainnet contract lets this wallet register without the USDC fee. */
+export function isCompetitionHost(address: string) {
+  return address.toLowerCase() === competitionAdminAddress()
+}
