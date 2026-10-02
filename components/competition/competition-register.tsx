@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from "react"
 import { prepareContractCall, readContract, sendAndConfirmTransaction } from "thirdweb"
 import { useActiveAccount } from "thirdweb/react"
-import { competitionAddressEnvKey, competitionContracts } from "@/lib/competition/chain"
+import { isCompetitionHost } from "@/lib/competition/access"
+import { competitionAddressEnvKey, competitionChain, competitionContracts } from "@/lib/competition/chain"
 import { uploadSubmissionImage } from "@/app/actions/submissions"
 import { recordCompetitionEntry, uploadCompetitionMetadata } from "@/app/actions/competition"
 import { Button } from "@/components/ui/button"
@@ -14,12 +15,14 @@ import { ConnectModal } from "@/components/web3/connect-modal"
 import { getUnlockedSubmitDays, submitDayValidationError } from "@/lib/community/dapptober-calendar"
 
 const ENTRY_FEE = BigInt(5_000_000)
+const BASE_MAINNET_ID = 8453
 
 export function CompetitionRegister() {
   const account = useActiveAccount()
   const [showConnect, setShowConnect] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const hostEntersFree = Boolean(account && competitionChain().id === BASE_MAINNET_ID && isCompetitionHost(account.address))
   const unlockedDays = getUnlockedSubmitDays()
   const [day, setDay] = useState(unlockedDays[0] ?? 1)
   const [name, setName] = useState("")
@@ -72,14 +75,16 @@ export function CompetitionRegister() {
         params: [],
       })
 
-      await sendAndConfirmTransaction({
-        account,
-        transaction: prepareContractCall({
-          contract: config.usdc,
-          method: "function approve(address spender, uint256 amount) returns (bool)",
-          params: [config.competition.address, ENTRY_FEE],
-        }),
-      })
+      if (!hostEntersFree) {
+        await sendAndConfirmTransaction({
+          account,
+          transaction: prepareContractCall({
+            contract: config.usdc,
+            method: "function approve(address spender, uint256 amount) returns (bool)",
+            params: [config.competition.address, ENTRY_FEE],
+          }),
+        })
+      }
 
       const receipt = await sendAndConfirmTransaction({
         account,
@@ -151,9 +156,13 @@ export function CompetitionRegister() {
         </div>
         {error ? <p className="text-sm text-orange-400">{error}</p> : null}
         <Button type="submit" disabled={pending} className="term-btn h-10">
-          {pending ? "Registering…" : "Pay 5 USDC and enter"}
+          {pending ? "Registering…" : hostEntersFree ? "Enter" : "Pay 5 USDC and enter"}
         </Button>
-        <p className="text-xs text-copper-dim">$1 goes to the creator wallet now. $4 stays in escrow for the winner. This is not a like.</p>
+        <p className="text-xs text-copper-dim">
+          {hostEntersFree
+            ? "Your host wallet enters without the USDC fee. This is not a like."
+            : "$1 goes to the creator wallet now. $4 stays in escrow for the winner. This is not a like."}
+        </p>
       </form>
     </>
   )

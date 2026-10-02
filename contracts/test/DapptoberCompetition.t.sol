@@ -54,6 +54,28 @@ contract DapptoberCompetitionTest is Test {
         usdc.approve(address(competition), type(uint256).max);
     }
 
+    function testHostRegistersWithoutPaying() public {
+        address host = competition.HOST();
+        vm.prank(host);
+        uint256 id = competition.register("ipfs://host");
+        assertEq(id, 0);
+        assertEq(competition.pot(), 0);
+        assertEq(competition.creatorFees(), 0);
+        assertEq(usdc.balanceOf(address(competition)), 0);
+        (address owner,,,) = competition.entries(0);
+        assertEq(owner, host);
+    }
+
+    function testServerWalletStillPaysEntryFee() public {
+        usdc.mint(serverWallet, 5_000_000);
+        vm.startPrank(serverWallet);
+        usdc.approve(address(competition), type(uint256).max);
+        competition.register("ipfs://server");
+        vm.stopPrank();
+        assertEq(competition.pot(), 4_000_000);
+        assertEq(competition.creatorFees(), 1_000_000);
+    }
+
     function testRegisterSplitsPotAndCollectedFees() public {
         vm.prank(entrant);
         uint256 id = competition.register("ipfs://agent");
