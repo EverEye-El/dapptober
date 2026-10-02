@@ -42,6 +42,14 @@ export function Sidebar() {
     { href: "/rules", label: "Rules", icon: ScrollText, active: false },
     { href: "/about", label: "About", icon: Info, active: false },
   ]
+  const prompts = navItems.slice(0, 1)
+  const fromShowcase = navItems.slice(1)
+  const itemClass = (active: boolean) =>
+    `flex items-center gap-3 px-3 py-2.5 border border-transparent transition-all duration-200 group font-mono text-xs tracking-[0.14em] uppercase ${
+      active
+        ? "border-copper/50 text-copper-bright bg-copper/10"
+        : "text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5"
+    } ${showLabels ? "" : "justify-center"}`
 
   return (
     <>
@@ -109,16 +117,61 @@ export function Sidebar() {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Main navigation">
-            {navItems.map((item) => (
+            {prompts.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={closeMobile}
-                className={`flex items-center gap-3 px-3 py-2.5 border border-transparent transition-all duration-200 group font-mono text-xs tracking-[0.14em] uppercase ${
-                  item.active
-                    ? "border-copper/50 text-copper-bright bg-copper/10"
-                    : "text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5"
-                } ${showLabels ? "" : "justify-center"}`}
+                className={itemClass(item.active)}
+                aria-current={item.active ? "page" : undefined}
+                title={showLabels ? undefined : item.label}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                {showLabels && (
+                  <span>
+                    <span className="text-copper mr-2">&gt;</span>
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            ))}
+            {account?.address ? (
+              <Link
+                href="/profile"
+                onClick={closeMobile}
+                className={itemClass(false)}
+                title={showLabels ? undefined : "Profile"}
+              >
+                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                {showLabels ? (
+                  <span>
+                    <span className="text-copper mr-2">&gt;</span>
+                    Profile
+                  </span>
+                ) : null}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowConnect(true)}
+                className={`w-full ${itemClass(false)}`}
+                title={showLabels ? undefined : "Profile"}
+              >
+                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                {showLabels ? (
+                  <span>
+                    <span className="text-copper mr-2">&gt;</span>
+                    Profile
+                  </span>
+                ) : null}
+              </button>
+            )}
+            {fromShowcase.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={closeMobile}
+                className={itemClass(item.active)}
                 aria-current={item.active ? "page" : undefined}
                 title={showLabels ? undefined : item.label}
               >
@@ -134,37 +187,6 @@ export function Sidebar() {
           </nav>
 
           <div className="px-4 pb-3 flex flex-col gap-3">
-            {account?.address ? (
-              <Link
-                href="/profile"
-                onClick={closeMobile}
-                className={`flex items-center gap-3 px-3 py-2.5 border border-transparent text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5 font-mono text-xs tracking-[0.14em] uppercase ${showLabels ? "" : "justify-center"}`}
-                title={showLabels ? undefined : "Profile"}
-              >
-                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                {showLabels ? (
-                  <span>
-                    <span className="text-copper mr-2">&gt;</span>
-                    Profile
-                  </span>
-                ) : null}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowConnect(true)}
-                className={`flex items-center gap-3 px-3 py-2.5 border border-transparent text-copper-dim hover:text-copper-bright hover:border-copper/40 hover:bg-copper/5 font-mono text-xs tracking-[0.14em] uppercase ${showLabels ? "" : "justify-center"}`}
-                title={showLabels ? undefined : "Profile"}
-              >
-                <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                {showLabels ? (
-                  <span>
-                    <span className="text-copper mr-2">&gt;</span>
-                    Profile
-                  </span>
-                ) : null}
-              </button>
-            )}
             <WalletConnectButton isCollapsed={!showLabels} />
           </div>
 

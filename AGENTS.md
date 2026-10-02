@@ -17,7 +17,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Avoid Vercel CLI login/auth flows from agent shells unless the user explicitly asks and supplies a token-based approach.
 - Keep community comments unlimited on showcase builds and competition agent pages — do not cap them at one per wallet. Regular builds have a like; competition agents are flagged and have both a like and a vote. Likes and competition votes stay separate actions.
 - Style the Thirdweb sign-in modal to match the hyper-tech copper terminal UI.
-- Logged-out visitors should not see a wallet profile; show a login CTA instead. On a profile, the display name comes first and the wallet address is secondary. In the sidebar, the profile and wallet icons sit together above the divider.
+- Logged-out visitors should not see a wallet profile; show a login CTA instead. On a profile, the display name comes first and the wallet address is secondary. In the sidebar, the profile icon sits in the nav directly above the trophy. The wallet icon stays above the divider.
 - When adding JEV to daily prompts, keep the existing prompt copy. Treat JEV as optional unless that day needs it as a core feature.
 - Showcase leads with the current edition. Prior-year entries (for example Seedpunk) belong in an archive toggle.
 - Showcase and the paid votes board share one page: the top is a horizontal scroller of the latest builds, and the competition layout (VOTE title, pot, phase, entry list, side enter card) sits underneath. The nav showcase icon is the trophy, and `/competition` redirects to `/showcase#votes`.
