@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
+import { submitDayValidationError } from "@/lib/community/dapptober-calendar"
 import { ensureProfile } from "./profiles"
 
 const supabaseAdmin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
@@ -16,6 +17,7 @@ export async function uploadCompetitionMetadata(body: {
   demoUrl: string
   imageUrl: string | null
   owner: string
+  day: number
 }) {
   const path = `meta/${crypto.randomUUID()}.json`
   const payload = JSON.stringify(body)
@@ -41,7 +43,11 @@ export async function recordCompetitionEntry(input: {
   imageUrl?: string | null
   metadataUri: string
   txHash: string
+  day: number
 }) {
+  const dayError = submitDayValidationError(input.day)
+  if (dayError) return { success: false as const, error: dayError }
+
   const profile = await ensureProfile(input.walletAddress)
   if (!profile.success) return { success: false as const, error: "Failed to create profile." }
 
@@ -54,9 +60,11 @@ export async function recordCompetitionEntry(input: {
     image_url: input.imageUrl ?? null,
     metadata_uri: input.metadataUri,
     tx_hash: input.txHash,
+    day: input.day,
     status: "registered",
   })
   if (error) return { success: false as const, error: error.message }
+  revalidatePath("/showcase")
   revalidatePath("/competition")
   return { success: true as const }
 }
@@ -70,6 +78,7 @@ export async function recordCompetitionVote(input: { entryId: string; walletAddr
   if (error && !/duplicate|unique/i.test(error.message)) {
     return { success: false as const, error: error.message }
   }
+  revalidatePath("/showcase")
   revalidatePath("/competition")
   revalidatePath(`/competition/${input.entryId}`)
   return { success: true as const }

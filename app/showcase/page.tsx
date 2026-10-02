@@ -1,3 +1,4 @@
+import { CompetitionBoard } from "@/components/competition/competition-board"
 import { ShowcaseGrid } from "@/components/showcase/showcase-grid"
 import { Sidebar } from "@/components/sidebar"
 import { SiteFooter } from "@/components/site-footer"
@@ -24,6 +25,8 @@ export default function ShowcasePage() {
         <section className="container mx-auto px-4 lg:px-8 py-6 relative z-10">
           <ShowcaseGrid />
         </section>
+
+        <CompetitionBoard />
 
         <SiteFooter />
       </main>

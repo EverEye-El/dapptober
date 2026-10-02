@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ConnectModal } from "@/components/web3/connect-modal"
+import { getUnlockedSubmitDays, submitDayValidationError } from "@/lib/community/dapptober-calendar"
 
 const ENTRY_FEE = BigInt(5_000_000)
 
@@ -19,6 +20,8 @@ export function CompetitionRegister() {
   const [showConnect, setShowConnect] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const unlockedDays = getUnlockedSubmitDays()
+  const [day, setDay] = useState(unlockedDays[0] ?? 1)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [demoUrl, setDemoUrl] = useState("")
@@ -29,6 +32,11 @@ export function CompetitionRegister() {
     setError(null)
     if (!account) {
       setShowConnect(true)
+      return
+    }
+    const dayError = submitDayValidationError(day)
+    if (dayError) {
+      setError(dayError)
       return
     }
     const config = competitionContracts()
@@ -54,6 +62,7 @@ export function CompetitionRegister() {
         demoUrl,
         imageUrl,
         owner: account.address,
+        day,
       })
       if (!meta.success) throw new Error(meta.error)
 
@@ -90,6 +99,7 @@ export function CompetitionRegister() {
         imageUrl,
         metadataUri: meta.url,
         txHash: receipt.transactionHash,
+        day,
       })
       if (!saved.success) throw new Error(saved.error)
       setName("")
@@ -107,6 +117,22 @@ export function CompetitionRegister() {
     <>
       <ConnectModal isOpen={showConnect} onClose={() => setShowConnect(false)} />
       <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="agent-day" className="text-white">Prompt day</Label>
+          <select
+            id="agent-day"
+            value={day}
+            onChange={(event) => setDay(Number(event.target.value))}
+            required
+            className="w-full h-10 bg-slate-900/90 border border-primary/50 text-white px-3"
+          >
+            {unlockedDays.map((option) => (
+              <option key={option} value={option}>
+                Day {String(option).padStart(2, "0")}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="agent-name" className="text-white">Agent name</Label>
           <Input id="agent-name" value={name} onChange={(e) => setName(e.target.value)} required className="bg-slate-900/90 border-primary/50 text-white" />

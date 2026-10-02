@@ -54,6 +54,7 @@ export default async function DappPage(props: DappPageProps) {
       .select("id, content, created_at, wallet_address")
       .eq("dapp_day", dapp.day)
       .is("submission_id", null)
+      .is("entry_id", null)
       .order("created_at", { ascending: false })
 
     const walletAddresses = commentsData

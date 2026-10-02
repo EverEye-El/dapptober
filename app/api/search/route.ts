@@ -40,8 +40,9 @@ interface AgentRow {
 interface CommentRow {
   id: string
   content: string
-  dapp_day: number
+  dapp_day: number | null
   submission_id: string | null
+  entry_id: string | null
   wallet_address: string | null
 }
 
@@ -94,7 +95,7 @@ export async function GET(request: Request) {
         .limit(6),
       supabase
         .from("comments")
-        .select("id, content, dapp_day, submission_id, wallet_address")
+        .select("id, content, dapp_day, submission_id, entry_id, wallet_address")
         .ilike("content", pattern)
         .order("created_at", { ascending: false })
         .limit(6),
@@ -148,10 +149,16 @@ export async function GET(request: Request) {
     results.comments = comments.map((comment) => {
       const text = comment.content.replace(/\s+/g, " ").trim()
       const wallet = comment.wallet_address ? shortAddress(comment.wallet_address) : "Comment"
-      const place = comment.submission_id ? "Showcase" : `Day ${String(comment.dapp_day).padStart(2, "0")}`
-      const href = comment.submission_id
-        ? `/showcase/${comment.submission_id}#comment-${comment.id}`
-        : `/dapp/${comment.dapp_day}#comment-${comment.id}`
+      const place = comment.entry_id
+        ? "Competition"
+        : comment.submission_id
+          ? "Showcase"
+          : `Day ${String(comment.dapp_day ?? 0).padStart(2, "0")}`
+      const href = comment.entry_id
+        ? `/competition/${comment.entry_id}#comment-${comment.id}`
+        : comment.submission_id
+          ? `/showcase/${comment.submission_id}#comment-${comment.id}`
+          : `/dapp/${comment.dapp_day}#comment-${comment.id}`
       return {
         id: `comment-${comment.id}`,
         kind: "comment" as const,

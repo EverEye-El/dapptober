@@ -139,9 +139,11 @@ export function ShowcaseGrid() {
   return (
     <div>
       {toggle}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
       {submissions.map((submission, index) => (
-        <ShowcaseCard key={submission.id} submission={submission} titleStartDelay={index * 80} />
+        <div key={submission.id} className="w-[min(85vw,22rem)] shrink-0 snap-start">
+          <ShowcaseCard submission={submission} titleStartDelay={index * 80} />
+        </div>
       ))}
       </div>
     </div>
