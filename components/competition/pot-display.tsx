@@ -13,9 +13,9 @@ export function PotDisplay() {
     if (!config) return
     let cancelled = false
     readContract({
-      contract: config.usdc,
-      method: "function balanceOf(address account) view returns (uint256)",
-      params: [config.competitionAddress],
+      contract: config.competition,
+      method: "function pot() view returns (uint256)",
+      params: [],
     })
       .then((balance) => {
         if (cancelled) return

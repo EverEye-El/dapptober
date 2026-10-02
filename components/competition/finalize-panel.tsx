@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { prepareContractCall, sendAndConfirmTransaction } from "thirdweb"
+import { useEffect, useState } from "react"
+import { prepareContractCall, readContract, sendAndConfirmTransaction } from "thirdweb"
 import { useActiveAccount } from "thirdweb/react"
+import { isCompetitionOperator } from "@/lib/competition/access"
 import { competitionContracts } from "@/lib/competition/chain"
 import { competitionPhase } from "@/lib/competition/window"
 import { Button } from "@/components/ui/button"
@@ -14,15 +15,43 @@ interface FinalizeEntry {
   votes: number
 }
 
+function usdcUnits(value: string) {
+  return BigInt(Math.round(Number(value) * 1_000_000))
+}
+
 export function FinalizePanel({ entries }: { entries: FinalizeEntry[] }) {
   const account = useActiveAccount()
-  const owner = (process.env.NEXT_PUBLIC_COMPETITION_OWNER || "").toLowerCase()
   const [selected, setSelected] = useState<number[]>([])
   const [deposit, setDeposit] = useState("")
+  const [fees, setFees] = useState("")
+  const [collected, setCollected] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
-  if (!account || !owner || account.address.toLowerCase() !== owner) return null
+  const allowed = Boolean(account && isCompetitionOperator(account.address))
+
+  useEffect(() => {
+    if (!allowed) return
+    const config = competitionContracts()
+    if (!config) return
+    let cancelled = false
+    readContract({
+      contract: config.competition,
+      method: "function creatorFees() view returns (uint256)",
+      params: [],
+    })
+      .then((balance) => {
+        if (!cancelled) setCollected((Number(balance) / 1_000_000).toString())
+      })
+      .catch(() => {
+        if (!cancelled) setCollected(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [allowed, message])
+
+  if (!account || !allowed) return null
 
   const phase = competitionPhase()
   const top = entries.reduce((max, entry) => Math.max(max, entry.votes), 0)
@@ -63,7 +92,7 @@ export function FinalizePanel({ entries }: { entries: FinalizeEntry[] }) {
 
   const onDeposit = async () => {
     const config = competitionContracts()
-    const amount = BigInt(Math.round(Number(deposit) * 1_000_000))
+    const amount = usdcUnits(deposit)
     if (!config || amount <= BigInt(0)) {
       setMessage("Enter a USDC amount and deploy the contract first.")
       return
@@ -88,9 +117,39 @@ export function FinalizePanel({ entries }: { entries: FinalizeEntry[] }) {
         }),
       })
       setDeposit("")
-      setMessage("USDC deposited into escrow.")
+      setMessage("USDC added to the pot.")
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Deposit failed")
+    } finally {
+      setPending(false)
+    }
+  }
+
+  const onFees = async (mode: "pot" | "withdraw") => {
+    const config = competitionContracts()
+    const amount = usdcUnits(fees)
+    if (!config || amount <= BigInt(0)) {
+      setMessage("Enter a USDC amount and deploy the contract first.")
+      return
+    }
+    setPending(true)
+    setMessage(null)
+    try {
+      await sendAndConfirmTransaction({
+        account,
+        transaction: prepareContractCall({
+          contract: config.competition,
+          method:
+            mode === "pot"
+              ? "function addFeesToPot(uint256 amount)"
+              : "function withdrawFees(address to, uint256 amount)",
+          params: mode === "pot" ? [amount] : [account.address, amount],
+        }),
+      })
+      setFees("")
+      setMessage(mode === "pot" ? "Collected fees added to the pot." : "Collected fees sent to this wallet.")
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Fee transfer failed")
     } finally {
       setPending(false)
     }
@@ -100,9 +159,31 @@ export function FinalizePanel({ entries }: { entries: FinalizeEntry[] }) {
     <section className="container mx-auto px-4 lg:px-8 pb-8">
       <div className="glass-card border-primary/30 p-4 space-y-4">
         <h2 className="text-lg font-bold text-copper-bright">Owner</h2>
+        <p className="text-sm text-copper-dim">
+          Each entry puts 4 USDC in the pot and holds 1 USDC aside. Either of your wallets can add those fees to the pot, withdraw them, or pay the winner.
+          {collected ? ` Collected fees: ${collected} USDC.` : ""}
+        </p>
         <div className="flex flex-wrap items-end gap-3">
           <label className="text-sm text-white space-y-2">
-            <span>Add USDC to the pot</span>
+            <span>Collected fees</span>
+            <Input
+              value={fees}
+              onChange={(event) => setFees(event.target.value)}
+              inputMode="decimal"
+              placeholder="1"
+              className="bg-slate-900/90 border-primary/50 text-white"
+            />
+          </label>
+          <Button type="button" className="term-btn h-10" disabled={pending} onClick={() => onFees("pot")}>
+            Add to pot
+          </Button>
+          <Button type="button" className="term-btn h-10" disabled={pending} onClick={() => onFees("withdraw")}>
+            Withdraw
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="text-sm text-white space-y-2">
+            <span>Add other USDC to the pot</span>
             <Input
               value={deposit}
               onChange={(event) => setDeposit(event.target.value)}

@@ -9,6 +9,23 @@ import { useActiveAccount } from "thirdweb/react"
 import { DAPPTOBER_YEAR } from "@/lib/dapp-prompts"
 import { RAIL_MARK } from "@/lib/ascii"
 import { SiteSearch } from "@/components/search/site-search"
+import type { ReactNode } from "react"
+
+function RailTip({ label, enabled, children }: { label: string; enabled: boolean; children: ReactNode }) {
+  if (!enabled) return children
+  return (
+    <div className="group/tip relative">
+      {children}
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap border border-copper/50 bg-[oklch(0.14_0.012_55)] px-2 py-1 font-mono text-[10px] tracking-[0.16em] uppercase text-copper-bright opacity-0 shadow-[0_0_16px_oklch(0.78_0.11_62/0.2)] transition-opacity group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+      >
+        <span className="mr-1.5 text-copper">&gt;</span>
+        {label}
+      </span>
+    </div>
+  )
+}
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true)
@@ -118,13 +135,13 @@ export function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Main navigation">
             {prompts.map((item) => (
+              <RailTip key={item.href} label={item.label} enabled={!showLabels}>
               <Link
-                key={item.href}
                 href={item.href}
                 onClick={closeMobile}
                 className={itemClass(item.active)}
                 aria-current={item.active ? "page" : undefined}
-                title={showLabels ? undefined : item.label}
+                aria-label={item.label}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {showLabels && (
@@ -134,13 +151,15 @@ export function Sidebar() {
                   </span>
                 )}
               </Link>
+              </RailTip>
             ))}
             {account?.address ? (
+              <RailTip label="Profile" enabled={!showLabels}>
               <Link
                 href="/profile"
                 onClick={closeMobile}
                 className={itemClass(false)}
-                title={showLabels ? undefined : "Profile"}
+                aria-label="Profile"
               >
                 <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {showLabels ? (
@@ -150,12 +169,14 @@ export function Sidebar() {
                   </span>
                 ) : null}
               </Link>
+              </RailTip>
             ) : (
+              <RailTip label="Profile" enabled={!showLabels}>
               <button
                 type="button"
                 onClick={() => setShowConnect(true)}
                 className={`w-full ${itemClass(false)}`}
-                title={showLabels ? undefined : "Profile"}
+                aria-label="Profile"
               >
                 <User className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {showLabels ? (
@@ -165,15 +186,16 @@ export function Sidebar() {
                   </span>
                 ) : null}
               </button>
+              </RailTip>
             )}
             {fromShowcase.map((item) => (
+              <RailTip key={item.href} label={item.label} enabled={!showLabels}>
               <Link
-                key={item.href}
                 href={item.href}
                 onClick={closeMobile}
                 className={itemClass(item.active)}
                 aria-current={item.active ? "page" : undefined}
-                title={showLabels ? undefined : item.label}
+                aria-label={item.label}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {showLabels && (
@@ -183,6 +205,7 @@ export function Sidebar() {
                   </span>
                 )}
               </Link>
+              </RailTip>
             ))}
           </nav>
 
