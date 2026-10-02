@@ -14,7 +14,7 @@ import { ConnectModal } from "./connect-modal"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 import { addComment } from "@/app/actions/comments"
 import type { EngagementTarget } from "@/lib/community/engagement"
-import { isPromptTarget } from "@/lib/community/engagement"
+import { commentRealtime, isPromptTarget } from "@/lib/community/engagement"
 import Link from "next/link"
 
 interface Comment {
@@ -56,8 +56,7 @@ export function CommentsSection({ target, initialComments }: CommentsSectionProp
     }
 
     const supabase = supabaseBrowser()
-    const channelName = isPromptTarget(target) ? `comments:prompt:${target.dappDay}` : `comments:submission:${target.submissionId}`
-    const filter = isPromptTarget(target) ? `dapp_day=eq.${target.dappDay}` : `submission_id=eq.${target.submissionId}`
+    const { channelName, filter } = commentRealtime(target)
 
     const channel = supabase
       .channel(channelName)
@@ -74,11 +73,11 @@ export function CommentsSection({ target, initialComments }: CommentsSectionProp
 
           const { data: commentData } = await supabase
             .from("comments")
-            .select("id, content, created_at, wallet_address, submission_id")
+            .select("id, content, created_at, wallet_address, submission_id, entry_id")
             .eq("id", payload.new.id)
             .single()
 
-          if (commentData && isPromptTarget(target) && commentData.submission_id) {
+          if (commentData && isPromptTarget(target) && (commentData.submission_id || commentData.entry_id)) {
             return
           }
 

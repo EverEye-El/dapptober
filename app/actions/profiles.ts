@@ -150,7 +150,7 @@ export async function getProfilePage(walletAddress: string) {
 
   const { data: comments } = await supabaseAdmin
     .from("comments")
-    .select("id, content, created_at, dapp_day, submission_id")
+    .select("id, content, created_at, dapp_day, submission_id, entry_id")
     .eq("wallet_address", normalizedAddress)
     .order("created_at", { ascending: false })
     .limit(20)

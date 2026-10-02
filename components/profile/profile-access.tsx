@@ -130,10 +130,20 @@ export function ProfileAccess({ address }: ProfileAccessProps) {
               <li key={comment.id} className="border border-primary/20 p-3">
                 <p className="text-sm text-white">{comment.content}</p>
                 <Link
-                  href={comment.submission_id ? `/showcase/${comment.submission_id}` : `/dapp/${comment.dapp_day}`}
+                  href={
+                    comment.entry_id
+                      ? `/competition/${comment.entry_id}`
+                      : comment.submission_id
+                        ? `/showcase/${comment.submission_id}`
+                        : `/dapp/${comment.dapp_day}`
+                  }
                   className="text-xs text-copper-bright hover:underline"
                 >
-                  {comment.submission_id ? "On a showcase build" : `On day ${comment.dapp_day}`}
+                  {comment.entry_id
+                    ? "On a competition agent"
+                    : comment.submission_id
+                      ? "On a showcase build"
+                      : `On day ${comment.dapp_day}`}
                 </Link>
               </li>
             ))}

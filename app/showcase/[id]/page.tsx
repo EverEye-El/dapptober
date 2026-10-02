@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, ExternalLink, Github } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
+import { Github } from "@/components/icons/github"
 import { Sidebar } from "@/components/sidebar"
 import { Button } from "@/components/ui/button"
 import { ParallaxTiltCard } from "@/components/terminal/parallax-tilt-card"
@@ -17,10 +18,11 @@ import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
 
 interface ShowcaseDetailPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export default async function ShowcaseDetailPage({ params }: ShowcaseDetailPageProps) {
+export default async function ShowcaseDetailPage(props: ShowcaseDetailPageProps) {
+  const params = await props.params;
   if (!isSupabaseConfigured()) {
     notFound()
   }
