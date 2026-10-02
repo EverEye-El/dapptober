@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { prepareContractCall, readContract, sendAndConfirmTransaction } from "thirdweb"
 import { useActiveAccount } from "thirdweb/react"
-import { competitionContracts } from "@/lib/competition/chain"
+import { competitionAddressEnvKey, competitionContracts } from "@/lib/competition/chain"
 import { uploadSubmissionImage } from "@/app/actions/submissions"
 import { recordCompetitionEntry, uploadCompetitionMetadata } from "@/app/actions/competition"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ export function CompetitionRegister() {
     }
     const config = competitionContracts()
     if (!config) {
-      setError("Competition contract is not deployed yet. Set NEXT_PUBLIC_COMPETITION_ADDRESS.")
+      setError(`Competition contract is not deployed yet. Set ${competitionAddressEnvKey()}.`)
       return
     }
 

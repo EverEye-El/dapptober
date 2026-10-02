@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { prepareContractCall, sendAndConfirmTransaction } from "thirdweb"
 import { useActiveAccount } from "thirdweb/react"
-import { competitionContracts } from "@/lib/competition/chain"
+import { competitionAddressEnvKey, competitionContracts } from "@/lib/competition/chain"
 import { recordCompetitionVote } from "@/app/actions/competition"
 import { competitionPhase, VOTE_WINDOW_LABEL, WINNER_ANNOUNCEMENT_LABEL } from "@/lib/competition/window"
 import { Button } from "@/components/ui/button"
@@ -31,7 +31,7 @@ export function VoteButton({ entryId, onchainEntryId, voteCount }: VoteButtonPro
     }
     const config = competitionContracts()
     if (!config) {
-      setError("Competition contract is not deployed yet.")
+      setError(`Competition contract is not deployed yet. Set ${competitionAddressEnvKey()}.`)
       return
     }
     setPending(true)
