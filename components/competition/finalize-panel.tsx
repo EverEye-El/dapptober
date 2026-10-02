@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { prepareContractCall, readContract, sendAndConfirmTransaction } from "thirdweb"
 import { useActiveAccount } from "thirdweb/react"
 import { isCompetitionOperator } from "@/lib/competition/access"
-import { competitionContracts } from "@/lib/competition/chain"
+import { competitionAddressEnvKey, competitionContracts } from "@/lib/competition/chain"
 import { competitionPhase } from "@/lib/competition/window"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -68,7 +68,7 @@ export function FinalizePanel({ entries }: { entries: FinalizeEntry[] }) {
   const onFinalize = async () => {
     const config = competitionContracts()
     if (!config) {
-      setMessage("Set NEXT_PUBLIC_COMPETITION_ADDRESS before finalizing.")
+      setMessage(`Set ${competitionAddressEnvKey()} before finalizing.`)
       return
     }
     setPending(true)

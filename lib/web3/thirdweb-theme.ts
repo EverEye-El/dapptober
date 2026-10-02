@@ -4,6 +4,7 @@ import type {
   ConnectButton_detailsModalOptions,
   ConnectButtonProps,
 } from "thirdweb/react"
+import { competitionChain } from "@/lib/competition/chain"
 import { dapptoberConnectWallets } from "@/lib/web3/connect-wallets"
 
 /** Copper / ink palette aligned with app/globals.css */
@@ -65,8 +66,9 @@ const termBtnOutline = "term-btn !text-xs"
 /** Shared ConnectButton props: connect, wallet details, network switch, SIWE sign-in modals */
 export const dapptoberConnectButtonDefaults: Pick<
   ConnectButtonProps,
-  "wallets" | "theme" | "connectModal" | "detailsModal" | "switchButton" | "signInButton"
+  "wallets" | "theme" | "connectModal" | "detailsModal" | "switchButton" | "signInButton" | "chain"
 > = {
+  chain: competitionChain(),
   wallets: dapptoberConnectWallets,
   theme: dapptoberThirdwebTheme,
   connectModal: dapptoberConnectModalOptions,
