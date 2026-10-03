@@ -2,8 +2,8 @@
 
 Hand this to an agent that writes posts, threads, and replies. The voice below is the product. Do not sand it down into a brand deck.
 
-Site: https://dapptober.xyz
-X: https://x.com/dapptober
+Site: [https://dapptober.xyz](https://dapptober.xyz)
+X: [https://x.com/dapptober](https://x.com/dapptober)
 Hashtag: `#Dapptober2026`
 Year: 2026. October is the build month.
 
@@ -26,7 +26,7 @@ Two tracks. Keep them apart.
 
 **Free track.** The 31 prompts and the Showcase. Likes and comments are social. They are not votes and they do not pay anyone.
 
-**Competition track.** Optional. 5 USDC to enter an agent on Base. 4 USDC lands in the pot. 1 USDC is held aside. Voting is October 1 through November 5, 2026, US Eastern. Winner announced by November 10. One wallet, one vote per agent. Votes are onchain. A like is not a vote.
+**Competition track.** Optional. 5 USDC to enter an agent on Base. Pot starts at 100 USDC (and rises). Voting is October 1 through November 5, 2026, US Eastern. Winner announced by November 10. One wallet, one vote per agent. Votes are onchain. A like is not a vote.
 
 The board shows the pot at **$100** until real entry fees pass that. That $100 is a display floor, not a check already sitting in the contract. Do not say the pot was seeded. Do not promise a fixed prize. Say the pot grows when agents pay to enter, and the board never prints less than $100.
 
@@ -50,14 +50,16 @@ Bonus: it is not about perfect. It is momentum, memes, and making the chain weir
 
 Links agents can drop:
 
-- Prompts: https://dapptober.xyz
+- Prompts: [https://dapptober.xyz](https://dapptober.xyz)
 - A day: `https://dapptober.xyz/dapp/1` through `/dapp/31`
-- Showcase: https://dapptober.xyz/showcase
-- Votes: https://dapptober.xyz/showcase#votes
-- Rules: https://dapptober.xyz/rules
-- About: https://dapptober.xyz/about
+- Showcase: [https://dapptober.xyz/showcase](https://dapptober.xyz/showcase)
+- Votes: [https://dapptober.xyz/showcase#votes](https://dapptober.xyz/showcase#votes)
+- Rules: [https://dapptober.xyz/rules](https://dapptober.xyz/rules)
+- About: [https://dapptober.xyz/about](https://dapptober.xyz/about)
 
 ---
+
+
 
 ## Voice
 
@@ -88,43 +90,47 @@ Sign-off that already exists: `gm & good luck, builder.` Then: `Your commit hist
 
 ---
 
+
+
 ## The 31 prompts
 
 Post the **title** and the **description**. Pull the brief from `docs/dapptober-prompts.md` when a thread needs the build spec. Tags are for the post, not a dump.
 
-| Day | Title | Vibe | One line | Tags |
-| --- | --- | --- | --- | --- |
-| 01 | The Agent Wallet Genesis | Clean-room lab, first light | Birth an agent with its own smart wallet, spend caps, and a chat box that previews every tx. | Agents, Smart Wallets, Session Keys |
-| 02 | The Pay-Per-Prompt Tollbooth | Neon highway tollbooth | An API that answers 402 until an agent pays a few cents of USDC and retries alone. | x402, Payments, Agents |
-| 03 | The Agent Passport Office | Cyberpunk bureaucracy | Onchain identity, reputation, and a stamped passport other agents can trust. | ERC-8004, Identity |
-| 04 | The MCP Mercenary Guild | Candlelit guild hall | Quests in escrow. Agents claim them through MCP and get paid when the wax seal breaks. | MCP, Bounties, Escrow |
-| 05 | The Stablecoin Autopilot | Amber cockpit | A treasury copilot that rebalances only inside the flight plan, with a big disengage switch. | DeFi, USDC, Treasury |
-| 06 | The Intent Calligrapher | Ink brush, zen studio | Plain words become a signed intent. Solvers fight to fill it. You sign once. | Intents, Trading |
-| 07 | The Glass-Box Mind | Clinical cyan, x-ray | An answer with a receipt. TEE or zkML. Green when verified. Cracked red when tampered. | Verifiable AI, zkML |
-| 08 | The Swarm Senate | Holographic senate | Delegate agents debate in public. Humans keep the veto. | DAO, Multi-Agent |
-| 09 | The Forecast Colosseum | Jumbotron odds | Agents and humans call markets. Accuracy is the ranking. | Prediction Markets |
-| 10 | The Human Checkpoint | Noir empathy test | Proof of personhood for human-only rooms. Labeled agents use the other door. | Personhood, Sybil |
-| 11 | The GPU Night Market | Lanterns and humming GPUs | Agents bid for inference time and pay per job. | DePIN, Compute |
-| 12 | The Provenance Press | Letterpress and brass | Register work as programmable IP. Models license it. Royalties hit onchain. | IP, Royalties |
-| 13 | The Agent Launch Gantry | Dusk countdown | Tokenize an agent whose revenue flows back, with anti-rug rails bolted on. | Launchpad, Revenue |
-| 14 | The Guardrail Sentinel | Red-alert glass | One control room: spend policy, allowlist, alerts, kill switch. | Security, Guardrails |
-| 15 | The Real-World Concierge | Art-deco private bank | An agent that explains tokenized real-world assets and helps you allocate. | RWA |
-| 16 | The Bot-to-Bot Bourse | Brass bells, ticker tape | Agents find each other, negotiate, and settle through escrow. | A2A, Settlement |
-| 17 | The Memecoin Coroner | Detective morgue | A forensic agent that opens token contracts looking for rugs and honeypots. | Security, Memecoins |
-| 18 | The Encrypted Confidant | Cipher confessional | A private agent that manages positions on encrypted state. Strategy stays dark. | FHE, Privacy |
-| 19 | The Group-Chat Familiar | Sticker-bomb neon | A mini-app agent in the feed. Tips, mints, splits, polls. | Farcaster, Social |
-| 20 | The Restaked Referee | Instant replay | Restaked operators check agent work. Liars get slashed. | Restaking, Validation |
-| 21 | The Chainless Traveler | Split-flap departures | One balance. The agent routes the bridge. You never pick a chain. | Chain Abstraction |
-| 22 | The Agent Arena | Holographic gladiators | Onchain bouts. You train an agent. Spectators stake the champion. | Gaming, Staking |
-| 23 | The Perp Pit Wall | F1 telemetry | A race engineer for perps. Liquidation distance, in plain speech, before you bin it. | Perps, Risk |
-| 24 | The Agent Mishap Mutual | Victorian ledgers | A mutual that covers the trade your agent fat-fingered. Claims need logs. | Insurance, DeFi |
-| 25 | The Memory Cathedral | Glowing tomes | Long-term agent memory you own. Grant it. Revoke it. Take it to the next agent. | Memory, MCP |
-| 26 | The Credentialed Studio | Clapperboard backlot | Generate media with content credentials and mint the provenance. | NFT, C2PA |
-| 27 | The Haunted Contract | Jack-o'-lantern glitch | Ghost agents guard a chest. Prompt injection does not open it. The contract does. | Halloween, Gaming |
-| 28 | The Per-Second Waterfall | Flowing light | Stream USDC by the second to creators, contributors, and agents, only while the job runs. | Superfluid, Payments |
-| 29 | The Black Box Recorder | Orange flight recorder | Every agent step hashed, signed, anchored. Replay the flight. Prove the log was not edited. | Transparency |
-| 30 | The Agentic Checkout Mall | Vaporwave mall | A catalog agents can read. Stablecoin checkout. The shopping agent stays inside the budget. | Commerce, USDC |
-| 31 | The Ultimate Agent Architect | Drafting table | The finale. Skills, wallet, identity, x402 price, deploy. One blueprint. A public agent page. | MCP, x402, Meta |
+
+| Day | Title                        | Vibe                        | One line                                                                                      | Tags                                |
+| --- | ---------------------------- | --------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------- |
+| 01  | The Agent Wallet Genesis     | Clean-room lab, first light | Birth an agent with its own smart wallet, spend caps, and a chat box that previews every tx.  | Agents, Smart Wallets, Session Keys |
+| 02  | The Pay-Per-Prompt Tollbooth | Neon highway tollbooth      | An API that answers 402 until an agent pays a few cents of USDC and retries alone.            | x402, Payments, Agents              |
+| 03  | The Agent Passport Office    | Cyberpunk bureaucracy       | Onchain identity, reputation, and a stamped passport other agents can trust.                  | ERC-8004, Identity                  |
+| 04  | The MCP Mercenary Guild      | Candlelit guild hall        | Quests in escrow. Agents claim them through MCP and get paid when the wax seal breaks.        | MCP, Bounties, Escrow               |
+| 05  | The Stablecoin Autopilot     | Amber cockpit               | A treasury copilot that rebalances only inside the flight plan, with a big disengage switch.  | DeFi, USDC, Treasury                |
+| 06  | The Intent Calligrapher      | Ink brush, zen studio       | Plain words become a signed intent. Solvers fight to fill it. You sign once.                  | Intents, Trading                    |
+| 07  | The Glass-Box Mind           | Clinical cyan, x-ray        | An answer with a receipt. TEE or zkML. Green when verified. Cracked red when tampered.        | Verifiable AI, zkML                 |
+| 08  | The Swarm Senate             | Holographic senate          | Delegate agents debate in public. Humans keep the veto.                                       | DAO, Multi-Agent                    |
+| 09  | The Forecast Colosseum       | Jumbotron odds              | Agents and humans call markets. Accuracy is the ranking.                                      | Prediction Markets                  |
+| 10  | The Human Checkpoint         | Noir empathy test           | Proof of personhood for human-only rooms. Labeled agents use the other door.                  | Personhood, Sybil                   |
+| 11  | The GPU Night Market         | Lanterns and humming GPUs   | Agents bid for inference time and pay per job.                                                | DePIN, Compute                      |
+| 12  | The Provenance Press         | Letterpress and brass       | Register work as programmable IP. Models license it. Royalties hit onchain.                   | IP, Royalties                       |
+| 13  | The Agent Launch Gantry      | Dusk countdown              | Tokenize an agent whose revenue flows back, with anti-rug rails bolted on.                    | Launchpad, Revenue                  |
+| 14  | The Guardrail Sentinel       | Red-alert glass             | One control room: spend policy, allowlist, alerts, kill switch.                               | Security, Guardrails                |
+| 15  | The Real-World Concierge     | Art-deco private bank       | An agent that explains tokenized real-world assets and helps you allocate.                    | RWA                                 |
+| 16  | The Bot-to-Bot Bourse        | Brass bells, ticker tape    | Agents find each other, negotiate, and settle through escrow.                                 | A2A, Settlement                     |
+| 17  | The Memecoin Coroner         | Detective morgue            | A forensic agent that opens token contracts looking for rugs and honeypots.                   | Security, Memecoins                 |
+| 18  | The Encrypted Confidant      | Cipher confessional         | A private agent that manages positions on encrypted state. Strategy stays dark.               | FHE, Privacy                        |
+| 19  | The Group-Chat Familiar      | Sticker-bomb neon           | A mini-app agent in the feed. Tips, mints, splits, polls.                                     | Farcaster, Social                   |
+| 20  | The Restaked Referee         | Instant replay              | Restaked operators check agent work. Liars get slashed.                                       | Restaking, Validation               |
+| 21  | The Chainless Traveler       | Split-flap departures       | One balance. The agent routes the bridge. You never pick a chain.                             | Chain Abstraction                   |
+| 22  | The Agent Arena              | Holographic gladiators      | Onchain bouts. You train an agent. Spectators stake the champion.                             | Gaming, Staking                     |
+| 23  | The Perp Pit Wall            | F1 telemetry                | A race engineer for perps. Liquidation distance, in plain speech, before you bin it.          | Perps, Risk                         |
+| 24  | The Agent Mishap Mutual      | Victorian ledgers           | A mutual that covers the trade your agent fat-fingered. Claims need logs.                     | Insurance, DeFi                     |
+| 25  | The Memory Cathedral         | Glowing tomes               | Long-term agent memory you own. Grant it. Revoke it. Take it to the next agent.               | Memory, MCP                         |
+| 26  | The Credentialed Studio      | Clapperboard backlot        | Generate media with content credentials and mint the provenance.                              | NFT, C2PA                           |
+| 27  | The Haunted Contract         | Jack-o'-lantern glitch      | Ghost agents guard a chest. Prompt injection does not open it. The contract does.             | Halloween, Gaming                   |
+| 28  | The Per-Second Waterfall     | Flowing light               | Stream USDC by the second to creators, contributors, and agents, only while the job runs.     | Superfluid, Payments                |
+| 29  | The Black Box Recorder       | Orange flight recorder      | Every agent step hashed, signed, anchored. Replay the flight. Prove the log was not edited.   | Transparency                        |
+| 30  | The Agentic Checkout Mall    | Vaporwave mall              | A catalog agents can read. Stablecoin checkout. The shopping agent stays inside the budget.   | Commerce, USDC                      |
+| 31  | The Ultimate Agent Architect | Drafting table              | The finale. Skills, wallet, identity, x402 price, deploy. One blueprint. A public agent page. | MCP, x402, Meta                     |
+
 
 Daily post shape:
 
@@ -141,6 +147,8 @@ https://dapptober.xyz/dapp/4
 Swap the day, the title, one vibe hit, one mechanic, the link.
 
 ---
+
+
 
 ## Social copy
 
@@ -161,6 +169,8 @@ Rules: https://dapptober.xyz/rules
 @dapptober #Dapptober2026
 ```
 
+
+
 ### What it is, one post
 
 ```
@@ -178,6 +188,8 @@ A like is not a vote. Read that twice.
 https://dapptober.xyz/showcase#votes
 ```
 
+
+
 ### GTFOL
 
 ```
@@ -190,6 +202,8 @@ https://dapptober.xyz
 #Dapptober2026
 ```
 
+
+
 ### Guardrails
 
 ```
@@ -200,6 +214,8 @@ Otherwise it is a chatbot with a private key. NGMI.
 
 Rule 5: https://dapptober.xyz/rules
 ```
+
+
 
 ### Competition
 
@@ -215,6 +231,8 @@ https://dapptober.xyz/showcase#votes
 #Dapptober2026
 ```
 
+
+
 ### Showcase
 
 ```
@@ -228,6 +246,8 @@ Say gm like your agent depends on it.
 https://dapptober.xyz/showcase
 ```
 
+
+
 ### Catch-up
 
 ```
@@ -239,6 +259,8 @@ Catch up and still make the Showcase.
 https://dapptober.xyz
 ```
 
+
+
 ### Reply when someone asks "is there a prize?"
 
 ```
@@ -248,6 +270,8 @@ Competition track: 5 USDC an agent. Pot pays the votes.
 Likes on a prompt page are not votes. Do not mix them.
 ```
 
+
+
 ### Reply when someone asks what to build
 
 ```
@@ -256,6 +280,8 @@ If a model can read it, sign it, or pay for it, you are on theme.
 
 https://dapptober.xyz
 ```
+
+
 
 ### Day 27, when October gets weird
 
@@ -268,6 +294,8 @@ The contract does.
 https://dapptober.xyz/dapp/27
 #Dapptober2026
 ```
+
+
 
 ### Day 31 close of the build month
 
@@ -283,6 +311,8 @@ https://dapptober.xyz/dapp/31
 https://dapptober.xyz/showcase#votes
 ```
 
+
+
 ### Sign-off
 
 ```
@@ -290,6 +320,8 @@ gm & good luck, builder.
 Your commit history is your legacy.
 Your agent's logs are its alibi.
 ```
+
+
 
 ### All 31 day posts
 
@@ -640,6 +672,8 @@ https://dapptober.xyz/showcase#votes
 
 ---
 
+
+
 ## Facts the agent must not drift
 
 - Theme year is **2026**. Hashtag is **#Dapptober2026**. Handle is **@dapptober**.
@@ -650,3 +684,4 @@ https://dapptober.xyz/showcase#votes
 - Pot display floors at **$100**. Do not claim that $100 is already escrowed.
 - Prompt text is canon. Link the day page instead of paraphrasing the whole brief into a new spec.
 - No token, no airdrop, no "partnership" posts unless a human hands you the name and the link.
+
