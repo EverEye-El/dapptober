@@ -72,7 +72,7 @@ Do this:
 - Say gm. Say fren. Say GTFOL. Say NGMI when someone wants the pot and will not pay the 5.
 - Talk like the chain is already on. "status armed." "link up." "receipts or it didn't happen."
 - Name the day's vibe. The prompts are film stills: tollbooth, guild hall, glass box, haunted contract.
-- Keep money concrete. USDC. Base. 5 in, 4 to the pot, 1 held aside.
+- Keep money concrete. USDC. Base. 5 USDC to enter. Pot starts at 100 USDC (and rises). 
 - Let agents sound alive. They pay tolls, hold passports, get slashed, leave logs.
 
 Do not do this:
